@@ -44,14 +44,54 @@ class NewsCollector:
         "ADA": ["ADA", "$ADA", "CARDANO"],
         "DOT": ["DOT", "$DOT", "POLKADOT"],
     }
+    
+    # Optimized keyword queries for token efficiency (1 token per search)
+    # Focus on Bitcoin and Ethereum to maximize data collection with 2000 token limit
+    OPTIMIZED_QUERIES = [
+        # Core Bitcoin queries (50)
+        "bitcoin", "BTC", "Bitcoin price", "Bitcoin news", "Bitcoin market",
+        "Bitcoin mining", "Bitcoin adoption", "Bitcoin regulation", "Bitcoin ETF", "Bitcoin halving",
+        "Bitcoin transaction", "Bitcoin wallet", "Bitcoin exchange", "Bitcoin security", "Bitcoin update",
+        "Bitcoin protocol", "Bitcoin network", "Bitcoin developer", "Bitcoin bull", "Bitcoin bear",
+        "Bitcoin crash", "Bitcoin surge", "Bitcoin trend", "Bitcoin forecast", "Bitcoin analysis",
+        "Bitcoin payment", "Bitcoin store", "Bitcoin investment", "Bitcoin trading", "Bitcoin fraud",
+        "Bitcoin lawsuit", "Bitcoin ban", "Bitcoin pump", "Bitcoin dump", "Bitcoin whale",
+        "Bitcoin MPC", "Bitcoin derivatives", "Bitcoin futures", "Bitcoin option", "Bitcoin hedge",
+        "Bitcoin recovery", "Bitcoin loss", "Bitcoin pump", "Bitcoin manipulation", "Bitcoin scam",
+        "Bitcoin block", "Bitcoin hash", "Bitcoin lightning", "Bitcoin layer2", "Bitcoin sidechain",
+        
+        # Core Ethereum queries (50)
+        "ethereum", "ETH", "Ethereum price", "Ethereum news", "Ethereum market",
+        "Ethereum mining", "Ethereum staking", "Ethereum upgrade", "Ethereum layer2", "Ethereum DeFi",
+        "Ethereum smart contract", "Ethereum dApp", "Ethereum security", "Ethereum update", "Ethereum protocol",
+        "Ethereum network", "Ethereum developer", "Ethereum bull", "Ethereum bear", "Ethereum crash",
+        "Ethereum surge", "Ethereum trend", "Ethereum forecast", "Ethereum analysis", "Ethereum payment",
+        "Ethereum token", "Ethereum NFT", "Ethereum investment", "Ethereum trading", "Ethereum fraud",
+        "Ethereum lawsuit", "Ethereum ban", "Ethereum whale", "Ethereum derivatives", "Ethereum futures",
+        "Ethereum option", "Ethereum hedge", "Ethereum recovery", "Ethereum loss", "Ethereum manipulation",
+        "Ethereum scam", "Ethereum sharding", "Ethereum blob", "Ethereum fusion", "Ethereum merge",
+        
+        # Market context queries (30)
+        "crypto market", "cryptocurrency news", "blockchain news", "crypto exchange",
+        "crypto regulation", "crypto ETF", "crypto security", "defi protocol", "defi hack",
+        "NFT market", "Web3 update", "crypto adoption", "crypto mining", "crypto payment",
+        "digital asset", "digital currency", "stablecoin", "crypto lending", "crypto lending hack",
+        
+        # Exchange and platform queries (20)
+        "Binance", "Coinbase", "Kraken", "OKX", "Bybit",
+        "Gemini", "Huobi", "Kucoin", "Crypto.com", "BlockFi",
+        "Celsius", "Voyager", "FTX", "Genesis", "Nexo",
+        "Staking", "Lending protocol", "DeFi hack", "Flash loan", "Arbitrage",
+    ]
 
     def __init__(self) -> None:
-        self.news_api_key = os.getenv("NEWS_API_KEY", "")
+        self.news_api_key = os.getenv("NEWSAPI_KEY", "") or os.getenv("NEWS_API_KEY", "")
         self.rate_limit_per_minute = 30
         self._request_timestamps: deque[float] = deque(maxlen=200)
         self._shutdown = asyncio.Event()
         self._feedparser = self._load_optional("feedparser")
         self._newspaper = self._load_optional("newspaper")
+        self._articles_seen: set[str] = set()  # Track seen article URLs to avoid duplicates
 
     def _load_optional(self, module_name: str) -> Any:
         try:
@@ -103,7 +143,8 @@ class NewsCollector:
             current = await db_manager.redis_client.get(key)
             current_int = int(current) if current else 0
             NEWS_REQUESTS_DAILY.set(current_int)
-            return current_int < 100
+            # Increased from 100 to 2000 to maximize token usage (2000 tokens = 2000 searches for recent content)
+            return current_int < 2000
         except Exception:
             return True
 
@@ -119,43 +160,66 @@ class NewsCollector:
 
     async def collect_from_newsapi(self) -> list[dict[str, Any]]:
         if not self.news_api_key:
-            logger.warning("NEWS_API_KEY is missing; skipping NewsAPI collection")
+            logger.warning("NEWSAPI_KEY is missing; skipping NewsAPI collection")
             return []
         if not await self._can_use_newsapi():
-            logger.info("NewsAPI daily quota reached (100/day). Skipping requests.")
+            logger.info("NewsAPI daily quota reached (2000/day). Skipping requests.")
             return []
 
-        params = {
-            "q": self.NEWS_KEYWORDS,
-            "sources": self.NEWS_SOURCES,
-            "language": "en",
-            "sortBy": "publishedAt",
-            "pageSize": 100,
-            "apiKey": self.news_api_key,
-        }
+        all_articles: list[dict[str, Any]] = []
+        
+        # Use optimized queries to maximize data collection with token budget
         async with httpx.AsyncClient(timeout=30) as client:
-            response = await self._request_with_retry(client, "GET", self.NEWSAPI_ENDPOINT, params=params)
-
-        await self._increment_newsapi_counter()
-        payload = response.json()
-        rows: list[dict[str, Any]] = []
-        for article in payload.get("articles", []):
-            url = article.get("url")
-            title = article.get("title")
-            if not url or not title:
-                continue
-            content = article.get("content") or article.get("description") or ""
-            published_at = self._parse_datetime(article.get("publishedAt"))
-            row = self._normalize_article(
-                title=title,
-                content=content,
-                url=url,
-                source=article.get("source", {}).get("name"),
-                author=article.get("author"),
-                published_at=published_at,
-            )
-            rows.append(row)
-        return rows
+            for query in self.OPTIMIZED_QUERIES:
+                if not await self._can_use_newsapi():
+                    logger.info("Reached NewsAPI daily quota during batch collection")
+                    break
+                
+                try:
+                    params = {
+                        "q": query,
+                        "language": "en",
+                        "sortBy": "publishedAt",
+                        "pageSize": 100,  # Maximum allowed
+                        "apiKey": self.news_api_key,
+                    }
+                    response = await self._request_with_retry(client, "GET", self.NEWSAPI_ENDPOINT, params=params)
+                    await self._increment_newsapi_counter()
+                    
+                    payload = response.json()
+                    articles = payload.get("articles", [])
+                    logger.info(f"Query '{query}' returned {len(articles)} articles")
+                    
+                    for article in articles:
+                        url = article.get("url")
+                        title = article.get("title")
+                        if not url or not title:
+                            continue
+                        
+                        # Skip if we've already collected this article
+                        if url in self._articles_seen:
+                            continue
+                        
+                        self._articles_seen.add(url)
+                        content = article.get("content") or article.get("description") or ""
+                        published_at = self._parse_datetime(article.get("publishedAt"))
+                        row = self._normalize_article(
+                            title=title,
+                            content=content,
+                            url=url,
+                            source=article.get("source", {}).get("name"),
+                            author=article.get("author"),
+                            published_at=published_at,
+                        )
+                        all_articles.append(row)
+                        
+                except Exception as exc:
+                    logger.warning(f"Error fetching query '{query}': {exc}")
+                    continue
+        
+        logger.info(f"Collected {len(all_articles)} unique articles from NewsAPI")
+        NEWS_ARTICLES_COLLECTED.inc(len(all_articles))
+        return all_articles
 
     async def collect_from_rss(self) -> list[dict[str, Any]]:
         articles: list[dict[str, Any]] = []

@@ -19,6 +19,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from backend.api.backtest import router as backtest_router
 from backend.api.coins import router as coins_router
 from backend.api.health import router as health_v1_router
+from backend.api.model_ops import router as model_ops_router
 from backend.api.predictions import router as predictions_router
 from backend.api.routes.health import router as legacy_health_router
 from backend.api.routes.market import router as legacy_market_router
@@ -162,3 +163,4 @@ app.include_router(signals_router)
 app.include_router(sentiment_router)
 app.include_router(predictions_router)
 app.include_router(backtest_router)
+app.include_router(model_ops_router)

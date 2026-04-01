@@ -64,6 +64,7 @@ def fetch_data(base_url: str, selected_coins: list[str]) -> dict[str, Any]:
 	coins_upper = [coin.upper() for coin in selected_coins]
 	data: dict[str, Any] = {
 		"health": _safe_get("/api/v1/health/"),
+		"model_runtime": _safe_get("/api/v1/model/runtime"),
 		"signals": _safe_get("/api/v1/signals/", {"page_size": 200}),
 		"active_signals": _safe_get("/api/v1/signals/active", {"limit": 200}),
 		"sentiment": _safe_get("/api/v1/sentiment/", {"hours": 48, "limit": 500}),
@@ -81,6 +82,18 @@ def fetch_data(base_url: str, selected_coins: list[str]) -> dict[str, Any]:
 			"indicators": _safe_get(f"/api/v1/coins/{coin}/technical-indicators"),
 		}
 	return data
+
+
+def run_finance_news_training(base_url: str, symbols: list[str], interval: str, max_rows: int) -> dict[str, Any]:
+	payload = {
+		"symbols": [symbol.upper() for symbol in symbols],
+		"interval": interval,
+		"max_rows_per_symbol": max_rows,
+		"sentiment_sample_size": 30,
+	}
+	response = requests.post(f"{base_url}/api/v1/model/train-finance-news", json=payload, timeout=600)
+	response.raise_for_status()
+	return response.json()
 
 
 def render_price_chart(coin: str, data: list[dict[str, Any]]) -> None:
@@ -404,6 +417,77 @@ with tab_backtest:
 
 with tab_model:
 	st.subheader("Model Metrics Comparison")
+	runtime = data.get("model_runtime", {}) if isinstance(data.get("model_runtime"), dict) else {}
+	if runtime and not runtime.get("error"):
+		col_r1, col_r2, col_r3 = st.columns(3)
+		col_r1.metric("Runtime Device", str(runtime.get("selected_device", "cpu")).upper())
+		col_r2.metric("CUDA Available", "YES" if runtime.get("cuda_available") else "NO")
+		col_r3.metric("Ollama Reachable", "YES" if runtime.get("ollama_reachable") else "NO")
+		gpu_name = runtime.get("gpu_name")
+		if gpu_name:
+			st.caption(f"GPU: {gpu_name}")
+
+	st.subheader("Finance/News Sentiment Retraining")
+	train_cols = st.columns(3)
+	train_symbols = train_cols[0].multiselect(
+		"Symbols",
+		options=["BTCUSDT", "ETHUSDT"],
+		default=["BTCUSDT", "ETHUSDT"],
+		key="model_train_symbols",
+	)
+	train_interval = train_cols[1].selectbox("Interval", ["15m", "1h", "4h", "1d"], index=0, key="model_train_interval")
+	train_rows = train_cols[2].slider("Rows per symbol", min_value=1000, max_value=20000, value=6000, step=500, key="model_train_rows")
+
+	if st.button("Run Finance/News Sentiment + Train", use_container_width=True):
+		if not train_symbols:
+			st.warning("Select at least one symbol")
+		else:
+			with st.spinner("Running sentiment analysis with Ollama and training prediction models..."):
+				try:
+					result = run_finance_news_training(backend_base, train_symbols, train_interval, train_rows)
+					st.session_state.model_train_result = result
+				except Exception as exc:
+					st.error(f"Training request failed: {exc}")
+
+	if "model_train_result" in st.session_state:
+		result = st.session_state.model_train_result
+		st.success("Training completed")
+		run_runtime = result.get("runtime", {}) if isinstance(result, dict) else {}
+		if run_runtime:
+			st.caption(
+				f"Runtime: {str(run_runtime.get('selected_device', 'cpu')).upper()} | "
+				f"CUDA: {'YES' if run_runtime.get('cuda_available') else 'NO'} | "
+				f"Ollama: {'YES' if run_runtime.get('ollama_reachable') else 'NO'}"
+			)
+
+		rows = result.get("results", []) if isinstance(result, dict) else []
+		if isinstance(rows, list) and rows:
+			summary = []
+			for item in rows:
+				sentiment = item.get("sentiment", {}) if isinstance(item, dict) else {}
+				summary.append(
+					{
+						"symbol": item.get("symbol"),
+						"status": item.get("status"),
+						"trained_rows": item.get("trained_rows"),
+						"current_price": item.get("current_price"),
+						"predicted_price": item.get("predicted_price"),
+						"low_95": item.get("low_95"),
+						"high_95": item.get("high_95"),
+						"sentiment_score": sentiment.get("aggregate_score"),
+						"sentiment_samples": sentiment.get("sample_count"),
+					}
+				)
+			st.dataframe(pd.DataFrame(summary), use_container_width=True, height=240)
+
+			for item in rows:
+				if not isinstance(item, dict):
+					continue
+				sentiment = item.get("sentiment", {}) if isinstance(item.get("sentiment"), dict) else {}
+				if sentiment:
+					with st.expander(f"Sentiment details - {item.get('symbol', 'N/A')}"):
+						st.json(sentiment)
+
 	preds = data.get("predictions", []) if isinstance(data.get("predictions"), list) else []
 	if preds:
 		p_df = pd.DataFrame(preds)
