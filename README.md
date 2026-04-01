@@ -92,10 +92,26 @@ docker compose up -d
 - Web: `streamlit run frontend/app.py`
 - CLI: `python -m cli.main terminal`
 
+Alternative top-level modules:
+
+- Web: `streamlit run dashboard/app.py`
+- Terminal: `python -m terminal.cli status`
+- API: `uvicorn api.main:app --reload`
+- Ingestion: `python -m data_ingestion.main`
+- Sentiment Worker: `python -m processing.sentiment.main`
+- Signal Worker: `python -m signals.main`
+
 ## Testing
 
 ```bash
 pytest tests -v
+```
+
+Additional quick checks:
+
+```bash
+pytest tests/test_sentiment.py tests/test_prediction.py tests/test_backtest.py -v
+python scripts/train_models.py
 ```
 
 Coverage is enabled via `pytest.ini` with component markers:
