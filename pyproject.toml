@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "binfin"
+version = "0.1.0"
+description = "Crypto trading intelligence terminal"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

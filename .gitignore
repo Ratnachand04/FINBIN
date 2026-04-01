@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+desktop.ini
+Thumbs.db
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and runtime
+*.log
+logs/
+tmp/
+
+# Data and artifacts
+data/
+artifacts/
+checkpoints/
+
+# ML models and large binaries
+models/
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.pkl
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Jupyter
+.ipynb_checkpoints/

@@ -1,0 +1,95 @@
+# =========================================================
+# Core data and API clients (Python 3.9+)
+# =========================================================
+
+# Data collection: social + news
+praw==7.8.1
+feedparser==6.0.11
+beautifulsoup4==4.12.3
+newspaper3k==0.2.8
+
+# Data collection: blockchain + exchanges
+web3==7.6.0
+etherscan-python==2.1.0
+python-binance==1.0.19
+ccxt==4.4.62
+
+# =========================================================
+# ML / AI
+# =========================================================
+transformers==4.48.0
+torch==2.5.1
+prophet==1.1.6
+tensorflow>=2.13.0,<2.20.0
+xgboost>=2.0.0,<3.0.0
+scikit-learn==1.6.1
+pandas==2.2.3
+numpy==2.2.2
+polars==1.22.0
+
+# =========================================================
+# Database and storage
+# =========================================================
+asyncpg==0.30.0
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.38
+alembic==1.14.1
+redis==5.2.1
+aioredis==2.0.1
+
+# =========================================================
+# Backend services
+# =========================================================
+fastapi==0.117.0
+uvicorn[standard]==0.35.0
+pydantic==2.10.6
+pydantic-settings==2.8.1
+python-dotenv==1.0.1
+httpx==0.28.1
+apscheduler==3.10.4
+celery==5.4.0
+
+# =========================================================
+# Frontend and terminal UI
+# =========================================================
+streamlit==1.42.0
+plotly==5.24.1
+matplotlib==3.10.0
+seaborn==0.13.2
+rich==13.9.4
+textual==0.89.1
+typer==0.15.1
+
+# =========================================================
+# Technical analysis
+# =========================================================
+# ta-lib requires system-level TA-Lib C library installation on many platforms.
+ta-lib==0.4.32
+pandas-ta==0.3.14b0
+
+# =========================================================
+# Monitoring and logging
+# =========================================================
+prometheus-client==0.21.1
+psutil==6.1.1
+loguru==0.7.3
+python-json-logger==3.2.1
+
+# =========================================================
+# Testing
+# =========================================================
+pytest==8.3.4
+pytest-asyncio==0.25.3
+pytest-cov==6.0.0
+pytest-docker==3.1.1
+fakeredis==2.27.0
+pytest-benchmark==5.1.0
+
+# =========================================================
+# Development quality toolchain
+# =========================================================
+ruff==0.9.6
+black==24.10.0
+isort==5.13.2
+mypy==1.14.1
+pre-commit==4.1.0
