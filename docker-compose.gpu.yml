@@ -1,0 +1,18 @@
+services:
+  ollama:
+    gpus: all
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+
+  llm-trainer:
+    gpus: all
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+
+  backend:
+    environment:
+      RAG_CONTEXT_DEVICE: cpu
+      RAG_CONTEXT_CPU_ONLY: "true"
+      CUDA_VISIBLE_DEVICES: ""

@@ -46,7 +46,7 @@ Use GPU acceleration (CUDA) for local model inference when available, and automa
   - `cuda_available`
   - `selected_device`
   - `ollama_reachable`
-- Streamlit Model tab shows runtime metrics and can complete retraining for BTC/ETH.
+- Streamlit Model tab shows runtime metrics and can complete retraining for BTC.
 - New rows are written to:
   - `sentiment_scores`
   - `price_predictions`
