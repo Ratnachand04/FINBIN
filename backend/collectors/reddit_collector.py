@@ -35,19 +35,11 @@ REDDIT_COLLECTOR_UP = Gauge(
 class RedditCollector:
     """Async Reddit collector using PRAW with threaded execution for API calls."""
 
-    DEFAULT_SUBREDDITS = ["cryptocurrency", "bitcoin", "ethereum", "CryptoMarkets"]
+    DEFAULT_SUBREDDITS = ["bitcoin", "ethtrader", "dogecoin"]
     COIN_PATTERNS: dict[str, str] = {
         "BTC": r"\b(?:\$?BTC|Bitcoin)\b",
-        "ETH": r"\b(?:\$?ETH|Ethereum)\b",
-        "SOL": r"\b(?:\$?SOL|Solana)\b",
-        "ADA": r"\b(?:\$?ADA|Cardano)\b",
-        "DOT": r"\b(?:\$?DOT|Polkadot)\b",
-        "BNB": r"\b(?:\$?BNB|Binance\s*Coin)\b",
-        "XRP": r"\b(?:\$?XRP|Ripple)\b",
-        "DOGE": r"\b(?:\$?DOGE|Dogecoin)\b",
-        "MATIC": r"\b(?:\$?MATIC|Polygon)\b",
-        "AVAX": r"\b(?:\$?AVAX|Avalanche)\b",
-        "LINK": r"\b(?:\$?LINK|Chainlink)\b",
+        "ETH": r"\b(?:\$?ETH|Ethereum|Ether)\b",
+        "DOGE": r"\b(?:\$?DOGE|Dogecoin|Doge)\b",
     }
 
     def __init__(self) -> None:

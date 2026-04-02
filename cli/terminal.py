@@ -22,7 +22,7 @@ class TerminalDashboard:
         self.console = Console()
         self.base_url = os.getenv("BACKEND_URL", "http://localhost:8000")
         self.refresh_seconds = float(os.getenv("TERMINAL_REFRESH_SECONDS", "2"))
-        self.coins = [c.strip().upper() for c in os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT").split(",") if c.strip()]
+        self.coins = [c.strip().upper() for c in os.getenv("TRACKED_COINS", "BTC,ETH,DOGE").split(",") if c.strip()]
         self.layout = self.create_layout()
         self.recent_logs: list[dict[str, str]] = []
         self._quit = False

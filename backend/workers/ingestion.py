@@ -11,7 +11,6 @@ from typing import Any
 from prometheus_client import Counter, Gauge
 
 from backend.collectors.news_collector import NewsCollector
-from backend.collectors.onchain_collector import OnchainCollector
 from backend.collectors.price_collector import PriceCollector
 from backend.collectors.reddit_collector import RedditCollector
 from backend.database import db_manager, execute_raw_sql
@@ -28,21 +27,14 @@ class DataIngestionWorker:
     def __init__(self) -> None:
         self.reddit_collector: RedditCollector | None = None
         self.news_collector: NewsCollector | None = None
-        self.onchain_collector: OnchainCollector | None = None
         self.price_collector: PriceCollector | None = None
         self._shutdown = asyncio.Event()
         self._tasks: dict[str, asyncio.Task[Any]] = {}
         self._error_window: list[float] = []
         self._scheduler: Any = None
 
-        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT")
+        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,DOGE")
         self.tracked_coins = [coin.strip().upper() for coin in tracked.split(",") if coin.strip()]
-        self.exchange_addresses = [
-            addr.strip().lower()
-            for addr in os.getenv("EXCHANGE_ADDRESSES", "").split(",")
-            if addr.strip()
-        ]
-        self.coin_token_addresses = self._load_coin_token_addresses()
 
     async def run(self) -> None:
         await db_manager.initialize()
@@ -69,7 +61,6 @@ class DataIngestionWorker:
     async def _initialize_collectors(self) -> None:
         self.reddit_collector = RedditCollector()
         self.news_collector = NewsCollector()
-        self.onchain_collector = OnchainCollector()
         self.price_collector = PriceCollector()
 
     async def collect_reddit_data(self) -> None:
@@ -114,29 +105,6 @@ class DataIngestionWorker:
         except Exception as exc:
             await self.handle_errors("news", exc)
 
-    async def collect_onchain_data(self) -> None:
-        if self.onchain_collector is None or self._shutdown.is_set():
-            return
-
-        try:
-            saved = 0
-            for coin in self.tracked_coins:
-                token = self.coin_token_addresses.get(coin)
-                if not token:
-                    continue
-                txs = await self.onchain_collector.get_whale_transactions(token_address=token)
-                if txs:
-                    await self.onchain_collector.save_to_db(txs)
-                    saved += len(txs)
-                if self.exchange_addresses:
-                    flows = await self.onchain_collector.get_exchange_flows(self.exchange_addresses)
-                    logger.info("Exchange flows for %s: %s", coin, flows.get("windows", {}))
-
-            INGESTION_QUEUE_BACKLOG.labels(source="onchain").set(0)
-            logger.info("Onchain collection completed with %s transactions", saved)
-        except Exception as exc:
-            await self.handle_errors("onchain", exc)
-
     async def collect_price_data(self) -> None:
         if self.price_collector is None:
             return
@@ -160,7 +128,6 @@ class DataIngestionWorker:
 
         scheduler = AsyncIOScheduler(timezone="UTC")
         scheduler.add_job(self.collect_news_data, IntervalTrigger(minutes=30), id="news_collection", replace_existing=True)
-        scheduler.add_job(self.collect_onchain_data, IntervalTrigger(minutes=15), id="onchain_collection", replace_existing=True)
         scheduler.add_job(
             self._refresh_technical_indicators,
             IntervalTrigger(minutes=15),
@@ -283,7 +250,7 @@ class DataIngestionWorker:
             logger.warning("Failed to persist ingestion state: %s", exc)
 
     async def _close_collectors(self) -> None:
-        for collector in [self.reddit_collector, self.news_collector, self.onchain_collector, self.price_collector]:
+        for collector in [self.reddit_collector, self.news_collector, self.price_collector]:
             if collector is None:
                 continue
             shutdown = getattr(collector, "shutdown", None)
@@ -302,16 +269,6 @@ class DataIngestionWorker:
                 loop.add_signal_handler(sig, self._shutdown.set)
             except NotImplementedError:
                 pass
-
-    def _load_coin_token_addresses(self) -> dict[str, str]:
-        default = {
-            "BTC": os.getenv("BTC_TOKEN_ADDRESS", "btc"),
-            "ETH": os.getenv("ETH_TOKEN_ADDRESS", "0x0000000000000000000000000000000000000000"),
-            "SOL": os.getenv("SOL_TOKEN_ADDRESS", "So11111111111111111111111111111111111111112"),
-            "ADA": os.getenv("ADA_TOKEN_ADDRESS", "ada"),
-            "DOT": os.getenv("DOT_TOKEN_ADDRESS", "dot"),
-        }
-        return default
 
 
 async def _main() -> None:

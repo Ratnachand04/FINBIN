@@ -14,7 +14,7 @@ import pandas as pd
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
-from backend.database import db_session_context, execute_raw_sql
+from backend.database import db_manager, db_session_context, execute_raw_sql
 from backend.ml.sentiment_analyzer import SentimentAnalyzer
 from processing.prediction.main import PredictionEngine
 
@@ -29,7 +29,7 @@ _SENTIMENT_SCORE_MAP = {
 
 
 class ModelTrainRequest(BaseModel):
-    symbols: list[str] = Field(default_factory=lambda: ["BTCUSDT", "ETHUSDT"])
+    symbols: list[str] = Field(default_factory=lambda: ["BTCUSDT", "ETHUSDT", "DOGEUSDT"])
     interval: str = Field(default="15m", pattern="^(15m|1h|4h|1d)$")
     max_rows_per_symbol: int = Field(default=6000, ge=600, le=50000)
     sentiment_sample_size: int = Field(default=30, ge=5, le=200)
@@ -53,15 +53,6 @@ def _normalize_symbol(symbol: str) -> str:
     if symbol.endswith("USDT"):
         return symbol
     return f"{symbol}USDT"
-
-
-def _workspace_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
-def _sql_export_paths() -> list[Path]:
-    root = _workspace_root() / "database"
-    return sorted(root.glob("btc_eth_training_data_part_*.sql"))
 
 
 async def _get_runtime_info() -> RuntimeInfo:
@@ -382,7 +373,6 @@ async def train_finance_news(payload: ModelTrainRequest) -> dict[str, Any]:
                 "sentiment_score": [sentiment_score] * len(price_frame),
             }
         )
-
         prediction = await asyncio.to_thread(engine.train_and_predict, symbol, price_frame, sentiment_df)
         current_price = float(price_frame["close"].iloc[-1])
 

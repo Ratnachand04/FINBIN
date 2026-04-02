@@ -30,7 +30,7 @@ def train(
         if coin.strip().upper() == "ALL":
             tracked = [
                 item.strip().upper()
-                for item in os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT").split(",")
+                for item in os.getenv("TRACKED_COINS", "BTC,ETH,DOGE").split(",")
                 if item.strip()
             ]
             for item in tracked:

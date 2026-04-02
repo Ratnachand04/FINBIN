@@ -4,9 +4,11 @@ from backend.collectors.market_collector import collect_market_tick
 
 
 def run() -> None:
+    symbols = ["BTCUSDT", "ETHUSDT", "DOGEUSDT"]
     while True:
-        tick = collect_market_tick("BTCUSDT")
-        print(f"collector_worker tick={tick}")
+        for symbol in symbols:
+            tick = collect_market_tick(symbol)
+            print(f"collector_worker tick={tick}")
         time.sleep(10)
 
 

@@ -32,7 +32,7 @@ class MLProcessingWorker:
         self._tasks: dict[str, asyncio.Task[Any]] = {}
         self._psutil = self._load_optional("psutil")
         self._ab_ratio = float(os.getenv("PREDICTION_AB_RATIO", "0.5"))
-        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT")
+        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,DOGE")
         self.tracked_coins = [coin.strip().upper() for coin in tracked.split(",") if coin.strip()]
 
     async def run(self) -> None:

@@ -9,4 +9,6 @@ def render_dashboard() -> None:
     table.add_column("Signal")
     table.add_column("Confidence")
     table.add_row("BTCUSDT", "BUY", "0.80")
+    table.add_row("ETHUSDT", "BUY", "0.74")
+    table.add_row("DOGEUSDT", "HOLD", "0.67")
     console.print(table)

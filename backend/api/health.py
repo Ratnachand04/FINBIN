@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import shutil
+import os
 from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter
+import httpx
 
 from backend.database import db_manager
 
@@ -30,14 +32,23 @@ def _memory_stats() -> dict[str, Any]:
 async def health_root() -> dict[str, Any]:
     db_ok = await db_manager.check_db_health()
     redis_ok = await db_manager.check_redis_health()
+    ollama_ok = False
+    ollama_url = os.getenv("OLLAMA_URL", "http://ollama:11434")
+    try:
+        async with httpx.AsyncClient(timeout=3) as client:
+            response = await client.get(f"{ollama_url}/api/tags")
+            ollama_ok = response.status_code == 200
+    except Exception:
+        ollama_ok = False
+
     disk = shutil.disk_usage(".")
     return {
-        "status": "ok" if db_ok and redis_ok else "degraded",
+        "status": "ok" if db_ok and redis_ok and ollama_ok else "degraded",
         "timestamp": datetime.now(UTC).isoformat(),
         "checks": {
             "database": db_ok,
             "redis": redis_ok,
-            "ollama": bool(__import__("os").environ.get("OLLAMA_BASE_URL")),
+            "ollama": ollama_ok,
             "disk": {
                 "total": disk.total,
                 "used": disk.used,

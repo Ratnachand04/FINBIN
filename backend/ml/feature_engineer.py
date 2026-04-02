@@ -131,48 +131,6 @@ class FeatureEngineer:
             "sentiment_src_twitter": float(row.twitter_count or 0) if row else 0.0,
         }
 
-    async def extract_onchain_features(self, coin: str, timestamp: datetime) -> dict[str, float]:
-        symbol = coin.upper()
-        start_24h = timestamp - timedelta(hours=24)
-
-        async with db_manager.session_factory() as session:
-            q = (
-                "SELECT "
-                "COUNT(*) FILTER (WHERE is_whale = true) AS whale_tx_24h, "
-                "COALESCE(SUM(CASE WHEN flow_direction = 'to_exchange' THEN amount_usd ELSE 0 END),0) - "
-                "COALESCE(SUM(CASE WHEN flow_direction = 'from_exchange' THEN amount_usd ELSE 0 END),0) AS net_exchange_flow, "
-                "COUNT(DISTINCT from_address) + COUNT(DISTINCT to_address) AS active_addresses, "
-                "COALESCE(SUM(amount_usd),0) AS tx_volume "
-                "FROM onchain_transactions WHERE symbol = :symbol AND ts BETWEEN :start_24h AND :end_ts"
-            )
-            row = (await execute_raw_sql(
-                session,
-                q,
-                {"symbol": symbol, "start_24h": start_24h, "end_ts": timestamp},
-            )).first()
-
-            nvt_q = (
-                "SELECT "
-                "COALESCE(AVG(p.close), 0) / NULLIF(COALESCE(SUM(o.amount_usd), 0), 0) AS nvt "
-                "FROM price_data p "
-                "LEFT JOIN onchain_transactions o ON o.symbol = p.symbol "
-                "AND DATE_TRUNC('day', o.ts) = DATE_TRUNC('day', p.ts) "
-                "WHERE p.symbol = :symbol AND p.ts BETWEEN :start_24h AND :end_ts"
-            )
-            nvt_row = (await execute_raw_sql(
-                session,
-                nvt_q,
-                {"symbol": symbol, "start_24h": start_24h, "end_ts": timestamp},
-            )).first()
-
-        return {
-            "whale_tx_24h": float(row.whale_tx_24h or 0) if row else 0.0,
-            "net_exchange_flow": float(row.net_exchange_flow or 0.0) if row else 0.0,
-            "active_addresses": float(row.active_addresses or 0) if row else 0.0,
-            "tx_volume": float(row.tx_volume or 0.0) if row else 0.0,
-            "nvt_ratio": float(nvt_row.nvt or 0.0) if nvt_row else 0.0,
-        }
-
     async def extract_temporal_features(self, timestamp: datetime) -> dict[str, float]:
         ts = timestamp if timestamp.tzinfo else timestamp.replace(tzinfo=UTC)
         hour = ts.hour
@@ -200,11 +158,10 @@ class FeatureEngineer:
         frame = await self.extract_technical_features(frame)
 
         sentiment = await self.extract_sentiment_features(coin, timestamp)
-        onchain = await self.extract_onchain_features(coin, timestamp)
         temporal = await self.extract_temporal_features(timestamp)
 
         latest = frame.iloc[-1].to_dict()
-        combined = {**latest, **sentiment, **onchain, **temporal}
+        combined = {**latest, **sentiment, **temporal}
         filtered = {k: v for k, v in combined.items() if isinstance(v, (int, float))}
 
         features_df = self._pd.DataFrame([filtered]).ffill()
@@ -258,15 +215,42 @@ class FeatureEngineer:
 
     async def _load_price_frame_range(self, coin: str, start: datetime, end: datetime) -> Any:
         symbol = f"{coin.upper()}USDT"
+        coin_symbol = coin.upper()
         async with db_manager.session_factory() as session:
             q = (
-                "SELECT ts, open, high, low, close, volume, quote_volume, trade_count, "
-                "metadata, interval "
-                "FROM price_data "
-                "WHERE symbol = :symbol AND ts BETWEEN :start AND :end AND interval = '15m' "
-                "ORDER BY ts ASC"
+                "SELECT p.ts, p.open, p.high, p.low, p.close, p.volume, p.quote_volume, p.trade_count, "
+                "p.metadata, p.interval, "
+                "COALESCE(sa.avg_sentiment, 0) AS sentiment, "
+                "COALESCE(ot.whale_tx, wt.whale_tx, 0) AS whale_tx "
+                "FROM price_data p "
+                "LEFT JOIN sentiment_aggregates sa "
+                "  ON sa.symbol = :coin_symbol "
+                " AND sa.window = '1h' "
+                " AND DATE_TRUNC('hour', sa.ts) = DATE_TRUNC('hour', p.ts) "
+                "LEFT JOIN ("
+                "  SELECT symbol, DATE_TRUNC('hour', ts) AS hour_ts, COUNT(*)::float AS whale_tx "
+                "  FROM onchain_transactions "
+                "  WHERE symbol = :coin_symbol AND is_whale = true AND ts BETWEEN :start AND :end "
+                "  GROUP BY symbol, DATE_TRUNC('hour', ts)"
+                ") ot "
+                "  ON ot.symbol = :coin_symbol AND ot.hour_ts = DATE_TRUNC('hour', p.ts) "
+                "LEFT JOIN ("
+                "  SELECT symbol, DATE_TRUNC('hour', ts) AS hour_ts, COUNT(*)::float AS whale_tx "
+                "  FROM whale_transactions "
+                "  WHERE symbol = :coin_symbol AND is_whale = true AND ts BETWEEN :start AND :end "
+                "  GROUP BY symbol, DATE_TRUNC('hour', ts)"
+                ") wt "
+                "  ON wt.symbol = :coin_symbol AND wt.hour_ts = DATE_TRUNC('hour', p.ts) "
+                "WHERE p.symbol = :symbol AND p.ts BETWEEN :start AND :end AND p.interval = '15m' "
+                "ORDER BY p.ts ASC"
             )
-            rows = (await execute_raw_sql(session, q, {"symbol": symbol, "start": start, "end": end})).all()
+            rows = (
+                await execute_raw_sql(
+                    session,
+                    q,
+                    {"symbol": symbol, "coin_symbol": coin_symbol, "start": start, "end": end},
+                )
+            ).all()
 
         if not rows:
             return self._pd.DataFrame()

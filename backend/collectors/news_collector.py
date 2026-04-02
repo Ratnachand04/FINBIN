@@ -9,15 +9,16 @@ import time
 from collections import deque
 from datetime import UTC, datetime
 from difflib import SequenceMatcher
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 from urllib.robotparser import RobotFileParser
 
 import httpx
 from prometheus_client import Counter, Gauge
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 
-from backend.database import bulk_insert, db_manager, upsert
+from backend.database import db_manager, upsert
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ NEWS_REQUESTS_DAILY = Gauge("binfin_newsapi_requests_daily", "NewsAPI requests m
 
 class NewsCollector:
     NEWSAPI_ENDPOINT = "https://newsapi.org/v2/everything"
-    NEWS_KEYWORDS = "bitcoin OR ethereum OR crypto OR blockchain"
+    NEWS_KEYWORDS = "bitcoin OR BTC OR blockchain"
     NEWS_SOURCES = "coindesk,cointelegraph,decrypt"
     RSS_FEEDS = [
         "https://cointelegraph.com/rss",
@@ -39,53 +40,47 @@ class NewsCollector:
     PEOPLE = {"VITALIK", "SATOSHI", "CZ", "SAM BANKMAN-FRIED"}
     COINS = {
         "BTC": ["BTC", "$BTC", "BITCOIN"],
-        "ETH": ["ETH", "$ETH", "ETHEREUM"],
-        "SOL": ["SOL", "$SOL", "SOLANA"],
-        "ADA": ["ADA", "$ADA", "CARDANO"],
-        "DOT": ["DOT", "$DOT", "POLKADOT"],
+        "ETH": ["ETH", "$ETH", "ETHEREUM", "ETHER"],
+        "DOGE": ["DOGE", "$DOGE", "DOGECOIN", "DOGE"],
     }
-    
+
     # Optimized keyword queries for token efficiency (1 token per search)
-    # Focus on Bitcoin and Ethereum to maximize data collection with 2000 token limit
+    # Restrict coverage to BTC, ETH, and DOGE.
     OPTIMIZED_QUERIES = [
-        # Core Bitcoin queries (50)
         "bitcoin", "BTC", "Bitcoin price", "Bitcoin news", "Bitcoin market",
-        "Bitcoin mining", "Bitcoin adoption", "Bitcoin regulation", "Bitcoin ETF", "Bitcoin halving",
-        "Bitcoin transaction", "Bitcoin wallet", "Bitcoin exchange", "Bitcoin security", "Bitcoin update",
-        "Bitcoin protocol", "Bitcoin network", "Bitcoin developer", "Bitcoin bull", "Bitcoin bear",
-        "Bitcoin crash", "Bitcoin surge", "Bitcoin trend", "Bitcoin forecast", "Bitcoin analysis",
-        "Bitcoin payment", "Bitcoin store", "Bitcoin investment", "Bitcoin trading", "Bitcoin fraud",
-        "Bitcoin lawsuit", "Bitcoin ban", "Bitcoin pump", "Bitcoin dump", "Bitcoin whale",
-        "Bitcoin MPC", "Bitcoin derivatives", "Bitcoin futures", "Bitcoin option", "Bitcoin hedge",
-        "Bitcoin recovery", "Bitcoin loss", "Bitcoin pump", "Bitcoin manipulation", "Bitcoin scam",
-        "Bitcoin block", "Bitcoin hash", "Bitcoin lightning", "Bitcoin layer2", "Bitcoin sidechain",
-        
-        # Core Ethereum queries (50)
-        "ethereum", "ETH", "Ethereum price", "Ethereum news", "Ethereum market",
-        "Ethereum mining", "Ethereum staking", "Ethereum upgrade", "Ethereum layer2", "Ethereum DeFi",
-        "Ethereum smart contract", "Ethereum dApp", "Ethereum security", "Ethereum update", "Ethereum protocol",
-        "Ethereum network", "Ethereum developer", "Ethereum bull", "Ethereum bear", "Ethereum crash",
-        "Ethereum surge", "Ethereum trend", "Ethereum forecast", "Ethereum analysis", "Ethereum payment",
-        "Ethereum token", "Ethereum NFT", "Ethereum investment", "Ethereum trading", "Ethereum fraud",
-        "Ethereum lawsuit", "Ethereum ban", "Ethereum whale", "Ethereum derivatives", "Ethereum futures",
-        "Ethereum option", "Ethereum hedge", "Ethereum recovery", "Ethereum loss", "Ethereum manipulation",
-        "Ethereum scam", "Ethereum sharding", "Ethereum blob", "Ethereum fusion", "Ethereum merge",
-        
-        # Market context queries (30)
-        "crypto market", "cryptocurrency news", "blockchain news", "crypto exchange",
-        "crypto regulation", "crypto ETF", "crypto security", "defi protocol", "defi hack",
-        "NFT market", "Web3 update", "crypto adoption", "crypto mining", "crypto payment",
-        "digital asset", "digital currency", "stablecoin", "crypto lending", "crypto lending hack",
-        
-        # Exchange and platform queries (20)
+        "Bitcoin ETF", "Bitcoin halving", "Bitcoin mining", "Bitcoin adoption", "Bitcoin regulation",
+        "ethereum", "ETH", "Ether price", "Ethereum news", "Ethereum market",
+        "Ethereum upgrade", "Ethereum staking", "Ethereum ETF", "Ethereum layer2", "Ethereum regulation",
+        "dogecoin", "DOGE", "Doge price", "Dogecoin news", "Dogecoin market",
+        "Dogecoin adoption", "Dogecoin payments", "Dogecoin trend", "Dogecoin whale", "Dogecoin exchange",
+        "BTC ETH DOGE", "crypto market", "cryptocurrency news", "blockchain news", "crypto exchange",
         "Binance", "Coinbase", "Kraken", "OKX", "Bybit",
-        "Gemini", "Huobi", "Kucoin", "Crypto.com", "BlockFi",
-        "Celsius", "Voyager", "FTX", "Genesis", "Nexo",
-        "Staking", "Lending protocol", "DeFi hack", "Flash loan", "Arbitrage",
+        "crypto regulation", "crypto ETF", "crypto security", "defi protocol", "defi hack",
     ]
 
+    def _load_news_api_key(self) -> str:
+        key = os.getenv("NEWSAPI_KEY", "") or os.getenv("NEWS_API_KEY", "")
+        if key:
+            return key
+
+        env_path = Path(__file__).resolve().parents[2] / ".env"
+        if not env_path.exists():
+            return ""
+
+        try:
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                if k.strip() in {"NEWSAPI_KEY", "NEWS_API_KEY"}:
+                    return v.strip().strip('"').strip("'")
+        except Exception as exc:
+            logger.warning("Unable to read .env for NEWSAPI_KEY: %s", exc)
+        return ""
+
     def __init__(self) -> None:
-        self.news_api_key = os.getenv("NEWSAPI_KEY", "") or os.getenv("NEWS_API_KEY", "")
+        self.news_api_key = self._load_news_api_key()
         self.rate_limit_per_minute = 30
         self._request_timestamps: deque[float] = deque(maxlen=200)
         self._shutdown = asyncio.Event()
@@ -130,6 +125,13 @@ class NewsCollector:
                 response = await client.request(method, url, **kwargs)
                 response.raise_for_status()
                 return response
+            except httpx.HTTPStatusError as exc:
+                status = exc.response.status_code if exc.response is not None else None
+                if status == 401:
+                    raise PermissionError("NewsAPI unauthorized (401). Check NEWSAPI_KEY.") from exc
+                delay = min(2**attempt, 20)
+                logger.warning("HTTP request failed for %s (attempt %s): %s", url, attempt + 1, exc)
+                await asyncio.sleep(delay)
             except Exception as exc:
                 delay = min(2**attempt, 20)
                 logger.warning("HTTP request failed for %s (attempt %s): %s", url, attempt + 1, exc)
@@ -214,6 +216,9 @@ class NewsCollector:
                         all_articles.append(row)
                         
                 except Exception as exc:
+                    if isinstance(exc, PermissionError):
+                        logger.error("NewsAPI authorization failed. Skipping remaining NewsAPI queries.")
+                        break
                     logger.warning(f"Error fetching query '{query}': {exc}")
                     continue
         
@@ -335,26 +340,40 @@ class NewsCollector:
             return
 
         deduped = self.deduplicate_articles(articles)
+        db_columns = {
+            "ts",
+            "url_hash",
+            "source_name",
+            "title",
+            "content",
+            "author",
+            "url",
+            "image_url",
+            "mentioned_coins",
+            "primary_symbol",
+            "sentiment_keywords",
+            "metadata",
+            "created_at",
+        }
+        db_rows = [{k: v for k, v in article.items() if k in db_columns} for article in deduped]
         async with db_manager.session_factory() as session:
             try:
-                try:
-                    await bulk_insert(session, "news_data", deduped)
-                except IntegrityError:
-                    for article in deduped:
-                        await upsert(
-                            session=session,
-                            table_name="news_data",
-                            values=article,
-                            conflict_columns=["url_hash"],
-                            update_columns=[
-                                "title",
-                                "content",
-                                "mentioned_coins",
-                                "extracted_entities",
-                                "sentiment_score",
-                                "metadata",
-                            ],
-                        )
+                for article in db_rows:
+                    await upsert(
+                        session=session,
+                        table_name="news_articles",
+                        values=article,
+                        conflict_columns=["url_hash"],
+                        update_columns=[
+                            "title",
+                            "content",
+                            "author",
+                            "url",
+                            "mentioned_coins",
+                            "primary_symbol",
+                            "metadata",
+                        ],
+                    )
 
                 await session.commit()
                 NEWS_ARTICLES_COLLECTED.inc(len(deduped))
@@ -389,6 +408,19 @@ class NewsCollector:
         combined_text = f"{title}\n{clean_content}"
         entities = self.extract_entities(combined_text)
         url_hash = hashlib.sha256(url.strip().encode("utf-8")).hexdigest()
+        
+        # Determine primary symbol (prioritize BTC/ETH/DOGE)
+        mentioned_coins = entities.get("coins", [])
+        primary_symbol = None
+        if "BTC" in mentioned_coins:
+            primary_symbol = "BTC"
+        elif "ETH" in mentioned_coins:
+            primary_symbol = "ETH"
+        elif "DOGE" in mentioned_coins:
+            primary_symbol = "DOGE"
+        elif mentioned_coins:
+            primary_symbol = mentioned_coins[0]
+        
         return {
             "url_hash": url_hash,
             "source_name": source,
@@ -399,7 +431,8 @@ class NewsCollector:
             "url": url,
             "published_at": published_at,
             "ts": published_at or datetime.now(UTC),
-            "mentioned_coins": entities["coins"],
+            "mentioned_coins": mentioned_coins,
+            "primary_symbol": primary_symbol,
             "extracted_entities": entities,
             "sentiment_score": None,
             "metadata": {"collected_at": datetime.now(UTC).isoformat()},

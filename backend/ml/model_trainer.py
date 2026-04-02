@@ -87,14 +87,27 @@ class ModelTrainer:
         async with db_manager.session_factory() as session:
             q = (
                 "SELECT p.ts, p.open, p.high, p.low, p.close, p.volume, p.quote_volume, p.trade_count, "
-                "sa.avg_sentiment AS sentiment, "
-                "COALESCE(ot.whale_tx, 0) AS whale_tx "
+                "COALESCE(sa.avg_sentiment, 0) AS sentiment, "
+                "COALESCE(ot.whale_tx, wt.whale_tx, 0) AS whale_tx "
                 "FROM price_data p "
-                "LEFT JOIN sentiment_aggregates sa ON sa.symbol = :coin AND DATE_TRUNC('hour', sa.ts) = DATE_TRUNC('hour', p.ts) "
+                "LEFT JOIN sentiment_aggregates sa "
+                "  ON sa.symbol = :coin "
+                " AND sa.window = '1h' "
+                " AND DATE_TRUNC('hour', sa.ts) = DATE_TRUNC('hour', p.ts) "
                 "LEFT JOIN ("
-                "  SELECT symbol, DATE_TRUNC('hour', ts) AS h, COUNT(*) FILTER (WHERE is_whale = true) AS whale_tx "
-                "  FROM onchain_transactions GROUP BY symbol, h"
-                ") ot ON ot.symbol = :coin AND ot.h = DATE_TRUNC('hour', p.ts) "
+                "  SELECT symbol, DATE_TRUNC('hour', ts) AS hour_ts, COUNT(*)::float AS whale_tx "
+                "  FROM onchain_transactions "
+                "  WHERE symbol = :coin AND is_whale = true AND ts BETWEEN :start_ts AND :end_ts "
+                "  GROUP BY symbol, DATE_TRUNC('hour', ts)"
+                ") ot "
+                "  ON ot.symbol = :coin AND ot.hour_ts = DATE_TRUNC('hour', p.ts) "
+                "LEFT JOIN ("
+                "  SELECT symbol, DATE_TRUNC('hour', ts) AS hour_ts, COUNT(*)::float AS whale_tx "
+                "  FROM whale_transactions "
+                "  WHERE symbol = :coin AND is_whale = true AND ts BETWEEN :start_ts AND :end_ts "
+                "  GROUP BY symbol, DATE_TRUNC('hour', ts)"
+                ") wt "
+                "  ON wt.symbol = :coin AND wt.hour_ts = DATE_TRUNC('hour', p.ts) "
                 "WHERE p.symbol = :symbol AND p.interval = '15m' AND p.ts BETWEEN :start_ts AND :end_ts "
                 "ORDER BY p.ts ASC"
             )
@@ -242,7 +255,7 @@ class ModelTrainer:
         scheduler = scheduler_cls(timezone="UTC")
 
         async def _job() -> None:
-            tracked = [coin.strip().upper() for coin in os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT").split(",") if coin.strip()]
+            tracked = [coin.strip().upper() for coin in os.getenv("TRACKED_COINS", "BTC,ETH,DOGE").split(",") if coin.strip()]
             for coin in tracked:
                 try:
                     result = await self.train_pipeline(coin=coin, lookback_days=90)

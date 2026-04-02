@@ -16,7 +16,8 @@ async def run_signal_loop() -> None:
     while True:
         samples = [
             MarketSnapshot("BTCUSDT", 70000, 70500, 0.62, 0.25, 0.82),
-            MarketSnapshot("ETHUSDT", 3500, 3420, 0.40, 0.30, 0.75),
+            MarketSnapshot("ETHUSDT", 3500, 3560, 0.58, 0.22, 0.79),
+            MarketSnapshot("DOGEUSDT", 0.25, 0.27, 0.55, 0.30, 0.76),
         ]
         for sample in samples:
             signal = generator.generate(sample)

@@ -26,7 +26,12 @@ class PredictionEngine:
         self.lstm = LSTMModel()
         self.ensemble = EnsembleModel()
 
-    def train_and_predict(self, symbol: str, price_df: pd.DataFrame, sentiment_df: pd.DataFrame | None = None) -> PredictionOutput:
+    def train_and_predict(
+        self,
+        symbol: str,
+        price_df: pd.DataFrame,
+        sentiment_df: pd.DataFrame | None = None,
+    ) -> PredictionOutput:
         frame = make_feature_frame(price_df, sentiment_df)
         cols = feature_columns(frame)
 

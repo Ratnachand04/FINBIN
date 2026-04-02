@@ -27,7 +27,7 @@ class SignalGeneratorWorker:
         self._shutdown = asyncio.Event()
         self._tasks: dict[str, asyncio.Task[Any]] = {}
         self._last_data_ts: dict[str, datetime] = {}
-        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT")
+        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,DOGE")
         self.tracked_coins = [coin.strip().upper() for coin in tracked.split(",") if coin.strip()]
         self.signal_strength_threshold = float(os.getenv("SIGNAL_MIN_STRENGTH", "6.5"))
         self.signal_conf_threshold = float(os.getenv("SIGNAL_MIN_CONFIDENCE", "0.70"))

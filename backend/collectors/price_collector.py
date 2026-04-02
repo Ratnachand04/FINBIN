@@ -27,7 +27,7 @@ PRICE_WRITE_LATENCY = Histogram(
 
 
 class PriceCollector:
-    DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "ADAUSDT", "DOTUSDT"]
+    DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT", "DOGEUSDT"]
     VALID_INTERVALS = {"15m", "1h", "4h", "1d"}
     INTERVAL_TO_MINUTES = {"15m": 15, "1h": 60, "4h": 240, "1d": 1440}
 
@@ -339,7 +339,7 @@ class PriceCollector:
                 PRICE_WRITE_LATENCY.observe(time.perf_counter() - start)
 
     async def run(self) -> None:
-        symbols_env = os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT")
+        symbols_env = os.getenv("TRACKED_COINS", "BTC,ETH,DOGE")
         symbols = [f"{item.strip().upper()}USDT" for item in symbols_env.split(",") if item.strip()]
 
         async def _historical_refresh_loop() -> None:

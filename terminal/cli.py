@@ -20,8 +20,8 @@ def status() -> None:
 
     rows = [
         ("BTCUSDT", "70,000", "0.62", "BUY"),
-        ("ETHUSDT", "3,500", "0.44", "SELL"),
-        ("SOLUSDT", "150", "0.55", "HOLD"),
+        ("ETHUSDT", "3,500", "0.57", "BUY"),
+        ("DOGEUSDT", "0.25", "0.54", "HOLD"),
     ]
     for row in rows:
         table.add_row(*row)

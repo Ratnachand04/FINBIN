@@ -5,7 +5,10 @@ import pandas as pd
 from processing.prediction.features.technical_indicators import add_technical_indicators
 
 
-def make_feature_frame(price_df: pd.DataFrame, sentiment_df: pd.DataFrame | None = None) -> pd.DataFrame:
+def make_feature_frame(
+    price_df: pd.DataFrame,
+    sentiment_df: pd.DataFrame | None = None,
+) -> pd.DataFrame:
     frame = add_technical_indicators(price_df)
 
     frame["return_1"] = frame["close"].pct_change().fillna(0.0)
@@ -24,9 +27,13 @@ def make_feature_frame(price_df: pd.DataFrame, sentiment_df: pd.DataFrame | None
             direction="backward",
         )
         merged["sentiment_score"] = merged.get("sentiment_score", 0.5).fillna(0.5)
-        return merged.dropna(subset=["target"])
+        frame = merged
 
-    frame["sentiment_score"] = 0.5
+    if "sentiment_score" not in frame.columns:
+        frame["sentiment_score"] = 0.5
+    else:
+        frame["sentiment_score"] = frame["sentiment_score"].fillna(0.5)
+
     return frame.dropna(subset=["target"])
 
 
