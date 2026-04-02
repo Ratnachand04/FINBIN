@@ -10,11 +10,16 @@ from dashboard.components.charts import price_chart
 st.set_page_config(page_title="BINFIN Dashboard", layout="wide")
 st.title("BINFIN Crypto Intelligence")
 
-symbol = st.selectbox("Symbol", ["BTCUSDT", "ETHUSDT", "SOLUSDT"])
+symbol = st.selectbox("Symbol", ["BTCUSDT", "ETHUSDT", "DOGEUSDT"])
 
 now = datetime.now(UTC)
 rows = []
-price = 70000.0 if symbol == "BTCUSDT" else 3500.0
+base_prices = {
+    "BTCUSDT": 70000.0,
+    "ETHUSDT": 3500.0,
+    "DOGEUSDT": 0.25,
+}
+price = base_prices.get(symbol, 100.0)
 for idx in range(96):
     ts = now - timedelta(minutes=(96 - idx) * 15)
     rows.append(

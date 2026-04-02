@@ -33,7 +33,7 @@ st.markdown(
 	unsafe_allow_html=True,
 )
 
-DEFAULT_COINS = ["BTC", "ETH", "SOL", "ADA", "DOT"]
+DEFAULT_COINS = ["BTC"]
 
 
 def _init_state() -> None:
@@ -52,10 +52,11 @@ def _init_state() -> None:
 
 
 @st.cache_data(ttl=30)
-def fetch_data(base_url: str, selected_coins: list[str]) -> dict[str, Any]:
+def fetch_data(base_url: str, selected_coins: list[str], token: str) -> dict[str, Any]:
+	headers = {"Authorization": f"Bearer {token}"} if token else {}
 	def _safe_get(path: str, params: dict[str, Any] | None = None) -> Any:
 		try:
-			response = requests.get(f"{base_url}{path}", params=params, timeout=12)
+			response = requests.get(f"{base_url}{path}", params=params, headers=headers, timeout=12)
 			response.raise_for_status()
 			return response.json()
 		except Exception as exc:
@@ -84,14 +85,15 @@ def fetch_data(base_url: str, selected_coins: list[str]) -> dict[str, Any]:
 	return data
 
 
-def run_finance_news_training(base_url: str, symbols: list[str], interval: str, max_rows: int) -> dict[str, Any]:
+def run_finance_news_training(base_url: str, symbols: list[str], interval: str, max_rows: int, token: str) -> dict[str, Any]:
+	headers = {"Authorization": f"Bearer {token}"} if token else {}
 	payload = {
 		"symbols": [symbol.upper() for symbol in symbols],
 		"interval": interval,
 		"max_rows_per_symbol": max_rows,
 		"sentiment_sample_size": 30,
 	}
-	response = requests.post(f"{base_url}/api/v1/model/train-finance-news", json=payload, timeout=600)
+	response = requests.post(f"{base_url}/api/v1/model/train-finance-news", json=payload, headers=headers, timeout=600)
 	response.raise_for_status()
 	return response.json()
 
@@ -253,6 +255,53 @@ def _start_ws_listener(ws_url: str) -> queue.Queue[str]:
 
 _init_state()
 
+def render_login_register(base_url: str) -> None:
+	st.title("BINFIN Intelligence Portal")
+	tab1, tab2 = st.tabs(["Login", "Register"])
+	
+	with tab1:
+		with st.form("login_form"):
+			st.subheader("Login")
+			username = st.text_input("Email", key="login_email")
+			password = st.text_input("Password", type="password", key="login_pass")
+			if st.form_submit_button("Sign In"):
+				try:
+					res = requests.post(
+						f"{base_url}/api/v1/auth/access-token", 
+						data={"username": username, "password": password}
+					)
+					if res.status_code == 200:
+						st.session_state.token = res.json().get("access_token")
+						st.rerun()
+					else:
+						st.error(f"Login failed: {res.text}")
+				except Exception as e:
+					st.error(f"Error connecting to backend: {e}")
+
+	with tab2:
+		with st.form("register_form"):
+			st.subheader("Register")
+			r_username = st.text_input("Email", key="r_email")
+			r_password = st.text_input("Password", type="password", key="r_pass")
+			if st.form_submit_button("Sign Up"):
+				try:
+					res = requests.post(
+						f"{base_url}/api/v1/auth/register", 
+						json={"email": r_username, "password": r_password}
+					)
+					if res.status_code == 200:
+						st.success("Registration successful! Please login.")
+					else:
+						st.error(f"Registration failed: {res.text}")
+				except Exception as e:
+					st.error(f"Error connecting to backend: {e}")
+
+backend_base = os.getenv("BACKEND_URL", "http://localhost:8000")
+
+if not st.session_state.get("token"):
+	render_login_register(backend_base)
+	st.stop()
+
 with st.sidebar:
 	st.header("Controls")
 	st.session_state.selected_coins = st.multiselect(
@@ -269,7 +318,11 @@ with st.sidebar:
 	backend_base = st.text_input("Backend URL", value=os.getenv("BACKEND_URL", "http://localhost:8000"))
 	ws_url = st.text_input("WebSocket URL", value=os.getenv("WS_SIGNALS_URL", "ws://localhost:8000/api/v1/signals/ws/notifications"))
 
-	health = fetch_data(backend_base, st.session_state.selected_coins).get("health", {})
+	if st.button("Logout"):
+		st.session_state.token = None
+		st.rerun()
+
+	health = fetch_data(backend_base, st.session_state.selected_coins, st.session_state.token).get("health", {})
 	status = health.get("status", "unknown") if isinstance(health, dict) else "unknown"
 	css_class = "status-ok" if status == "ok" else "status-warn" if status == "degraded" else "status-bad"
 	st.markdown(f"Connection: <span class='{css_class}'>{status.upper()}</span>", unsafe_allow_html=True)
@@ -284,7 +337,7 @@ if st.session_state.notifications_enabled and "ws_queue" in st.session_state:
 		st.session_state.ws_alerts.insert(0, raw_msg)
 		st.session_state.ws_alerts = st.session_state.ws_alerts[:30]
 
-data = fetch_data(backend_base, st.session_state.selected_coins)
+data = fetch_data(backend_base, st.session_state.selected_coins, st.session_state.token)
 active_signals = data.get("active_signals", []) if isinstance(data.get("active_signals"), list) else []
 recent_outcomes = data.get("recent_outcomes", []) if isinstance(data.get("recent_outcomes"), list) else []
 performance = data.get("performance", {}) if isinstance(data.get("performance"), dict) else {}
@@ -313,9 +366,42 @@ metric3.metric("Best Performer", f"{best_symbol} ({best_return:.2f}%)" if total 
 health_state = data.get("health", {}).get("status", "unknown") if isinstance(data.get("health"), dict) else "unknown"
 metric4.metric("System Status", str(health_state).upper())
 
-tab_live, tab_signal, tab_market, tab_backtest, tab_model = st.tabs(
-	["Live Dashboard", "Signal Analysis", "Market Overview", "Backtesting", "Model Performance"]
+tab_live, tab_signal, tab_market, tab_backtest, tab_model, tab_keys = st.tabs(
+	["Live Dashboard", "Signal Analysis", "Market Overview", "Backtesting", "Model Performance", "API Keys"]
 )
+
+with tab_keys:
+	st.subheader("Manage Custom API Keys")
+	st.write("Provide API keys to retrieve personalized live data for model ingestion and dashboard feeds.")
+	
+	with st.form("api_key_form"):
+		provider = st.selectbox("Provider", ["BINANCE", "NEWS_API", "ALPACA", "ALPHA_VANTAGE", "HUGGINGFACE"])
+		api_key = st.text_input("API Key", type="password")
+		api_secret = st.text_input("API Secret (if applicable)", type="password")
+		
+		if st.form_submit_button("Save Key"):
+			try:
+				res = requests.post(
+					f"{backend_base}/api/v1/keys/",
+					json={"provider": provider, "api_key": api_key, "api_secret": api_secret},
+					headers={"Authorization": f"Bearer {st.session_state.token}"}
+				)
+				if res.status_code == 200:
+					st.success("API Key saved successfully!")
+				else:
+					st.error("Failed to save API Key.")
+			except Exception as e:
+				st.error(f"Error connecting to backend: {e}")
+	
+	try:
+		keys_res = requests.get(f"{backend_base}/api/v1/keys/", headers={"Authorization": f"Bearer {st.session_state.token}"})
+		if keys_res.status_code == 200:
+			st.write("### Saved Keys")
+			for k in keys_res.json():
+				st.write(f"- {k['provider']}")
+	except:
+		pass
+
 
 with tab_live:
 	st.subheader("Real-Time Tickers")
@@ -431,8 +517,8 @@ with tab_model:
 	train_cols = st.columns(3)
 	train_symbols = train_cols[0].multiselect(
 		"Symbols",
-		options=["BTCUSDT", "ETHUSDT"],
-		default=["BTCUSDT", "ETHUSDT"],
+		options=["BTCUSDT", "ETHUSDT", "DOGEUSDT"],
+		default=["BTCUSDT", "ETHUSDT", "DOGEUSDT"],
 		key="model_train_symbols",
 	)
 	train_interval = train_cols[1].selectbox("Interval", ["15m", "1h", "4h", "1d"], index=0, key="model_train_interval")
@@ -444,7 +530,7 @@ with tab_model:
 		else:
 			with st.spinner("Running sentiment analysis with Ollama and training prediction models..."):
 				try:
-					result = run_finance_news_training(backend_base, train_symbols, train_interval, train_rows)
+					result = run_finance_news_training(backend_base, train_symbols, train_interval, train_rows, st.session_state.token)
 					st.session_state.model_train_result = result
 				except Exception as exc:
 					st.error(f"Training request failed: {exc}")

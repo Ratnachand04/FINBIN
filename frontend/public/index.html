@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINFIN | Advanced Financial Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+
+    <!-- AUTHENTICATION OVERLAY -->
+    <div id="auth-overlay" class="overlay active">
+        <div class="glass-panel auth-panel">
+            <h1 class="gradient-text">BINFIN Intelligence</h1>
+            <p>Predictive Trading & Deep Sentiment Engine</p>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active" onsubmit="handleAuth(event, 'login')">
+                <div class="input-group">
+                    <span class="material-symbols-outlined">mail</span>
+                    <input type="email" id="login-email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <span class="material-symbols-outlined">lock</span>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+                <div id="login-error" class="error-text"></div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form" onsubmit="handleAuth(event, 'register')">
+                <div class="input-group">
+                    <span class="material-symbols-outlined">mail</span>
+                    <input type="email" id="register-email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <span class="material-symbols-outlined">lock</span>
+                    <input type="password" id="register-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+                <div id="register-message" class="info-text"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="app-container" class="dashboard-layout" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar glass-panel">
+            <div class="brand">
+                <span class="material-symbols-outlined brand-icon">query_stats</span>
+                <h2>BINFIN</h2>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="switchView('dashboard')">
+                    <span class="material-symbols-outlined">dashboard</span> Overview
+                </button>
+                <button class="nav-item" onclick="switchView('charts')">
+                    <span class="material-symbols-outlined">candlestick_chart</span> Live Charts
+                </button>
+                <button class="nav-item" onclick="switchView('signals')">
+                    <span class="material-symbols-outlined">online_prediction</span> Signals
+                </button>
+                <button class="nav-item" onclick="switchView('models')">
+                    <span class="material-symbols-outlined">model_training</span> Model Ops
+                </button>
+                <button class="nav-item" onclick="switchView('settings')">
+                    <span class="material-symbols-outlined">key</span> Custom Keys
+                </button>
+            </nav>
+
+            <div class="user-profile">
+                <span class="material-symbols-outlined">account_circle</span>
+                <span id="user-email-display">user@binfin.app</span>
+                <button class="icon-btn" onclick="logout()" title="Logout">
+                    <span class="material-symbols-outlined">logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="topbar glass-panel">
+                <div class="system-status">
+                    <div class="status-indicator online"></div>
+                    <span>System Status: <strong id="sys-status">CONNECTING...</strong></span>
+                </div>
+                <div class="coin-selector">
+                    <span>Active Asset:</span>
+                    <select id="global-coin-select" onchange="handleCoinChange()">
+                        <option value="BTC">BTC / USDT</option>
+                        <option value="ETH">ETH / USDT</option>
+                        <option value="DOGE">DOGE / USDT</option>
+                    </select>
+                </div>
+            </header>
+
+            <div class="views-container">
+                <!-- VIEW 1: Dashboard Overview -->
+                <div id="view-dashboard" class="view-section active">
+                    <div class="bento-grid">
+                        <div class="bento-card highlight-card">
+                            <h3>Active Trading Signals</h3>
+                            <div class="metric-huge" id="metric-signals">0</div>
+                            <p class="subtitle">Looking at 24h window</p>
+                        </div>
+                        <div class="bento-card">
+                            <h3>Win Rate (30d)</h3>
+                            <div class="metric-huge text-green" id="metric-winrate">0.0%</div>
+                        </div>
+                        <div class="bento-card col-span-2">
+                            <h3>Recent Predictions / Sentiments</h3>
+                            <table class="data-table" id="recent-signals-table">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Signal</th>
+                                        <th>Confidence</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="4">Loading data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: Charts (Native Lightweight Embed) -->
+                <div id="view-charts" class="view-section">
+                    <div class="bento-card full-height no-padding">
+                        <div class="chart-header">
+                            <h3>Live Market Action & Candlesticks</h3>
+                            <p>Powered by Lightweight Charts (TradingView)</p>
+                        </div>
+                        <div id="tvchart" style="width: 100%; height: 100%; position: relative;"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: Settings API Keys -->
+                <div id="view-settings" class="view-section">
+                    <div class="bento-card">
+                        <h3>Custom API Keys</h3>
+                        <p>Provide your private keys to dynamically inject live feeds into the model context.</p>
+                        
+                        <form id="apiKeyForm" onsubmit="saveApiKey(event)" class="settings-form">
+                            <div class="input-group">
+                                <label>Provider</label>
+                                <select id="key-provider" required>
+                                    <option value="BINANCE">Binance</option>
+                                    <option value="NEWS_API">NewsAPI</option>
+                                    <option value="ALPACA">Alpaca</option>
+                                    <option value="HUGGINGFACE">HuggingFace</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>API Key</label>
+                                <input type="password" id="key-value" required>
+                            </div>
+                            <div class="input-group">
+                                <label>API Secret (Optional)</label>
+                                <input type="password" id="key-secret">
+                            </div>
+                            <button type="submit" class="btn-primary">Save Key securely</button>
+                        </form>
+                        
+                        <div class="saved-keys-list mt-20">
+                            <h4>Active Integrations</h4>
+                            <ul id="keys-list">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View 4: Model Ops -->
+                <div id="view-models" class="view-section">
+                    <div class="bento-card">
+                        <h3>Model Operations & Training</h3>
+                        <p>Trigger remote endpoints to run QLoRA fine-tuning and sentiment injection via Celery.</p>
+                        <button class="btn-primary" onclick="triggerModelTraining()">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                            Start Fine-Tuning Protocol
+                        </button>
+                        <div id="training-output" class="terminal-output mt-20">
+                            > Model status: STANDBY
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-signals" class="view-section">
+                     <div class="bento-card">
+                        <h3>Full Signal History</h3>
+                        <p>Signal processing pipeline currently operational. (Data populated via API sync).</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

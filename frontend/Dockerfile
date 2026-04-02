@@ -1,12 +1,14 @@
-FROM python:3.12-slim
+FROM nginx:alpine
 
-WORKDIR /app
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+# Copy static frontend files (this will be mounted in dev, mapped in prod)
+# COPY public /usr/share/nginx/html
 
-COPY . /app
+# Copy the generated internal nginx conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 8501
+EXPOSE 80
 
-CMD ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["nginx", "-g", "daemon off;"]
