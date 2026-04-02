@@ -13,7 +13,7 @@ The **Crypto Intelligence Terminal** is a robust, hybrid-compute AI pipeline for
 - **Multi-model price prediction:** Incorporates financial modeling techniques like Prophet, LSTM, and XGBoost.
 - **Intelligent signal generation:** Produces definitive BUY/SELL/HOLD signals backed by explainability metrics.
 - **Comprehensive backtesting engine:** Validates the historical accuracy of deployed models using the Sharpe Ratio and drawdown metrics.
-- **Unified Graphical Dashboards:** Provides both full Web (Streamlit + ApexCharts) and CLI-based rich dashboards.
+- **Unified Graphical Dashboards:** Provides a full animated Web dashboard (HTML/CSS/JS + Lightweight Charts) and CLI-based rich dashboards.
 - **Open-source architecture:** Fully containerized for self-hosted, independent operation without reliance on expensive third-party foundational models.
 
 ## Architecture
@@ -85,7 +85,7 @@ cp .env.example .env
 
 To fetch real-world data, the system requires API keys. You have two options to configure them:
 1. **Locally via the `.env` file:** Copy `.env.example` to `.env` and insert your keys (e.g., `BINANCE_API_KEY`, `NEWS_API_KEY`). The backend services will load them securely on startup.
-2. **Via the Frontend Dashboard:** Once deployed, navigate to `http://localhost:8501`. Log into the portal, navigate to the **"API Keys"** tab, and enter your credentials. The system uses these authenticated keys for live data routing behind the scenes.
+2. **Via the Frontend Dashboard:** Once deployed, navigate to `http://localhost:8501`. The dashboard opens directly (no username/password prompt) and streams live backend data.
 
 ### Run using Docker Compose
 
@@ -126,7 +126,7 @@ This intelligence system relies on a multi-modal approach to forecasting crypto-
 2. **AI Inference & Sentiment Filtering:** The backend processes the textual and numerical data using FinBERT and an Ollama-powered Mistral-7B runtime to extract meaningful, contextual market sentiment from the raw pipeline.
 3. **Price Prediction Pipeline:** Dedicated quantitative models (Prophet, XGBoost) concurrently utilize the historical time-series data to analyze and project impending price trends.
 4. **Signal Aggregation:** The Signal Generator cross-references the processed sentiment data with the predictive numeric modeling to produce actionable BUY/HOLD/SELL signals. The backtesting engine then appraises these indications.
-5. **Insights Presentation:** The unified frontend (developed with Streamlit and ApexCharts) surfaces these indicators within a visually coherent dashboard. 
+5. **Insights Presentation:** The unified frontend (developed with HTML/CSS/JS and Lightweight Charts) surfaces these indicators in a live animated dashboard.
 
 ## GPU and CPU Edition 
 
@@ -194,3 +194,47 @@ Performance snapshot generated on **2026-04-02** from live `price_data` in Postg
 - **Signal win rate:** percentage of profitable closed trades in backtest.
 - **Data source:** latest 900 rows per available symbol/interval in `price_data`.
 - **Evaluation coverage:** BTC, ETH, and DOGE multi-asset price series currently present in database.
+
+## Mathematical Breakdown
+
+| Component | Logic Applied | Working Model Concept |
+|-----------|---------------|-----------------------|
+| **Ensemble Logic** | Weighted average of $M$ model probabilities | **Macro-Signal Integration**: Synthesizes cross-paradigm forecasts into a unified consensus. |
+| **Prophet** | Additive regression for trend/seasonality | **Structural Trend Decomposition**: Isolates long-term price trajectories from periodic cycles. |
+| **LSTM** | Sequential memory gates (Forget/Input/Output) | **Chronological Memory Gates**: Processes non-linear time dependencies across historical OHLCV data. |
+| **XGBoost** | Regularized Gradient Boosting (Newton-Raphson) | **High-Gain Residual Boosting**: Iteratively reduces model error by focusing on difficult-to-predict price splits. |
+| **QLoRA** | Low-rank adapter updates to NF4 quantized weights | **Parameter-Efficient Adaptation**: Injects domain-specific sentiment intelligence into generalized LLMs. |
+| **Evaluation** | Sharpe Ratio / Directional Accuracy Calculation | **Risk-Adjusted Alpha Scoring**: Statistically validates the probability of excess returns vs volatility. |
+
+### 1. Unified Consensus (Ensemble)
+The architecture achieves robustness by balancing three distinct forecasting methodologies. The final directional probability $P$ for a class $c$ is calculated by:
+$$P_{\text{ensemble}}(c) = 0.3 \cdot P_{\text{prophet}}(c) + 0.4 \cdot P_{\text{lstm}}(c) + 0.3 \cdot P_{\text{xgb}}(c)$$
+
+### 2. Market Cycle Analysis (Prophet)
+Used to identify macro-trends by decomposing the signal into deterministic components:
+$$y(t) = g(t) + s(t) + h(t) + \epsilon_t$$
+- $g(t)$: Piecewise linear growth trend.
+- $s(t)$: Fourier series for intraday/weekly periodicity.
+- $h(t)$: Market holiday and anomalous event impacts.
+
+### 3. Temporal Relationship Mapping (LSTM)
+Utilizes a recursive neural architecture to protect long-term market context:
+- **Forget Gate**: $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$ (Controls information decay over time).
+- **Input Gate**: $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$ (Selects relevant new price features).
+- **Cell State**: $C_t = f_t \odot C_{t-1} + i_t \odot \tanh(W_C \cdot [h_{t-1}, x_t] + b_C)$ (Stores the persistent market memory).
+
+### 4. Optimized Decision Splits (XGBoost)
+The model iteratively constructs shallow trees to minimize a regularized objective:
+$$\mathcal{L}(\phi) = \sum_i l(\hat{y}_i, y_i) + \gamma T + \frac{1}{2}\lambda \sum w_j^2$$
+This ensures the model generalizes well to unseen market data by penalizing excessive leaf nodes ($T$) and complex weights ($w$).
+
+### 5. Efficient Knowledge Transfer (QLoRA)
+Leverages the **Mistral-7B** foundational model for sentiment analysis using 4-bit precision compression:
+$$W_{fixed} + \Delta W = W_{NF4} + (A \times B) \cdot \frac{\alpha}{r}$$
+This concept allows the terminal to adapt massive transformer models to local crypto-sentiment tasks on standard consumer hardware.
+
+### 6. Quantitative Validation Metrics
+- **Directional Accuracy**: $Acc = \frac{1}{N} \sum \mathbb{1}(\text{sgn}(\Delta \hat{y}) = \text{sgn}(\Delta y))$ (Measures "hit rate").
+- **Sharpe Ratio**: $S = \frac{\mu_{\text{returns}}}{\sigma_{\text{returns}}}$ (Normalizes profit against trading risk).
+- **Confidence Layer**: $\text{Conf} = \left( \frac{1}{M} \sum \max(P_m) \right) \times \text{Multiplier}$ (Measures divergence between independent models).
+
