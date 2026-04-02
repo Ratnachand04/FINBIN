@@ -25,7 +25,7 @@ class OHLCVTick(BaseModel):
 
 class BinanceCollector:
     def __init__(self, symbols: list[str] | None = None, interval: str = "15m") -> None:
-        self.symbols = symbols or ["BTCUSDT", "ETHUSDT", "SOLUSDT", "ADAUSDT", "DOTUSDT"]
+        self.symbols = symbols or ["BTCUSDT", "ETHUSDT", "DOGEUSDT"]
         self.interval = interval
         self._stop = asyncio.Event()
 

@@ -1,0 +1,2464 @@
+date,sentiment_score,sentiment_label,simulated_headline
+2019-07-05,-0.878,Negative,Major exchange hack sparks panic selling.
+2019-07-06,-1.0,Negative,Fears of regulatory crackdown loom.
+2019-07-07,0.219,Neutral,Low volatility day ahead of fed meeting.
+2019-07-08,-0.254,Neutral,Market consolidating around key levels.
+2019-07-09,0.044,Neutral,Trading sideways with no clear direction.
+2019-07-10,-0.509,Negative,Bears dominating as support levels break.
+2019-07-11,-0.735,Negative,Investors fleeing risk-on assets.
+2019-07-12,0.148,Neutral,Market consolidating around key levels.
+2019-07-13,-0.033,Neutral,Trading sideways with no clear direction.
+2019-07-14,-0.966,Negative,Major exchange hack sparks panic selling.
+2019-07-15,0.809,Positive,Record high inflows seen in crypto funds.
+2019-07-16,-0.824,Negative,Investors fleeing risk-on assets.
+2019-07-17,0.37,Positive,Positive regulatory news sparks a rally.
+2019-07-18,1.0,Positive,Bulls taking control of the market.
+2019-07-19,-0.437,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-07-20,0.295,Neutral,Sideways trading continues throughout the session.
+2019-07-21,-0.085,Neutral,Market consolidating around key levels.
+2019-07-22,-0.592,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-07-23,-0.739,Negative,Investors fleeing risk-on assets.
+2019-07-24,0.121,Neutral,Market consolidating around key levels.
+2019-07-25,-0.011,Neutral,Sideways trading continues throughout the session.
+2019-07-26,-0.027,Neutral,Sideways trading continues throughout the session.
+2019-07-27,-0.529,Negative,Major exchange hack sparks panic selling.
+2019-07-28,0.151,Neutral,Trading sideways with no clear direction.
+2019-07-29,-0.282,Neutral,Market consolidating around key levels.
+2019-07-30,-0.049,Neutral,Trading sideways with no clear direction.
+2019-07-31,0.363,Positive,Positive regulatory news sparks a rally.
+2019-08-01,0.202,Neutral,Market participants remain undecided.
+2019-08-02,-0.152,Neutral,Market consolidating around key levels.
+2019-08-03,0.138,Neutral,Market consolidating around key levels.
+2019-08-04,0.156,Neutral,Low volatility day ahead of fed meeting.
+2019-08-05,0.548,Positive,Market shows strong resilience.
+2019-08-06,-0.36,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-08-07,0.269,Neutral,Sideways trading continues throughout the session.
+2019-08-08,-0.219,Neutral,Low volatility day ahead of fed meeting.
+2019-08-09,-0.286,Neutral,Sideways trading continues throughout the session.
+2019-08-10,-0.168,Neutral,Sideways trading continues throughout the session.
+2019-08-11,0.023,Neutral,Low volatility day ahead of fed meeting.
+2019-08-12,-0.298,Neutral,Trading sideways with no clear direction.
+2019-08-13,-0.14,Neutral,Market consolidating around key levels.
+2019-08-14,-0.664,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-08-15,-0.682,Negative,Investors fleeing risk-on assets.
+2019-08-16,0.572,Positive,Positive regulatory news sparks a rally.
+2019-08-17,-0.229,Neutral,Market participants remain undecided.
+2019-08-18,0.35,Positive,Record high inflows seen in crypto funds.
+2019-08-19,0.615,Positive,Market shows strong resilience.
+2019-08-20,-0.206,Neutral,Sideways trading continues throughout the session.
+2019-08-21,-0.598,Negative,Fears of regulatory crackdown loom.
+2019-08-22,-0.119,Neutral,Trading sideways with no clear direction.
+2019-08-23,-0.033,Neutral,Low volatility day ahead of fed meeting.
+2019-08-24,-0.073,Neutral,Trading sideways with no clear direction.
+2019-08-25,0.146,Neutral,Low volatility day ahead of fed meeting.
+2019-08-26,0.309,Positive,Market shows strong resilience.
+2019-08-27,-0.095,Neutral,Low volatility day ahead of fed meeting.
+2019-08-28,-0.518,Negative,Bears dominating as support levels break.
+2019-08-29,-0.432,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-08-30,-0.026,Neutral,Trading sideways with no clear direction.
+2019-08-31,-0.19,Neutral,Sideways trading continues throughout the session.
+2019-09-01,0.004,Neutral,Market consolidating around key levels.
+2019-09-02,0.928,Positive,Record high inflows seen in crypto funds.
+2019-09-03,-0.335,Negative,Fears of regulatory crackdown loom.
+2019-09-04,-0.126,Neutral,Trading sideways with no clear direction.
+2019-09-05,-0.31,Negative,Investors fleeing risk-on assets.
+2019-09-06,-0.076,Neutral,Market consolidating around key levels.
+2019-09-07,0.214,Neutral,Trading sideways with no clear direction.
+2019-09-08,-0.018,Neutral,Low volatility day ahead of fed meeting.
+2019-09-09,-0.015,Neutral,Sideways trading continues throughout the session.
+2019-09-10,0.061,Neutral,Sideways trading continues throughout the session.
+2019-09-11,-0.242,Neutral,Trading sideways with no clear direction.
+2019-09-12,0.008,Neutral,Low volatility day ahead of fed meeting.
+2019-09-13,0.139,Neutral,Trading sideways with no clear direction.
+2019-09-14,-0.1,Neutral,Low volatility day ahead of fed meeting.
+2019-09-15,0.204,Neutral,Sideways trading continues throughout the session.
+2019-09-16,-0.031,Neutral,Market participants remain undecided.
+2019-09-17,1.0,Positive,Institutional adoption continues to grow.
+2019-09-18,0.524,Positive,Market shows strong resilience.
+2019-09-19,0.223,Neutral,Sideways trading continues throughout the session.
+2019-09-20,-0.466,Negative,Investors fleeing risk-on assets.
+2019-09-21,-0.241,Neutral,Trading sideways with no clear direction.
+2019-09-22,0.115,Neutral,Low volatility day ahead of fed meeting.
+2019-09-23,-0.815,Negative,Bears dominating as support levels break.
+2019-09-24,-0.87,Negative,Fears of regulatory crackdown loom.
+2019-09-25,-0.067,Neutral,Low volatility day ahead of fed meeting.
+2019-09-26,-0.106,Neutral,Market participants remain undecided.
+2019-09-27,0.196,Neutral,Market participants remain undecided.
+2019-09-28,0.325,Positive,Record high inflows seen in crypto funds.
+2019-09-29,-0.194,Neutral,Sideways trading continues throughout the session.
+2019-09-30,1.0,Positive,Record high inflows seen in crypto funds.
+2019-10-01,-0.165,Neutral,Sideways trading continues throughout the session.
+2019-10-02,-0.279,Neutral,Market participants remain undecided.
+2019-10-03,-0.299,Neutral,Low volatility day ahead of fed meeting.
+2019-10-04,0.087,Neutral,Market consolidating around key levels.
+2019-10-05,-0.03,Neutral,Trading sideways with no clear direction.
+2019-10-06,-0.259,Neutral,Market participants remain undecided.
+2019-10-07,0.33,Positive,Record high inflows seen in crypto funds.
+2019-10-08,-0.074,Neutral,Market consolidating around key levels.
+2019-10-09,0.431,Positive,Positive regulatory news sparks a rally.
+2019-10-10,-0.287,Neutral,Market participants remain undecided.
+2019-10-11,0.012,Neutral,Low volatility day ahead of fed meeting.
+2019-10-12,0.157,Neutral,Trading sideways with no clear direction.
+2019-10-13,0.848,Positive,Market shows strong resilience.
+2019-10-14,0.769,Positive,Institutional adoption continues to grow.
+2019-10-15,-0.169,Neutral,Trading sideways with no clear direction.
+2019-10-16,0.58,Positive,Market shows strong resilience.
+2019-10-17,0.672,Positive,Institutional adoption continues to grow.
+2019-10-18,-0.336,Negative,Major exchange hack sparks panic selling.
+2019-10-19,0.296,Neutral,Trading sideways with no clear direction.
+2019-10-20,0.166,Neutral,Trading sideways with no clear direction.
+2019-10-21,0.024,Neutral,Market consolidating around key levels.
+2019-10-22,-0.681,Negative,Bears dominating as support levels break.
+2019-10-23,-0.211,Neutral,Trading sideways with no clear direction.
+2019-10-24,0.385,Positive,Positive regulatory news sparks a rally.
+2019-10-25,1.0,Positive,Bulls taking control of the market.
+2019-10-26,-0.6,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-10-27,0.179,Neutral,Low volatility day ahead of fed meeting.
+2019-10-28,-0.139,Neutral,Market participants remain undecided.
+2019-10-29,0.094,Neutral,Sideways trading continues throughout the session.
+2019-10-30,-0.182,Neutral,Low volatility day ahead of fed meeting.
+2019-10-31,-0.143,Neutral,Low volatility day ahead of fed meeting.
+2019-11-01,0.17,Neutral,Trading sideways with no clear direction.
+2019-11-02,-0.253,Neutral,Trading sideways with no clear direction.
+2019-11-03,0.127,Neutral,Low volatility day ahead of fed meeting.
+2019-11-04,0.085,Neutral,Low volatility day ahead of fed meeting.
+2019-11-05,0.283,Neutral,Low volatility day ahead of fed meeting.
+2019-11-06,0.055,Neutral,Sideways trading continues throughout the session.
+2019-11-07,0.587,Positive,Record high inflows seen in crypto funds.
+2019-11-08,-0.23,Neutral,Low volatility day ahead of fed meeting.
+2019-11-09,0.429,Positive,Institutional adoption continues to grow.
+2019-11-10,0.299,Neutral,Sideways trading continues throughout the session.
+2019-11-11,-0.2,Neutral,Market consolidating around key levels.
+2019-11-12,-0.141,Neutral,Market participants remain undecided.
+2019-11-13,-0.071,Neutral,Market consolidating around key levels.
+2019-11-14,-0.022,Neutral,Market participants remain undecided.
+2019-11-15,-0.198,Neutral,Sideways trading continues throughout the session.
+2019-11-16,0.11,Neutral,Market participants remain undecided.
+2019-11-17,-0.191,Neutral,Sideways trading continues throughout the session.
+2019-11-18,-0.519,Negative,Major exchange hack sparks panic selling.
+2019-11-19,-0.07,Neutral,Low volatility day ahead of fed meeting.
+2019-11-20,-0.151,Neutral,Trading sideways with no clear direction.
+2019-11-21,-0.751,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-11-22,-0.491,Negative,Bears dominating as support levels break.
+2019-11-23,0.422,Positive,Positive regulatory news sparks a rally.
+2019-11-24,-0.961,Negative,Fears of regulatory crackdown loom.
+2019-11-25,0.009,Neutral,Market participants remain undecided.
+2019-11-26,0.018,Neutral,Trading sideways with no clear direction.
+2019-11-27,0.208,Neutral,Market consolidating around key levels.
+2019-11-28,-0.312,Negative,Bears dominating as support levels break.
+2019-11-29,0.59,Positive,Bulls taking control of the market.
+2019-11-30,-0.603,Negative,Bears dominating as support levels break.
+2019-12-01,-0.36,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-12-02,-0.457,Negative,Bears dominating as support levels break.
+2019-12-03,-0.467,Negative,Fears of regulatory crackdown loom.
+2019-12-04,0.048,Neutral,Market consolidating around key levels.
+2019-12-05,-0.038,Neutral,Low volatility day ahead of fed meeting.
+2019-12-06,0.254,Neutral,Low volatility day ahead of fed meeting.
+2019-12-07,-0.128,Neutral,Sideways trading continues throughout the session.
+2019-12-08,-0.1,Neutral,Market participants remain undecided.
+2019-12-09,-0.298,Neutral,Market participants remain undecided.
+2019-12-10,-0.208,Neutral,Trading sideways with no clear direction.
+2019-12-11,0.14,Neutral,Trading sideways with no clear direction.
+2019-12-12,-0.177,Neutral,Market consolidating around key levels.
+2019-12-13,0.073,Neutral,Trading sideways with no clear direction.
+2019-12-14,-0.046,Neutral,Market participants remain undecided.
+2019-12-15,0.242,Neutral,Sideways trading continues throughout the session.
+2019-12-16,-0.288,Neutral,Market consolidating around key levels.
+2019-12-17,-0.606,Negative,Fears of regulatory crackdown loom.
+2019-12-18,0.406,Positive,Bulls taking control of the market.
+2019-12-19,-0.311,Negative,Market bleeds amidst macroeconomic uncertainty.
+2019-12-20,0.184,Neutral,Low volatility day ahead of fed meeting.
+2019-12-21,0.034,Neutral,Market participants remain undecided.
+2019-12-22,0.428,Positive,Market shows strong resilience.
+2019-12-23,-0.429,Negative,Major exchange hack sparks panic selling.
+2019-12-24,-0.072,Neutral,Market consolidating around key levels.
+2019-12-25,-0.001,Neutral,Market participants remain undecided.
+2019-12-26,-0.066,Neutral,Market participants remain undecided.
+2019-12-27,0.114,Neutral,Market participants remain undecided.
+2019-12-28,0.148,Neutral,Trading sideways with no clear direction.
+2019-12-29,-0.202,Neutral,Trading sideways with no clear direction.
+2019-12-30,-0.114,Neutral,Low volatility day ahead of fed meeting.
+2019-12-31,-0.182,Neutral,Sideways trading continues throughout the session.
+2020-01-01,-0.053,Neutral,Trading sideways with no clear direction.
+2020-01-02,-0.293,Neutral,Trading sideways with no clear direction.
+2020-01-03,0.301,Positive,Institutional adoption continues to grow.
+2020-01-04,0.35,Positive,Bulls taking control of the market.
+2020-01-05,0.059,Neutral,Low volatility day ahead of fed meeting.
+2020-01-06,0.444,Positive,Institutional adoption continues to grow.
+2020-01-07,0.301,Positive,Record high inflows seen in crypto funds.
+2020-01-08,-0.67,Negative,Investors fleeing risk-on assets.
+2020-01-09,0.097,Neutral,Sideways trading continues throughout the session.
+2020-01-10,0.329,Positive,Market shows strong resilience.
+2020-01-11,-0.093,Neutral,Market consolidating around key levels.
+2020-01-12,0.082,Neutral,Market consolidating around key levels.
+2020-01-13,-0.212,Neutral,Market participants remain undecided.
+2020-01-14,0.844,Positive,Institutional adoption continues to grow.
+2020-01-15,0.284,Neutral,Sideways trading continues throughout the session.
+2020-01-16,-0.185,Neutral,Trading sideways with no clear direction.
+2020-01-17,0.951,Positive,Bulls taking control of the market.
+2020-01-18,0.228,Neutral,Market participants remain undecided.
+2020-01-19,-0.714,Negative,Investors fleeing risk-on assets.
+2020-01-20,-0.206,Neutral,Market consolidating around key levels.
+2020-01-21,-0.112,Neutral,Market consolidating around key levels.
+2020-01-22,-0.083,Neutral,Sideways trading continues throughout the session.
+2020-01-23,-0.676,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-01-24,-0.014,Neutral,Trading sideways with no clear direction.
+2020-01-25,-0.01,Neutral,Market consolidating around key levels.
+2020-01-26,0.286,Neutral,Market consolidating around key levels.
+2020-01-27,0.329,Positive,Positive regulatory news sparks a rally.
+2020-01-28,0.439,Positive,Institutional adoption continues to grow.
+2020-01-29,-0.22,Neutral,Trading sideways with no clear direction.
+2020-01-30,0.13,Neutral,Trading sideways with no clear direction.
+2020-01-31,-0.413,Negative,Fears of regulatory crackdown loom.
+2020-02-01,0.122,Neutral,Sideways trading continues throughout the session.
+2020-02-02,0.078,Neutral,Market consolidating around key levels.
+2020-02-03,-0.122,Neutral,Market participants remain undecided.
+2020-02-04,0.431,Positive,Positive regulatory news sparks a rally.
+2020-02-05,0.277,Neutral,Trading sideways with no clear direction.
+2020-02-06,0.482,Positive,Bulls taking control of the market.
+2020-02-07,0.882,Positive,Positive regulatory news sparks a rally.
+2020-02-08,0.814,Positive,Bulls taking control of the market.
+2020-02-09,0.263,Neutral,Low volatility day ahead of fed meeting.
+2020-02-10,-1.0,Negative,Major exchange hack sparks panic selling.
+2020-02-11,0.287,Neutral,Market participants remain undecided.
+2020-02-12,0.277,Neutral,Low volatility day ahead of fed meeting.
+2020-02-13,-0.282,Neutral,Sideways trading continues throughout the session.
+2020-02-14,0.563,Positive,Market shows strong resilience.
+2020-02-15,-0.899,Negative,Fears of regulatory crackdown loom.
+2020-02-16,-0.725,Negative,Investors fleeing risk-on assets.
+2020-02-17,-0.411,Negative,Major exchange hack sparks panic selling.
+2020-02-18,1.0,Positive,Market shows strong resilience.
+2020-02-19,-0.994,Negative,Major exchange hack sparks panic selling.
+2020-02-20,0.182,Neutral,Low volatility day ahead of fed meeting.
+2020-02-21,0.164,Neutral,Trading sideways with no clear direction.
+2020-02-22,-0.313,Negative,Fears of regulatory crackdown loom.
+2020-02-23,0.586,Positive,Institutional adoption continues to grow.
+2020-02-24,-0.396,Negative,Major exchange hack sparks panic selling.
+2020-02-25,-0.448,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-02-26,-0.787,Negative,Investors fleeing risk-on assets.
+2020-02-27,-0.131,Neutral,Low volatility day ahead of fed meeting.
+2020-02-28,-0.193,Neutral,Trading sideways with no clear direction.
+2020-02-29,-0.609,Negative,Major exchange hack sparks panic selling.
+2020-03-01,0.457,Positive,Institutional adoption continues to grow.
+2020-03-02,0.715,Positive,Bulls taking control of the market.
+2020-03-03,1.0,Positive,Bulls taking control of the market.
+2020-03-04,-0.419,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-03-05,0.387,Positive,Record high inflows seen in crypto funds.
+2020-03-06,-0.099,Neutral,Market participants remain undecided.
+2020-03-07,-0.436,Negative,Major exchange hack sparks panic selling.
+2020-03-08,-1.0,Negative,Investors fleeing risk-on assets.
+2020-03-09,0.505,Positive,Market shows strong resilience.
+2020-03-10,-0.24,Neutral,Low volatility day ahead of fed meeting.
+2020-03-11,-0.304,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-03-12,-1.0,Negative,Investors fleeing risk-on assets.
+2020-03-13,0.884,Positive,Institutional adoption continues to grow.
+2020-03-14,-0.622,Negative,Investors fleeing risk-on assets.
+2020-03-15,0.117,Neutral,Market participants remain undecided.
+2020-03-16,-0.8,Negative,Fears of regulatory crackdown loom.
+2020-03-17,0.261,Neutral,Market consolidating around key levels.
+2020-03-18,-0.024,Neutral,Sideways trading continues throughout the session.
+2020-03-19,1.0,Positive,Institutional adoption continues to grow.
+2020-03-20,0.165,Neutral,Low volatility day ahead of fed meeting.
+2020-03-21,-0.061,Neutral,Low volatility day ahead of fed meeting.
+2020-03-22,-0.467,Negative,Fears of regulatory crackdown loom.
+2020-03-23,0.931,Positive,Market shows strong resilience.
+2020-03-24,0.162,Neutral,Trading sideways with no clear direction.
+2020-03-25,0.007,Neutral,Market consolidating around key levels.
+2020-03-26,0.018,Neutral,Market consolidating around key levels.
+2020-03-27,-0.596,Negative,Bears dominating as support levels break.
+2020-03-28,0.208,Neutral,Market consolidating around key levels.
+2020-03-29,-0.846,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-03-30,0.7,Positive,Record high inflows seen in crypto funds.
+2020-03-31,-0.004,Neutral,Trading sideways with no clear direction.
+2020-04-01,0.615,Positive,Market shows strong resilience.
+2020-04-02,0.259,Neutral,Sideways trading continues throughout the session.
+2020-04-03,-0.314,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-04-04,0.24,Neutral,Market participants remain undecided.
+2020-04-05,-0.178,Neutral,Low volatility day ahead of fed meeting.
+2020-04-06,1.0,Positive,Institutional adoption continues to grow.
+2020-04-07,-0.095,Neutral,Market consolidating around key levels.
+2020-04-08,-0.095,Neutral,Trading sideways with no clear direction.
+2020-04-09,0.132,Neutral,Trading sideways with no clear direction.
+2020-04-10,-0.438,Negative,Investors fleeing risk-on assets.
+2020-04-11,0.044,Neutral,Market consolidating around key levels.
+2020-04-12,0.099,Neutral,Market participants remain undecided.
+2020-04-13,-0.059,Neutral,Market consolidating around key levels.
+2020-04-14,-0.023,Neutral,Trading sideways with no clear direction.
+2020-04-15,-0.437,Negative,Fears of regulatory crackdown loom.
+2020-04-16,0.888,Positive,Record high inflows seen in crypto funds.
+2020-04-17,-0.122,Neutral,Market participants remain undecided.
+2020-04-18,0.253,Neutral,Sideways trading continues throughout the session.
+2020-04-19,0.037,Neutral,Low volatility day ahead of fed meeting.
+2020-04-20,-0.355,Negative,Major exchange hack sparks panic selling.
+2020-04-21,-0.067,Neutral,Market consolidating around key levels.
+2020-04-22,0.166,Neutral,Trading sideways with no clear direction.
+2020-04-23,0.574,Positive,Record high inflows seen in crypto funds.
+2020-04-24,0.415,Positive,Market shows strong resilience.
+2020-04-25,0.22,Neutral,Market participants remain undecided.
+2020-04-26,0.864,Positive,Record high inflows seen in crypto funds.
+2020-04-27,-0.221,Neutral,Market participants remain undecided.
+2020-04-28,-0.176,Neutral,Market consolidating around key levels.
+2020-04-29,1.0,Positive,Positive regulatory news sparks a rally.
+2020-04-30,-0.331,Negative,Investors fleeing risk-on assets.
+2020-05-01,0.45,Positive,Positive regulatory news sparks a rally.
+2020-05-02,0.462,Positive,Market shows strong resilience.
+2020-05-03,-0.313,Negative,Fears of regulatory crackdown loom.
+2020-05-04,-0.248,Neutral,Sideways trading continues throughout the session.
+2020-05-05,0.111,Neutral,Trading sideways with no clear direction.
+2020-05-06,0.001,Neutral,Market participants remain undecided.
+2020-05-07,0.86,Positive,Record high inflows seen in crypto funds.
+2020-05-08,-0.187,Neutral,Market consolidating around key levels.
+2020-05-09,0.105,Neutral,Market participants remain undecided.
+2020-05-10,-0.814,Negative,Investors fleeing risk-on assets.
+2020-05-11,-0.388,Negative,Investors fleeing risk-on assets.
+2020-05-12,0.252,Neutral,Low volatility day ahead of fed meeting.
+2020-05-13,0.496,Positive,Institutional adoption continues to grow.
+2020-05-14,0.177,Neutral,Sideways trading continues throughout the session.
+2020-05-15,-0.474,Negative,Investors fleeing risk-on assets.
+2020-05-16,-0.074,Neutral,Low volatility day ahead of fed meeting.
+2020-05-17,-0.036,Neutral,Low volatility day ahead of fed meeting.
+2020-05-18,0.086,Neutral,Sideways trading continues throughout the session.
+2020-05-19,0.025,Neutral,Sideways trading continues throughout the session.
+2020-05-20,-0.167,Neutral,Market consolidating around key levels.
+2020-05-21,-0.165,Neutral,Low volatility day ahead of fed meeting.
+2020-05-22,0.444,Positive,Record high inflows seen in crypto funds.
+2020-05-23,-0.095,Neutral,Market consolidating around key levels.
+2020-05-24,-0.545,Negative,Major exchange hack sparks panic selling.
+2020-05-25,0.516,Positive,Bulls taking control of the market.
+2020-05-26,-0.183,Neutral,Trading sideways with no clear direction.
+2020-05-27,0.189,Neutral,Trading sideways with no clear direction.
+2020-05-28,0.183,Neutral,Low volatility day ahead of fed meeting.
+2020-05-29,0.031,Neutral,Market participants remain undecided.
+2020-05-30,0.409,Positive,Positive regulatory news sparks a rally.
+2020-05-31,-0.469,Negative,Bears dominating as support levels break.
+2020-06-01,0.615,Positive,Market shows strong resilience.
+2020-06-02,-0.596,Negative,Investors fleeing risk-on assets.
+2020-06-03,0.1,Neutral,Trading sideways with no clear direction.
+2020-06-04,0.116,Neutral,Low volatility day ahead of fed meeting.
+2020-06-05,-0.314,Negative,Bears dominating as support levels break.
+2020-06-06,0.167,Neutral,Market participants remain undecided.
+2020-06-07,-0.13,Neutral,Sideways trading continues throughout the session.
+2020-06-08,-0.184,Neutral,Sideways trading continues throughout the session.
+2020-06-09,-0.12,Neutral,Sideways trading continues throughout the session.
+2020-06-10,-0.01,Neutral,Sideways trading continues throughout the session.
+2020-06-11,-0.93,Negative,Bears dominating as support levels break.
+2020-06-12,0.401,Positive,Record high inflows seen in crypto funds.
+2020-06-13,0.094,Neutral,Market consolidating around key levels.
+2020-06-14,-0.017,Neutral,Sideways trading continues throughout the session.
+2020-06-15,0.034,Neutral,Market consolidating around key levels.
+2020-06-16,0.051,Neutral,Market participants remain undecided.
+2020-06-17,-0.117,Neutral,Sideways trading continues throughout the session.
+2020-06-18,0.034,Neutral,Low volatility day ahead of fed meeting.
+2020-06-19,0.064,Neutral,Trading sideways with no clear direction.
+2020-06-20,-0.027,Neutral,Sideways trading continues throughout the session.
+2020-06-21,0.076,Neutral,Low volatility day ahead of fed meeting.
+2020-06-22,0.05,Neutral,Market consolidating around key levels.
+2020-06-23,-0.231,Neutral,Low volatility day ahead of fed meeting.
+2020-06-24,-0.356,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-06-25,-0.24,Neutral,Low volatility day ahead of fed meeting.
+2020-06-26,-0.492,Negative,Major exchange hack sparks panic selling.
+2020-06-27,-0.172,Neutral,Market consolidating around key levels.
+2020-06-28,-0.131,Neutral,Sideways trading continues throughout the session.
+2020-06-29,-0.052,Neutral,Low volatility day ahead of fed meeting.
+2020-06-30,0.166,Neutral,Sideways trading continues throughout the session.
+2020-07-01,-0.033,Neutral,Market participants remain undecided.
+2020-07-02,0.037,Neutral,Market consolidating around key levels.
+2020-07-03,0.162,Neutral,Market consolidating around key levels.
+2020-07-04,-0.229,Neutral,Trading sideways with no clear direction.
+2020-07-05,-0.169,Neutral,Low volatility day ahead of fed meeting.
+2020-07-06,0.958,Positive,Market shows strong resilience.
+2020-07-07,0.96,Positive,Market shows strong resilience.
+2020-07-08,1.0,Positive,Positive regulatory news sparks a rally.
+2020-07-09,-1.0,Negative,Investors fleeing risk-on assets.
+2020-07-10,-1.0,Negative,Bears dominating as support levels break.
+2020-07-11,0.944,Positive,Positive regulatory news sparks a rally.
+2020-07-12,-0.828,Negative,Fears of regulatory crackdown loom.
+2020-07-13,-0.995,Negative,Bears dominating as support levels break.
+2020-07-14,0.727,Positive,Bulls taking control of the market.
+2020-07-15,-1.0,Negative,Major exchange hack sparks panic selling.
+2020-07-16,-0.576,Negative,Fears of regulatory crackdown loom.
+2020-07-17,0.441,Positive,Market shows strong resilience.
+2020-07-18,1.0,Positive,Record high inflows seen in crypto funds.
+2020-07-19,-0.408,Negative,Major exchange hack sparks panic selling.
+2020-07-20,-0.827,Negative,Investors fleeing risk-on assets.
+2020-07-21,0.331,Positive,Positive regulatory news sparks a rally.
+2020-07-22,0.14,Neutral,Low volatility day ahead of fed meeting.
+2020-07-23,0.162,Neutral,Market participants remain undecided.
+2020-07-24,-0.241,Neutral,Market participants remain undecided.
+2020-07-25,0.017,Neutral,Sideways trading continues throughout the session.
+2020-07-26,-0.081,Neutral,Market consolidating around key levels.
+2020-07-27,-0.265,Neutral,Trading sideways with no clear direction.
+2020-07-28,0.176,Neutral,Trading sideways with no clear direction.
+2020-07-29,-0.247,Neutral,Sideways trading continues throughout the session.
+2020-07-30,0.385,Positive,Positive regulatory news sparks a rally.
+2020-07-31,-0.06,Neutral,Low volatility day ahead of fed meeting.
+2020-08-01,1.0,Positive,Market shows strong resilience.
+2020-08-02,-1.0,Negative,Investors fleeing risk-on assets.
+2020-08-03,0.386,Positive,Institutional adoption continues to grow.
+2020-08-04,0.77,Positive,Record high inflows seen in crypto funds.
+2020-08-05,-0.085,Neutral,Low volatility day ahead of fed meeting.
+2020-08-06,0.086,Neutral,Sideways trading continues throughout the session.
+2020-08-07,-0.167,Neutral,Market participants remain undecided.
+2020-08-08,0.106,Neutral,Low volatility day ahead of fed meeting.
+2020-08-09,-0.208,Neutral,Trading sideways with no clear direction.
+2020-08-10,0.21,Neutral,Market consolidating around key levels.
+2020-08-11,-0.262,Neutral,Sideways trading continues throughout the session.
+2020-08-12,0.317,Positive,Record high inflows seen in crypto funds.
+2020-08-13,0.166,Neutral,Trading sideways with no clear direction.
+2020-08-14,0.467,Positive,Positive regulatory news sparks a rally.
+2020-08-15,-0.303,Negative,Bears dominating as support levels break.
+2020-08-16,0.045,Neutral,Sideways trading continues throughout the session.
+2020-08-17,0.384,Positive,Record high inflows seen in crypto funds.
+2020-08-18,-0.339,Negative,Bears dominating as support levels break.
+2020-08-19,-0.094,Neutral,Market consolidating around key levels.
+2020-08-20,0.261,Neutral,Trading sideways with no clear direction.
+2020-08-21,-0.297,Neutral,Trading sideways with no clear direction.
+2020-08-22,0.141,Neutral,Trading sideways with no clear direction.
+2020-08-23,-0.081,Neutral,Market consolidating around key levels.
+2020-08-24,-0.064,Neutral,Low volatility day ahead of fed meeting.
+2020-08-25,-0.443,Negative,Major exchange hack sparks panic selling.
+2020-08-26,0.029,Neutral,Trading sideways with no clear direction.
+2020-08-27,-0.588,Negative,Fears of regulatory crackdown loom.
+2020-08-28,0.286,Neutral,Market participants remain undecided.
+2020-08-29,-0.144,Neutral,Trading sideways with no clear direction.
+2020-08-30,0.291,Neutral,Market participants remain undecided.
+2020-08-31,-0.289,Neutral,Trading sideways with no clear direction.
+2020-09-01,0.264,Neutral,Sideways trading continues throughout the session.
+2020-09-02,-0.494,Negative,Major exchange hack sparks panic selling.
+2020-09-03,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-09-04,0.554,Positive,Positive regulatory news sparks a rally.
+2020-09-05,-0.401,Negative,Major exchange hack sparks panic selling.
+2020-09-06,0.186,Neutral,Sideways trading continues throughout the session.
+2020-09-07,0.284,Neutral,Low volatility day ahead of fed meeting.
+2020-09-08,-0.388,Negative,Major exchange hack sparks panic selling.
+2020-09-09,0.171,Neutral,Market consolidating around key levels.
+2020-09-10,0.214,Neutral,Market participants remain undecided.
+2020-09-11,-0.072,Neutral,Sideways trading continues throughout the session.
+2020-09-12,0.057,Neutral,Low volatility day ahead of fed meeting.
+2020-09-13,-0.325,Negative,Major exchange hack sparks panic selling.
+2020-09-14,-0.131,Neutral,Low volatility day ahead of fed meeting.
+2020-09-15,0.362,Positive,Institutional adoption continues to grow.
+2020-09-16,-0.13,Neutral,Low volatility day ahead of fed meeting.
+2020-09-17,-0.127,Neutral,Trading sideways with no clear direction.
+2020-09-18,-0.051,Neutral,Low volatility day ahead of fed meeting.
+2020-09-19,-0.002,Neutral,Sideways trading continues throughout the session.
+2020-09-20,-0.114,Neutral,Low volatility day ahead of fed meeting.
+2020-09-21,-0.922,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-09-22,0.403,Positive,Record high inflows seen in crypto funds.
+2020-09-23,-0.606,Negative,Fears of regulatory crackdown loom.
+2020-09-24,0.696,Positive,Institutional adoption continues to grow.
+2020-09-25,0.329,Positive,Market shows strong resilience.
+2020-09-26,0.153,Neutral,Sideways trading continues throughout the session.
+2020-09-27,-0.081,Neutral,Market participants remain undecided.
+2020-09-28,-0.136,Neutral,Market consolidating around key levels.
+2020-09-29,0.274,Neutral,Low volatility day ahead of fed meeting.
+2020-09-30,-0.283,Neutral,Low volatility day ahead of fed meeting.
+2020-10-01,-0.124,Neutral,Market participants remain undecided.
+2020-10-02,-0.325,Negative,Major exchange hack sparks panic selling.
+2020-10-03,-0.088,Neutral,Market consolidating around key levels.
+2020-10-04,0.332,Positive,Market shows strong resilience.
+2020-10-05,0.004,Neutral,Sideways trading continues throughout the session.
+2020-10-06,0.009,Neutral,Trading sideways with no clear direction.
+2020-10-07,0.012,Neutral,Sideways trading continues throughout the session.
+2020-10-08,0.049,Neutral,Sideways trading continues throughout the session.
+2020-10-09,0.259,Neutral,Low volatility day ahead of fed meeting.
+2020-10-10,-0.157,Neutral,Sideways trading continues throughout the session.
+2020-10-11,-0.008,Neutral,Low volatility day ahead of fed meeting.
+2020-10-12,-0.116,Neutral,Sideways trading continues throughout the session.
+2020-10-13,-0.305,Negative,Fears of regulatory crackdown loom.
+2020-10-14,-0.036,Neutral,Sideways trading continues throughout the session.
+2020-10-15,-0.392,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-10-16,-0.089,Neutral,Low volatility day ahead of fed meeting.
+2020-10-17,-0.166,Neutral,Market consolidating around key levels.
+2020-10-18,-0.091,Neutral,Market participants remain undecided.
+2020-10-19,0.081,Neutral,Market participants remain undecided.
+2020-10-20,0.204,Neutral,Low volatility day ahead of fed meeting.
+2020-10-21,0.206,Neutral,Sideways trading continues throughout the session.
+2020-10-22,0.102,Neutral,Market consolidating around key levels.
+2020-10-23,0.028,Neutral,Market consolidating around key levels.
+2020-10-24,0.143,Neutral,Trading sideways with no clear direction.
+2020-10-25,-0.033,Neutral,Sideways trading continues throughout the session.
+2020-10-26,0.265,Neutral,Trading sideways with no clear direction.
+2020-10-27,0.152,Neutral,Market participants remain undecided.
+2020-10-28,-0.586,Negative,Fears of regulatory crackdown loom.
+2020-10-29,0.134,Neutral,Low volatility day ahead of fed meeting.
+2020-10-30,0.194,Neutral,Low volatility day ahead of fed meeting.
+2020-10-31,-0.153,Neutral,Market consolidating around key levels.
+2020-11-01,-0.029,Neutral,Market participants remain undecided.
+2020-11-02,-0.543,Negative,Bears dominating as support levels break.
+2020-11-03,0.095,Neutral,Sideways trading continues throughout the session.
+2020-11-04,0.013,Neutral,Trading sideways with no clear direction.
+2020-11-05,0.709,Positive,Bulls taking control of the market.
+2020-11-06,0.872,Positive,Record high inflows seen in crypto funds.
+2020-11-07,-0.49,Negative,Bears dominating as support levels break.
+2020-11-08,0.232,Neutral,Low volatility day ahead of fed meeting.
+2020-11-09,-0.363,Negative,Bears dominating as support levels break.
+2020-11-10,0.533,Positive,Bulls taking control of the market.
+2020-11-11,-0.155,Neutral,Market participants remain undecided.
+2020-11-12,0.074,Neutral,Market consolidating around key levels.
+2020-11-13,0.13,Neutral,Market consolidating around key levels.
+2020-11-14,-0.261,Neutral,Trading sideways with no clear direction.
+2020-11-15,0.12,Neutral,Low volatility day ahead of fed meeting.
+2020-11-16,0.555,Positive,Record high inflows seen in crypto funds.
+2020-11-17,0.218,Neutral,Market consolidating around key levels.
+2020-11-18,-0.052,Neutral,Sideways trading continues throughout the session.
+2020-11-19,-0.087,Neutral,Trading sideways with no clear direction.
+2020-11-20,0.275,Neutral,Low volatility day ahead of fed meeting.
+2020-11-21,0.812,Positive,Positive regulatory news sparks a rally.
+2020-11-22,-0.557,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-11-23,0.951,Positive,Record high inflows seen in crypto funds.
+2020-11-24,1.0,Positive,Bulls taking control of the market.
+2020-11-25,-1.0,Negative,Bears dominating as support levels break.
+2020-11-26,-0.93,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-11-27,-0.072,Neutral,Low volatility day ahead of fed meeting.
+2020-11-28,0.434,Positive,Market shows strong resilience.
+2020-11-29,0.006,Neutral,Market participants remain undecided.
+2020-11-30,0.367,Positive,Positive regulatory news sparks a rally.
+2020-12-01,-1.0,Negative,Major exchange hack sparks panic selling.
+2020-12-02,0.067,Neutral,Market participants remain undecided.
+2020-12-03,0.116,Neutral,Market consolidating around key levels.
+2020-12-04,-0.484,Negative,Major exchange hack sparks panic selling.
+2020-12-05,0.407,Positive,Positive regulatory news sparks a rally.
+2020-12-06,0.119,Neutral,Market participants remain undecided.
+2020-12-07,-0.275,Neutral,Sideways trading continues throughout the session.
+2020-12-08,-0.67,Negative,Fears of regulatory crackdown loom.
+2020-12-09,-0.105,Neutral,Market participants remain undecided.
+2020-12-10,-0.297,Neutral,Trading sideways with no clear direction.
+2020-12-11,-0.171,Neutral,Market participants remain undecided.
+2020-12-12,0.461,Positive,Record high inflows seen in crypto funds.
+2020-12-13,0.628,Positive,Record high inflows seen in crypto funds.
+2020-12-14,-0.307,Negative,Market bleeds amidst macroeconomic uncertainty.
+2020-12-15,-0.239,Neutral,Market participants remain undecided.
+2020-12-16,0.869,Positive,Institutional adoption continues to grow.
+2020-12-17,0.94,Positive,Record high inflows seen in crypto funds.
+2020-12-18,0.628,Positive,Institutional adoption continues to grow.
+2020-12-19,0.175,Neutral,Market participants remain undecided.
+2020-12-20,1.0,Positive,Market shows strong resilience.
+2020-12-21,0.267,Neutral,Market consolidating around key levels.
+2020-12-22,-0.683,Negative,Fears of regulatory crackdown loom.
+2020-12-23,-0.966,Negative,Fears of regulatory crackdown loom.
+2020-12-24,1.0,Positive,Record high inflows seen in crypto funds.
+2020-12-25,-0.113,Neutral,Sideways trading continues throughout the session.
+2020-12-26,-0.192,Neutral,Market participants remain undecided.
+2020-12-27,-0.053,Neutral,Trading sideways with no clear direction.
+2020-12-28,0.307,Positive,Bulls taking control of the market.
+2020-12-29,-0.511,Negative,Bears dominating as support levels break.
+2020-12-30,0.34,Positive,Bulls taking control of the market.
+2020-12-31,0.066,Neutral,Trading sideways with no clear direction.
+2021-01-01,0.883,Positive,Positive regulatory news sparks a rally.
+2021-01-02,0.897,Positive,Market shows strong resilience.
+2021-01-03,-0.967,Negative,Bears dominating as support levels break.
+2021-01-04,0.015,Neutral,Sideways trading continues throughout the session.
+2021-01-05,0.411,Positive,Market shows strong resilience.
+2021-01-06,0.845,Positive,Record high inflows seen in crypto funds.
+2021-01-07,-0.902,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-01-08,0.121,Neutral,Market participants remain undecided.
+2021-01-09,0.494,Positive,Bulls taking control of the market.
+2021-01-10,-0.5,Negative,Major exchange hack sparks panic selling.
+2021-01-11,-1.0,Negative,Investors fleeing risk-on assets.
+2021-01-12,-0.94,Negative,Fears of regulatory crackdown loom.
+2021-01-13,0.84,Positive,Record high inflows seen in crypto funds.
+2021-01-14,1.0,Positive,Positive regulatory news sparks a rally.
+2021-01-15,-0.23,Neutral,Trading sideways with no clear direction.
+2021-01-16,-0.245,Neutral,Low volatility day ahead of fed meeting.
+2021-01-17,-0.42,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-01-18,-0.019,Neutral,Market consolidating around key levels.
+2021-01-19,-0.177,Neutral,Market participants remain undecided.
+2021-01-20,-0.138,Neutral,Sideways trading continues throughout the session.
+2021-01-21,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-01-22,0.826,Positive,Record high inflows seen in crypto funds.
+2021-01-23,0.134,Neutral,Trading sideways with no clear direction.
+2021-01-24,0.284,Neutral,Low volatility day ahead of fed meeting.
+2021-01-25,-0.836,Negative,Fears of regulatory crackdown loom.
+2021-01-26,-0.192,Neutral,Market consolidating around key levels.
+2021-01-27,-1.0,Negative,Major exchange hack sparks panic selling.
+2021-01-28,1.0,Positive,Bulls taking control of the market.
+2021-01-29,0.822,Positive,Institutional adoption continues to grow.
+2021-01-30,-0.852,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-01-31,0.872,Positive,Institutional adoption continues to grow.
+2021-02-01,-0.996,Negative,Fears of regulatory crackdown loom.
+2021-02-02,-0.802,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-02-03,0.922,Positive,Positive regulatory news sparks a rally.
+2021-02-04,1.0,Positive,Institutional adoption continues to grow.
+2021-02-05,-0.924,Negative,Investors fleeing risk-on assets.
+2021-02-06,1.0,Positive,Bulls taking control of the market.
+2021-02-07,0.811,Positive,Record high inflows seen in crypto funds.
+2021-02-08,0.282,Neutral,Sideways trading continues throughout the session.
+2021-02-09,-0.991,Negative,Fears of regulatory crackdown loom.
+2021-02-10,0.492,Positive,Institutional adoption continues to grow.
+2021-02-11,-0.656,Negative,Fears of regulatory crackdown loom.
+2021-02-12,-0.109,Neutral,Sideways trading continues throughout the session.
+2021-02-13,-0.873,Negative,Major exchange hack sparks panic selling.
+2021-02-14,-0.993,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-02-15,-0.935,Negative,Fears of regulatory crackdown loom.
+2021-02-16,-0.851,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-02-17,-0.822,Negative,Bears dominating as support levels break.
+2021-02-18,1.0,Positive,Institutional adoption continues to grow.
+2021-02-19,-0.87,Negative,Fears of regulatory crackdown loom.
+2021-02-20,-0.137,Neutral,Trading sideways with no clear direction.
+2021-02-21,0.323,Positive,Institutional adoption continues to grow.
+2021-02-22,-0.668,Negative,Bears dominating as support levels break.
+2021-02-23,-1.0,Negative,Bears dominating as support levels break.
+2021-02-24,0.965,Positive,Positive regulatory news sparks a rally.
+2021-02-25,-0.915,Negative,Fears of regulatory crackdown loom.
+2021-02-26,0.195,Neutral,Low volatility day ahead of fed meeting.
+2021-02-27,-0.226,Neutral,Market participants remain undecided.
+2021-02-28,-0.772,Negative,Investors fleeing risk-on assets.
+2021-03-01,0.663,Positive,Bulls taking control of the market.
+2021-03-02,0.073,Neutral,Market consolidating around key levels.
+2021-03-03,0.043,Neutral,Low volatility day ahead of fed meeting.
+2021-03-04,-0.118,Neutral,Market participants remain undecided.
+2021-03-05,-0.241,Neutral,Market participants remain undecided.
+2021-03-06,0.336,Positive,Market shows strong resilience.
+2021-03-07,0.452,Positive,Bulls taking control of the market.
+2021-03-08,0.869,Positive,Market shows strong resilience.
+2021-03-09,-1.0,Negative,Major exchange hack sparks panic selling.
+2021-03-10,-0.442,Negative,Fears of regulatory crackdown loom.
+2021-03-11,0.211,Neutral,Sideways trading continues throughout the session.
+2021-03-12,-0.124,Neutral,Trading sideways with no clear direction.
+2021-03-13,0.91,Positive,Record high inflows seen in crypto funds.
+2021-03-14,-1.0,Negative,Fears of regulatory crackdown loom.
+2021-03-15,-0.18,Neutral,Low volatility day ahead of fed meeting.
+2021-03-16,0.543,Positive,Institutional adoption continues to grow.
+2021-03-17,-0.295,Neutral,Trading sideways with no clear direction.
+2021-03-18,-0.325,Negative,Fears of regulatory crackdown loom.
+2021-03-19,0.163,Neutral,Trading sideways with no clear direction.
+2021-03-20,0.011,Neutral,Sideways trading continues throughout the session.
+2021-03-21,-0.355,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-03-22,-0.711,Negative,Fears of regulatory crackdown loom.
+2021-03-23,-0.236,Neutral,Low volatility day ahead of fed meeting.
+2021-03-24,-0.624,Negative,Major exchange hack sparks panic selling.
+2021-03-25,-0.165,Neutral,Market consolidating around key levels.
+2021-03-26,0.781,Positive,Bulls taking control of the market.
+2021-03-27,0.253,Neutral,Sideways trading continues throughout the session.
+2021-03-28,-0.224,Neutral,Market participants remain undecided.
+2021-03-29,0.216,Neutral,Low volatility day ahead of fed meeting.
+2021-03-30,-0.026,Neutral,Market consolidating around key levels.
+2021-03-31,-0.173,Neutral,Market consolidating around key levels.
+2021-04-01,0.809,Positive,Bulls taking control of the market.
+2021-04-02,-0.922,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-04-03,-0.437,Negative,Major exchange hack sparks panic selling.
+2021-04-04,0.475,Positive,Positive regulatory news sparks a rally.
+2021-04-05,0.669,Positive,Market shows strong resilience.
+2021-04-06,0.893,Positive,Institutional adoption continues to grow.
+2021-04-07,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-04-08,0.687,Positive,Bulls taking control of the market.
+2021-04-09,-0.239,Neutral,Trading sideways with no clear direction.
+2021-04-10,0.636,Positive,Positive regulatory news sparks a rally.
+2021-04-11,1.0,Positive,Positive regulatory news sparks a rally.
+2021-04-12,-0.859,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-04-13,0.976,Positive,Market shows strong resilience.
+2021-04-14,0.998,Positive,Record high inflows seen in crypto funds.
+2021-04-15,0.97,Positive,Bulls taking control of the market.
+2021-04-16,1.0,Positive,Positive regulatory news sparks a rally.
+2021-04-17,-0.927,Negative,Bears dominating as support levels break.
+2021-04-18,0.868,Positive,Positive regulatory news sparks a rally.
+2021-04-19,0.838,Positive,Bulls taking control of the market.
+2021-04-20,-0.867,Negative,Fears of regulatory crackdown loom.
+2021-04-21,-0.529,Negative,Fears of regulatory crackdown loom.
+2021-04-22,-1.0,Negative,Fears of regulatory crackdown loom.
+2021-04-23,-0.644,Negative,Fears of regulatory crackdown loom.
+2021-04-24,0.9,Positive,Bulls taking control of the market.
+2021-04-25,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-04-26,0.842,Positive,Bulls taking control of the market.
+2021-04-27,0.217,Neutral,Low volatility day ahead of fed meeting.
+2021-04-28,1.0,Positive,Market shows strong resilience.
+2021-04-29,-1.0,Negative,Fears of regulatory crackdown loom.
+2021-04-30,1.0,Positive,Market shows strong resilience.
+2021-05-01,1.0,Positive,Record high inflows seen in crypto funds.
+2021-05-02,-0.839,Negative,Fears of regulatory crackdown loom.
+2021-05-03,0.823,Positive,Institutional adoption continues to grow.
+2021-05-04,0.812,Positive,Positive regulatory news sparks a rally.
+2021-05-05,0.857,Positive,Positive regulatory news sparks a rally.
+2021-05-06,-1.0,Negative,Fears of regulatory crackdown loom.
+2021-05-07,0.815,Positive,Institutional adoption continues to grow.
+2021-05-08,-1.0,Negative,Fears of regulatory crackdown loom.
+2021-05-09,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-05-10,-1.0,Negative,Investors fleeing risk-on assets.
+2021-05-11,0.86,Positive,Record high inflows seen in crypto funds.
+2021-05-12,-0.894,Negative,Bears dominating as support levels break.
+2021-05-13,0.829,Positive,Bulls taking control of the market.
+2021-05-14,1.0,Positive,Bulls taking control of the market.
+2021-05-15,-0.832,Negative,Fears of regulatory crackdown loom.
+2021-05-16,0.177,Neutral,Low volatility day ahead of fed meeting.
+2021-05-17,-0.833,Negative,Major exchange hack sparks panic selling.
+2021-05-18,-0.338,Negative,Major exchange hack sparks panic selling.
+2021-05-19,-1.0,Negative,Major exchange hack sparks panic selling.
+2021-05-20,0.823,Positive,Bulls taking control of the market.
+2021-05-21,-0.874,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-05-22,-0.523,Negative,Fears of regulatory crackdown loom.
+2021-05-23,-0.82,Negative,Fears of regulatory crackdown loom.
+2021-05-24,0.868,Positive,Bulls taking control of the market.
+2021-05-25,-0.66,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-05-26,0.358,Positive,Market shows strong resilience.
+2021-05-27,-0.863,Negative,Investors fleeing risk-on assets.
+2021-05-28,-1.0,Negative,Bears dominating as support levels break.
+2021-05-29,-0.308,Negative,Investors fleeing risk-on assets.
+2021-05-30,-0.06,Neutral,Market consolidating around key levels.
+2021-05-31,1.0,Positive,Bulls taking control of the market.
+2021-06-01,1.0,Positive,Record high inflows seen in crypto funds.
+2021-06-02,1.0,Positive,Market shows strong resilience.
+2021-06-03,-0.648,Negative,Bears dominating as support levels break.
+2021-06-04,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-06-05,-0.309,Negative,Bears dominating as support levels break.
+2021-06-06,0.19,Neutral,Sideways trading continues throughout the session.
+2021-06-07,-1.0,Negative,Bears dominating as support levels break.
+2021-06-08,-0.162,Neutral,Trading sideways with no clear direction.
+2021-06-09,0.771,Positive,Institutional adoption continues to grow.
+2021-06-10,-0.941,Negative,Investors fleeing risk-on assets.
+2021-06-11,-0.284,Neutral,Market participants remain undecided.
+2021-06-12,-0.446,Negative,Major exchange hack sparks panic selling.
+2021-06-13,0.634,Positive,Positive regulatory news sparks a rally.
+2021-06-14,0.189,Neutral,Trading sideways with no clear direction.
+2021-06-15,-0.388,Negative,Investors fleeing risk-on assets.
+2021-06-16,-0.451,Negative,Investors fleeing risk-on assets.
+2021-06-17,-0.058,Neutral,Sideways trading continues throughout the session.
+2021-06-18,-0.44,Negative,Major exchange hack sparks panic selling.
+2021-06-19,-0.388,Negative,Fears of regulatory crackdown loom.
+2021-06-20,-0.441,Negative,Major exchange hack sparks panic selling.
+2021-06-21,-0.862,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-06-22,0.986,Positive,Record high inflows seen in crypto funds.
+2021-06-23,0.963,Positive,Record high inflows seen in crypto funds.
+2021-06-24,0.888,Positive,Positive regulatory news sparks a rally.
+2021-06-25,-1.0,Negative,Bears dominating as support levels break.
+2021-06-26,0.363,Positive,Bulls taking control of the market.
+2021-06-27,1.0,Positive,Institutional adoption continues to grow.
+2021-06-28,-0.381,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-06-29,0.322,Positive,Positive regulatory news sparks a rally.
+2021-06-30,-0.66,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-07-01,-0.437,Negative,Fears of regulatory crackdown loom.
+2021-07-02,0.071,Neutral,Trading sideways with no clear direction.
+2021-07-03,-0.069,Neutral,Market participants remain undecided.
+2021-07-04,-0.07,Neutral,Low volatility day ahead of fed meeting.
+2021-07-05,-0.911,Negative,Fears of regulatory crackdown loom.
+2021-07-06,0.242,Neutral,Sideways trading continues throughout the session.
+2021-07-07,-0.565,Negative,Fears of regulatory crackdown loom.
+2021-07-08,-0.989,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-07-09,0.954,Positive,Market shows strong resilience.
+2021-07-10,-0.552,Negative,Bears dominating as support levels break.
+2021-07-11,0.301,Positive,Market shows strong resilience.
+2021-07-12,-0.522,Negative,Bears dominating as support levels break.
+2021-07-13,-0.52,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-07-14,-0.035,Neutral,Low volatility day ahead of fed meeting.
+2021-07-15,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-07-16,-0.86,Negative,Investors fleeing risk-on assets.
+2021-07-17,1.0,Positive,Record high inflows seen in crypto funds.
+2021-07-18,-0.333,Negative,Investors fleeing risk-on assets.
+2021-07-19,-0.553,Negative,Major exchange hack sparks panic selling.
+2021-07-20,-0.197,Neutral,Low volatility day ahead of fed meeting.
+2021-07-21,1.0,Positive,Record high inflows seen in crypto funds.
+2021-07-22,-0.095,Neutral,Low volatility day ahead of fed meeting.
+2021-07-23,0.276,Neutral,Trading sideways with no clear direction.
+2021-07-24,0.053,Neutral,Low volatility day ahead of fed meeting.
+2021-07-25,-0.063,Neutral,Market participants remain undecided.
+2021-07-26,0.398,Positive,Bulls taking control of the market.
+2021-07-27,-0.011,Neutral,Trading sideways with no clear direction.
+2021-07-28,-0.171,Neutral,Trading sideways with no clear direction.
+2021-07-29,-0.061,Neutral,Market participants remain undecided.
+2021-07-30,0.119,Neutral,Sideways trading continues throughout the session.
+2021-07-31,-0.079,Neutral,Market consolidating around key levels.
+2021-08-01,-0.299,Neutral,Low volatility day ahead of fed meeting.
+2021-08-02,-0.028,Neutral,Market participants remain undecided.
+2021-08-03,-0.471,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-08-04,0.204,Neutral,Trading sideways with no clear direction.
+2021-08-05,-0.052,Neutral,Trading sideways with no clear direction.
+2021-08-06,0.449,Positive,Market shows strong resilience.
+2021-08-07,1.0,Positive,Record high inflows seen in crypto funds.
+2021-08-08,-1.0,Negative,Fears of regulatory crackdown loom.
+2021-08-09,0.877,Positive,Institutional adoption continues to grow.
+2021-08-10,0.219,Neutral,Market consolidating around key levels.
+2021-08-11,0.368,Positive,Market shows strong resilience.
+2021-08-12,-0.201,Neutral,Low volatility day ahead of fed meeting.
+2021-08-13,0.827,Positive,Institutional adoption continues to grow.
+2021-08-14,0.246,Neutral,Sideways trading continues throughout the session.
+2021-08-15,1.0,Positive,Record high inflows seen in crypto funds.
+2021-08-16,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-08-17,-0.954,Negative,Major exchange hack sparks panic selling.
+2021-08-18,0.257,Neutral,Low volatility day ahead of fed meeting.
+2021-08-19,0.748,Positive,Institutional adoption continues to grow.
+2021-08-20,0.444,Positive,Bulls taking control of the market.
+2021-08-21,-0.545,Negative,Bears dominating as support levels break.
+2021-08-22,-0.233,Neutral,Market consolidating around key levels.
+2021-08-23,-0.047,Neutral,Trading sideways with no clear direction.
+2021-08-24,-0.913,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-08-25,0.384,Positive,Institutional adoption continues to grow.
+2021-08-26,-1.0,Negative,Investors fleeing risk-on assets.
+2021-08-27,1.0,Positive,Positive regulatory news sparks a rally.
+2021-08-28,-0.505,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-08-29,-0.45,Negative,Fears of regulatory crackdown loom.
+2021-08-30,-0.389,Negative,Bears dominating as support levels break.
+2021-08-31,0.329,Positive,Market shows strong resilience.
+2021-09-01,1.0,Positive,Institutional adoption continues to grow.
+2021-09-02,-0.176,Neutral,Market participants remain undecided.
+2021-09-03,0.018,Neutral,Trading sideways with no clear direction.
+2021-09-04,0.288,Neutral,Low volatility day ahead of fed meeting.
+2021-09-05,0.775,Positive,Institutional adoption continues to grow.
+2021-09-06,-0.068,Neutral,Sideways trading continues throughout the session.
+2021-09-07,-1.0,Negative,Major exchange hack sparks panic selling.
+2021-09-08,0.1,Neutral,Sideways trading continues throughout the session.
+2021-09-09,-0.187,Neutral,Market consolidating around key levels.
+2021-09-10,-0.622,Negative,Investors fleeing risk-on assets.
+2021-09-11,0.214,Neutral,Low volatility day ahead of fed meeting.
+2021-09-12,0.658,Positive,Bulls taking control of the market.
+2021-09-13,-1.0,Negative,Investors fleeing risk-on assets.
+2021-09-14,0.242,Neutral,Low volatility day ahead of fed meeting.
+2021-09-15,0.405,Positive,Market shows strong resilience.
+2021-09-16,-0.486,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-09-17,-0.176,Neutral,Sideways trading continues throughout the session.
+2021-09-18,-0.039,Neutral,Low volatility day ahead of fed meeting.
+2021-09-19,-0.365,Negative,Investors fleeing risk-on assets.
+2021-09-20,-0.951,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-09-21,-0.519,Negative,Fears of regulatory crackdown loom.
+2021-09-22,1.0,Positive,Market shows strong resilience.
+2021-09-23,0.113,Neutral,Market consolidating around key levels.
+2021-09-24,-0.863,Negative,Fears of regulatory crackdown loom.
+2021-09-25,-0.19,Neutral,Trading sideways with no clear direction.
+2021-09-26,-0.186,Neutral,Market participants remain undecided.
+2021-09-27,-0.218,Neutral,Market consolidating around key levels.
+2021-09-28,-0.373,Negative,Bears dominating as support levels break.
+2021-09-29,0.244,Neutral,Trading sideways with no clear direction.
+2021-09-30,0.24,Neutral,Market participants remain undecided.
+2021-10-01,1.0,Positive,Market shows strong resilience.
+2021-10-02,-0.259,Neutral,Low volatility day ahead of fed meeting.
+2021-10-03,0.344,Positive,Institutional adoption continues to grow.
+2021-10-04,1.0,Positive,Institutional adoption continues to grow.
+2021-10-05,0.653,Positive,Record high inflows seen in crypto funds.
+2021-10-06,0.021,Neutral,Low volatility day ahead of fed meeting.
+2021-10-07,-0.658,Negative,Bears dominating as support levels break.
+2021-10-08,0.055,Neutral,Sideways trading continues throughout the session.
+2021-10-09,0.282,Neutral,Low volatility day ahead of fed meeting.
+2021-10-10,-0.89,Negative,Fears of regulatory crackdown loom.
+2021-10-11,0.181,Neutral,Market participants remain undecided.
+2021-10-12,-0.174,Neutral,Trading sideways with no clear direction.
+2021-10-13,0.416,Positive,Positive regulatory news sparks a rally.
+2021-10-14,0.033,Neutral,Market participants remain undecided.
+2021-10-15,-0.057,Neutral,Market participants remain undecided.
+2021-10-16,0.332,Positive,Record high inflows seen in crypto funds.
+2021-10-17,0.176,Neutral,Sideways trading continues throughout the session.
+2021-10-18,0.505,Positive,Institutional adoption continues to grow.
+2021-10-19,-0.115,Neutral,Low volatility day ahead of fed meeting.
+2021-10-20,0.625,Positive,Positive regulatory news sparks a rally.
+2021-10-21,-0.724,Negative,Fears of regulatory crackdown loom.
+2021-10-22,0.034,Neutral,Market participants remain undecided.
+2021-10-23,0.254,Neutral,Market consolidating around key levels.
+2021-10-24,0.829,Positive,Institutional adoption continues to grow.
+2021-10-25,-0.545,Negative,Major exchange hack sparks panic selling.
+2021-10-26,-0.647,Negative,Bears dominating as support levels break.
+2021-10-27,-0.963,Negative,Bears dominating as support levels break.
+2021-10-28,0.885,Positive,Record high inflows seen in crypto funds.
+2021-10-29,-0.618,Negative,Market bleeds amidst macroeconomic uncertainty.
+2021-10-30,-0.905,Negative,Fears of regulatory crackdown loom.
+2021-10-31,0.428,Positive,Record high inflows seen in crypto funds.
+2021-11-01,-0.486,Negative,Investors fleeing risk-on assets.
+2021-11-02,0.286,Neutral,Sideways trading continues throughout the session.
+2021-11-03,-0.306,Negative,Major exchange hack sparks panic selling.
+2021-11-04,-0.503,Negative,Bears dominating as support levels break.
+2021-11-05,-0.24,Neutral,Market participants remain undecided.
+2021-11-06,0.116,Neutral,Low volatility day ahead of fed meeting.
+2021-11-07,0.11,Neutral,Low volatility day ahead of fed meeting.
+2021-11-08,1.0,Positive,Positive regulatory news sparks a rally.
+2021-11-09,-0.6,Negative,Investors fleeing risk-on assets.
+2021-11-10,-0.868,Negative,Bears dominating as support levels break.
+2021-11-11,0.28,Neutral,Trading sideways with no clear direction.
+2021-11-12,-0.047,Neutral,Trading sideways with no clear direction.
+2021-11-13,0.113,Neutral,Market consolidating around key levels.
+2021-11-14,0.165,Neutral,Trading sideways with no clear direction.
+2021-11-15,-0.367,Negative,Bears dominating as support levels break.
+2021-11-16,-1.0,Negative,Fears of regulatory crackdown loom.
+2021-11-17,0.096,Neutral,Market participants remain undecided.
+2021-11-18,-0.829,Negative,Fears of regulatory crackdown loom.
+2021-11-19,0.815,Positive,Market shows strong resilience.
+2021-11-20,-0.178,Neutral,Market consolidating around key levels.
+2021-11-21,-0.676,Negative,Bears dominating as support levels break.
+2021-11-22,-0.436,Negative,Fears of regulatory crackdown loom.
+2021-11-23,0.521,Positive,Bulls taking control of the market.
+2021-11-24,-0.837,Negative,Fears of regulatory crackdown loom.
+2021-11-25,0.093,Neutral,Market consolidating around key levels.
+2021-11-26,-1.0,Negative,Major exchange hack sparks panic selling.
+2021-11-27,0.261,Neutral,Low volatility day ahead of fed meeting.
+2021-11-28,0.022,Neutral,Low volatility day ahead of fed meeting.
+2021-11-29,0.651,Positive,Positive regulatory news sparks a rally.
+2021-11-30,0.141,Neutral,Trading sideways with no clear direction.
+2021-12-01,-0.259,Neutral,Sideways trading continues throughout the session.
+2021-12-02,-0.121,Neutral,Low volatility day ahead of fed meeting.
+2021-12-03,-0.541,Negative,Bears dominating as support levels break.
+2021-12-04,-0.841,Negative,Major exchange hack sparks panic selling.
+2021-12-05,-0.771,Negative,Major exchange hack sparks panic selling.
+2021-12-06,0.753,Positive,Positive regulatory news sparks a rally.
+2021-12-07,-0.007,Neutral,Sideways trading continues throughout the session.
+2021-12-08,0.338,Positive,Record high inflows seen in crypto funds.
+2021-12-09,-0.882,Negative,Major exchange hack sparks panic selling.
+2021-12-10,-0.416,Negative,Fears of regulatory crackdown loom.
+2021-12-11,0.288,Neutral,Market participants remain undecided.
+2021-12-12,0.244,Neutral,Market participants remain undecided.
+2021-12-13,-1.0,Negative,Major exchange hack sparks panic selling.
+2021-12-14,1.0,Positive,Record high inflows seen in crypto funds.
+2021-12-15,-0.99,Negative,Bears dominating as support levels break.
+2021-12-16,-0.748,Negative,Bears dominating as support levels break.
+2021-12-17,-0.461,Negative,Fears of regulatory crackdown loom.
+2021-12-18,0.398,Positive,Positive regulatory news sparks a rally.
+2021-12-19,-0.193,Neutral,Low volatility day ahead of fed meeting.
+2021-12-20,-0.138,Neutral,Trading sideways with no clear direction.
+2021-12-21,0.398,Positive,Record high inflows seen in crypto funds.
+2021-12-22,0.237,Neutral,Sideways trading continues throughout the session.
+2021-12-23,0.915,Positive,Record high inflows seen in crypto funds.
+2021-12-24,0.232,Neutral,Trading sideways with no clear direction.
+2021-12-25,0.301,Positive,Institutional adoption continues to grow.
+2021-12-26,0.099,Neutral,Market consolidating around key levels.
+2021-12-27,-0.132,Neutral,Trading sideways with no clear direction.
+2021-12-28,-0.962,Negative,Major exchange hack sparks panic selling.
+2021-12-29,-0.631,Negative,Bears dominating as support levels break.
+2021-12-30,0.283,Neutral,Market consolidating around key levels.
+2021-12-31,0.018,Neutral,Trading sideways with no clear direction.
+2022-01-01,0.246,Neutral,Market consolidating around key levels.
+2022-01-02,0.04,Neutral,Market consolidating around key levels.
+2022-01-03,-0.417,Negative,Major exchange hack sparks panic selling.
+2022-01-04,-0.09,Neutral,Market consolidating around key levels.
+2022-01-05,-0.748,Negative,Fears of regulatory crackdown loom.
+2022-01-06,0.169,Neutral,Trading sideways with no clear direction.
+2022-01-07,-0.272,Neutral,Trading sideways with no clear direction.
+2022-01-08,-0.363,Negative,Bears dominating as support levels break.
+2022-01-09,-0.149,Neutral,Market participants remain undecided.
+2022-01-10,-0.608,Negative,Bears dominating as support levels break.
+2022-01-11,1.0,Positive,Institutional adoption continues to grow.
+2022-01-12,0.801,Positive,Bulls taking control of the market.
+2022-01-13,0.693,Positive,Bulls taking control of the market.
+2022-01-14,1.0,Positive,Positive regulatory news sparks a rally.
+2022-01-15,-0.045,Neutral,Sideways trading continues throughout the session.
+2022-01-16,-0.619,Negative,Bears dominating as support levels break.
+2022-01-17,-0.473,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-01-18,-0.598,Negative,Bears dominating as support levels break.
+2022-01-19,-0.384,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-01-20,-0.561,Negative,Bears dominating as support levels break.
+2022-01-21,-1.0,Negative,Fears of regulatory crackdown loom.
+2022-01-22,-0.899,Negative,Bears dominating as support levels break.
+2022-01-23,0.983,Positive,Market shows strong resilience.
+2022-01-24,-0.543,Negative,Bears dominating as support levels break.
+2022-01-25,0.773,Positive,Positive regulatory news sparks a rally.
+2022-01-26,0.127,Neutral,Low volatility day ahead of fed meeting.
+2022-01-27,-0.287,Neutral,Low volatility day ahead of fed meeting.
+2022-01-28,0.169,Neutral,Low volatility day ahead of fed meeting.
+2022-01-29,0.1,Neutral,Sideways trading continues throughout the session.
+2022-01-30,-0.577,Negative,Investors fleeing risk-on assets.
+2022-01-31,0.114,Neutral,Trading sideways with no clear direction.
+2022-02-01,0.165,Neutral,Sideways trading continues throughout the session.
+2022-02-02,-0.467,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-02-03,0.031,Neutral,Low volatility day ahead of fed meeting.
+2022-02-04,0.817,Positive,Positive regulatory news sparks a rally.
+2022-02-05,-0.248,Neutral,Low volatility day ahead of fed meeting.
+2022-02-06,0.577,Positive,Positive regulatory news sparks a rally.
+2022-02-07,1.0,Positive,Market shows strong resilience.
+2022-02-08,-0.543,Negative,Investors fleeing risk-on assets.
+2022-02-09,0.22,Neutral,Trading sideways with no clear direction.
+2022-02-10,-0.911,Negative,Major exchange hack sparks panic selling.
+2022-02-11,-0.563,Negative,Fears of regulatory crackdown loom.
+2022-02-12,0.17,Neutral,Low volatility day ahead of fed meeting.
+2022-02-13,0.376,Positive,Record high inflows seen in crypto funds.
+2022-02-14,-0.255,Neutral,Low volatility day ahead of fed meeting.
+2022-02-15,0.619,Positive,Market shows strong resilience.
+2022-02-16,-0.383,Negative,Major exchange hack sparks panic selling.
+2022-02-17,-0.856,Negative,Investors fleeing risk-on assets.
+2022-02-18,0.022,Neutral,Market consolidating around key levels.
+2022-02-19,0.192,Neutral,Trading sideways with no clear direction.
+2022-02-20,-0.347,Negative,Investors fleeing risk-on assets.
+2022-02-21,-0.946,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-02-22,0.498,Positive,Positive regulatory news sparks a rally.
+2022-02-23,-0.631,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-02-24,-0.422,Negative,Major exchange hack sparks panic selling.
+2022-02-25,0.248,Neutral,Market consolidating around key levels.
+2022-02-26,-0.188,Neutral,Market consolidating around key levels.
+2022-02-27,-0.391,Negative,Major exchange hack sparks panic selling.
+2022-02-28,0.957,Positive,Market shows strong resilience.
+2022-03-01,0.179,Neutral,Market participants remain undecided.
+2022-03-02,0.063,Neutral,Trading sideways with no clear direction.
+2022-03-03,-0.209,Neutral,Market consolidating around key levels.
+2022-03-04,-0.624,Negative,Major exchange hack sparks panic selling.
+2022-03-05,0.479,Positive,Institutional adoption continues to grow.
+2022-03-06,-0.31,Negative,Fears of regulatory crackdown loom.
+2022-03-07,-0.626,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-03-08,-0.14,Neutral,Market consolidating around key levels.
+2022-03-09,0.543,Positive,Record high inflows seen in crypto funds.
+2022-03-10,-0.516,Negative,Major exchange hack sparks panic selling.
+2022-03-11,-0.154,Neutral,Sideways trading continues throughout the session.
+2022-03-12,-0.286,Neutral,Sideways trading continues throughout the session.
+2022-03-13,-0.574,Negative,Major exchange hack sparks panic selling.
+2022-03-14,0.193,Neutral,Low volatility day ahead of fed meeting.
+2022-03-15,-0.298,Neutral,Market consolidating around key levels.
+2022-03-16,0.503,Positive,Bulls taking control of the market.
+2022-03-17,0.071,Neutral,Market participants remain undecided.
+2022-03-18,0.379,Positive,Market shows strong resilience.
+2022-03-19,0.731,Positive,Institutional adoption continues to grow.
+2022-03-20,-0.684,Negative,Investors fleeing risk-on assets.
+2022-03-21,0.056,Neutral,Low volatility day ahead of fed meeting.
+2022-03-22,0.394,Positive,Bulls taking control of the market.
+2022-03-23,1.0,Positive,Positive regulatory news sparks a rally.
+2022-03-24,0.798,Positive,Institutional adoption continues to grow.
+2022-03-25,-0.506,Negative,Fears of regulatory crackdown loom.
+2022-03-26,0.709,Positive,Bulls taking control of the market.
+2022-03-27,0.856,Positive,Institutional adoption continues to grow.
+2022-03-28,-0.107,Neutral,Trading sideways with no clear direction.
+2022-03-29,0.302,Positive,Institutional adoption continues to grow.
+2022-03-30,-0.055,Neutral,Market consolidating around key levels.
+2022-03-31,-0.345,Negative,Major exchange hack sparks panic selling.
+2022-04-01,0.257,Neutral,Trading sideways with no clear direction.
+2022-04-02,-0.423,Negative,Fears of regulatory crackdown loom.
+2022-04-03,0.93,Positive,Positive regulatory news sparks a rally.
+2022-04-04,0.345,Positive,Record high inflows seen in crypto funds.
+2022-04-05,1.0,Positive,Market shows strong resilience.
+2022-04-06,-0.942,Negative,Major exchange hack sparks panic selling.
+2022-04-07,0.151,Neutral,Trading sideways with no clear direction.
+2022-04-08,-0.17,Neutral,Market participants remain undecided.
+2022-04-09,0.207,Neutral,Trading sideways with no clear direction.
+2022-04-10,0.435,Positive,Positive regulatory news sparks a rally.
+2022-04-11,-1.0,Negative,Bears dominating as support levels break.
+2022-04-12,0.33,Positive,Positive regulatory news sparks a rally.
+2022-04-13,0.126,Neutral,Low volatility day ahead of fed meeting.
+2022-04-14,0.515,Positive,Market shows strong resilience.
+2022-04-15,0.221,Neutral,Market consolidating around key levels.
+2022-04-16,-0.225,Neutral,Market participants remain undecided.
+2022-04-17,-0.283,Neutral,Market participants remain undecided.
+2022-04-18,0.022,Neutral,Market participants remain undecided.
+2022-04-19,0.393,Positive,Record high inflows seen in crypto funds.
+2022-04-20,-0.023,Neutral,Trading sideways with no clear direction.
+2022-04-21,-0.315,Negative,Investors fleeing risk-on assets.
+2022-04-22,0.019,Neutral,Low volatility day ahead of fed meeting.
+2022-04-23,-0.094,Neutral,Sideways trading continues throughout the session.
+2022-04-24,-0.091,Neutral,Market participants remain undecided.
+2022-04-25,0.862,Positive,Market shows strong resilience.
+2022-04-26,-1.0,Negative,Fears of regulatory crackdown loom.
+2022-04-27,0.461,Positive,Market shows strong resilience.
+2022-04-28,-0.326,Negative,Fears of regulatory crackdown loom.
+2022-04-29,-0.237,Neutral,Low volatility day ahead of fed meeting.
+2022-04-30,-0.876,Negative,Major exchange hack sparks panic selling.
+2022-05-01,0.624,Positive,Record high inflows seen in crypto funds.
+2022-05-02,-0.412,Negative,Bears dominating as support levels break.
+2022-05-03,-0.177,Neutral,Sideways trading continues throughout the session.
+2022-05-04,0.709,Positive,Market shows strong resilience.
+2022-05-05,-0.991,Negative,Bears dominating as support levels break.
+2022-05-06,-0.18,Neutral,Market consolidating around key levels.
+2022-05-07,-0.125,Neutral,Trading sideways with no clear direction.
+2022-05-08,-0.284,Neutral,Market consolidating around key levels.
+2022-05-09,-1.0,Negative,Fears of regulatory crackdown loom.
+2022-05-10,0.994,Positive,Record high inflows seen in crypto funds.
+2022-05-11,-0.915,Negative,Major exchange hack sparks panic selling.
+2022-05-12,-0.524,Negative,Bears dominating as support levels break.
+2022-05-13,1.0,Positive,Institutional adoption continues to grow.
+2022-05-14,0.343,Positive,Institutional adoption continues to grow.
+2022-05-15,0.754,Positive,Institutional adoption continues to grow.
+2022-05-16,-0.791,Negative,Major exchange hack sparks panic selling.
+2022-05-17,0.547,Positive,Positive regulatory news sparks a rally.
+2022-05-18,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-05-19,0.659,Positive,Institutional adoption continues to grow.
+2022-05-20,-0.264,Neutral,Low volatility day ahead of fed meeting.
+2022-05-21,0.018,Neutral,Market participants remain undecided.
+2022-05-22,0.285,Neutral,Sideways trading continues throughout the session.
+2022-05-23,-0.514,Negative,Major exchange hack sparks panic selling.
+2022-05-24,0.136,Neutral,Market consolidating around key levels.
+2022-05-25,-0.209,Neutral,Sideways trading continues throughout the session.
+2022-05-26,-0.961,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-05-27,0.571,Positive,Institutional adoption continues to grow.
+2022-05-28,0.187,Neutral,Trading sideways with no clear direction.
+2022-05-29,0.259,Neutral,Market participants remain undecided.
+2022-05-30,1.0,Positive,Market shows strong resilience.
+2022-05-31,-0.261,Neutral,Low volatility day ahead of fed meeting.
+2022-06-01,-0.694,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-06-02,0.18,Neutral,Market consolidating around key levels.
+2022-06-03,-0.355,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-06-04,0.127,Neutral,Low volatility day ahead of fed meeting.
+2022-06-05,0.03,Neutral,Trading sideways with no clear direction.
+2022-06-06,0.343,Positive,Record high inflows seen in crypto funds.
+2022-06-07,-0.412,Negative,Investors fleeing risk-on assets.
+2022-06-08,-0.039,Neutral,Trading sideways with no clear direction.
+2022-06-09,0.085,Neutral,Market consolidating around key levels.
+2022-06-10,-0.614,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-06-11,-1.0,Negative,Major exchange hack sparks panic selling.
+2022-06-12,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-06-13,-0.922,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-06-14,0.216,Neutral,Market participants remain undecided.
+2022-06-15,1.0,Positive,Record high inflows seen in crypto funds.
+2022-06-16,-0.82,Negative,Major exchange hack sparks panic selling.
+2022-06-17,0.335,Positive,Institutional adoption continues to grow.
+2022-06-18,-0.818,Negative,Fears of regulatory crackdown loom.
+2022-06-19,1.0,Positive,Bulls taking control of the market.
+2022-06-20,-0.306,Negative,Major exchange hack sparks panic selling.
+2022-06-21,0.929,Positive,Positive regulatory news sparks a rally.
+2022-06-22,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-06-23,0.465,Positive,Record high inflows seen in crypto funds.
+2022-06-24,0.64,Positive,Bulls taking control of the market.
+2022-06-25,0.199,Neutral,Market consolidating around key levels.
+2022-06-26,1.0,Positive,Positive regulatory news sparks a rally.
+2022-06-27,-0.339,Negative,Major exchange hack sparks panic selling.
+2022-06-28,-0.835,Negative,Fears of regulatory crackdown loom.
+2022-06-29,0.693,Positive,Positive regulatory news sparks a rally.
+2022-06-30,-0.727,Negative,Fears of regulatory crackdown loom.
+2022-07-01,-0.039,Neutral,Market participants remain undecided.
+2022-07-02,0.051,Neutral,Market consolidating around key levels.
+2022-07-03,-0.01,Neutral,Sideways trading continues throughout the session.
+2022-07-04,0.386,Positive,Institutional adoption continues to grow.
+2022-07-05,-0.295,Neutral,Low volatility day ahead of fed meeting.
+2022-07-06,0.091,Neutral,Low volatility day ahead of fed meeting.
+2022-07-07,0.369,Positive,Market shows strong resilience.
+2022-07-08,-0.505,Negative,Fears of regulatory crackdown loom.
+2022-07-09,0.157,Neutral,Market participants remain undecided.
+2022-07-10,-0.499,Negative,Fears of regulatory crackdown loom.
+2022-07-11,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-07-12,-0.321,Negative,Fears of regulatory crackdown loom.
+2022-07-13,0.525,Positive,Institutional adoption continues to grow.
+2022-07-14,0.054,Neutral,Market consolidating around key levels.
+2022-07-15,0.218,Neutral,Market participants remain undecided.
+2022-07-16,0.257,Neutral,Sideways trading continues throughout the session.
+2022-07-17,-0.247,Neutral,Sideways trading continues throughout the session.
+2022-07-18,0.865,Positive,Bulls taking control of the market.
+2022-07-19,0.206,Neutral,Trading sideways with no clear direction.
+2022-07-20,0.414,Positive,Market shows strong resilience.
+2022-07-21,-0.004,Neutral,Market consolidating around key levels.
+2022-07-22,-0.37,Negative,Major exchange hack sparks panic selling.
+2022-07-23,0.027,Neutral,Trading sideways with no clear direction.
+2022-07-24,0.077,Neutral,Low volatility day ahead of fed meeting.
+2022-07-25,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-07-26,0.29,Neutral,Low volatility day ahead of fed meeting.
+2022-07-27,1.0,Positive,Positive regulatory news sparks a rally.
+2022-07-28,0.573,Positive,Institutional adoption continues to grow.
+2022-07-29,-0.116,Neutral,Market participants remain undecided.
+2022-07-30,0.212,Neutral,Trading sideways with no clear direction.
+2022-07-31,-0.532,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-08-01,-0.04,Neutral,Low volatility day ahead of fed meeting.
+2022-08-02,-0.622,Negative,Major exchange hack sparks panic selling.
+2022-08-03,0.064,Neutral,Trading sideways with no clear direction.
+2022-08-04,0.083,Neutral,Trading sideways with no clear direction.
+2022-08-05,0.605,Positive,Record high inflows seen in crypto funds.
+2022-08-06,-0.435,Negative,Bears dominating as support levels break.
+2022-08-07,-0.051,Neutral,Low volatility day ahead of fed meeting.
+2022-08-08,0.178,Neutral,Trading sideways with no clear direction.
+2022-08-09,-0.404,Negative,Investors fleeing risk-on assets.
+2022-08-10,0.391,Positive,Market shows strong resilience.
+2022-08-11,0.028,Neutral,Sideways trading continues throughout the session.
+2022-08-12,0.381,Positive,Positive regulatory news sparks a rally.
+2022-08-13,0.022,Neutral,Low volatility day ahead of fed meeting.
+2022-08-14,0.847,Positive,Record high inflows seen in crypto funds.
+2022-08-15,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-08-16,0.95,Positive,Record high inflows seen in crypto funds.
+2022-08-17,-0.986,Negative,Investors fleeing risk-on assets.
+2022-08-18,-0.843,Negative,Fears of regulatory crackdown loom.
+2022-08-19,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-08-20,0.363,Positive,Institutional adoption continues to grow.
+2022-08-21,-0.085,Neutral,Market consolidating around key levels.
+2022-08-22,-0.348,Negative,Major exchange hack sparks panic selling.
+2022-08-23,0.151,Neutral,Market participants remain undecided.
+2022-08-24,-0.251,Neutral,Sideways trading continues throughout the session.
+2022-08-25,0.406,Positive,Market shows strong resilience.
+2022-08-26,-1.0,Negative,Investors fleeing risk-on assets.
+2022-08-27,0.081,Neutral,Sideways trading continues throughout the session.
+2022-08-28,-0.3,Neutral,Sideways trading continues throughout the session.
+2022-08-29,0.648,Positive,Positive regulatory news sparks a rally.
+2022-08-30,-0.5,Negative,Investors fleeing risk-on assets.
+2022-08-31,0.045,Neutral,Market participants remain undecided.
+2022-09-01,0.398,Positive,Market shows strong resilience.
+2022-09-02,-0.184,Neutral,Market participants remain undecided.
+2022-09-03,0.353,Positive,Bulls taking control of the market.
+2022-09-04,0.06,Neutral,Sideways trading continues throughout the session.
+2022-09-05,-0.235,Neutral,Market consolidating around key levels.
+2022-09-06,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-09-07,0.7,Positive,Record high inflows seen in crypto funds.
+2022-09-08,0.162,Neutral,Trading sideways with no clear direction.
+2022-09-09,0.535,Positive,Bulls taking control of the market.
+2022-09-10,0.355,Positive,Positive regulatory news sparks a rally.
+2022-09-11,-0.273,Neutral,Low volatility day ahead of fed meeting.
+2022-09-12,0.162,Neutral,Trading sideways with no clear direction.
+2022-09-13,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-09-14,0.233,Neutral,Market participants remain undecided.
+2022-09-15,-0.467,Negative,Bears dominating as support levels break.
+2022-09-16,0.533,Positive,Positive regulatory news sparks a rally.
+2022-09-17,0.436,Positive,Institutional adoption continues to grow.
+2022-09-18,-0.957,Negative,Major exchange hack sparks panic selling.
+2022-09-19,0.45,Positive,Market shows strong resilience.
+2022-09-20,-0.204,Neutral,Market participants remain undecided.
+2022-09-21,-0.128,Neutral,Low volatility day ahead of fed meeting.
+2022-09-22,0.721,Positive,Institutional adoption continues to grow.
+2022-09-23,0.833,Positive,Market shows strong resilience.
+2022-09-24,-0.037,Neutral,Sideways trading continues throughout the session.
+2022-09-25,-0.285,Neutral,Market participants remain undecided.
+2022-09-26,-0.196,Neutral,Low volatility day ahead of fed meeting.
+2022-09-27,-0.005,Neutral,Sideways trading continues throughout the session.
+2022-09-28,0.089,Neutral,Trading sideways with no clear direction.
+2022-09-29,0.069,Neutral,Low volatility day ahead of fed meeting.
+2022-09-30,0.143,Neutral,Sideways trading continues throughout the session.
+2022-10-01,-0.258,Neutral,Low volatility day ahead of fed meeting.
+2022-10-02,-0.231,Neutral,Market consolidating around key levels.
+2022-10-03,0.312,Positive,Positive regulatory news sparks a rally.
+2022-10-04,1.0,Positive,Record high inflows seen in crypto funds.
+2022-10-05,-0.15,Neutral,Market participants remain undecided.
+2022-10-06,-0.323,Negative,Major exchange hack sparks panic selling.
+2022-10-07,-0.369,Negative,Investors fleeing risk-on assets.
+2022-10-08,-0.071,Neutral,Market participants remain undecided.
+2022-10-09,0.179,Neutral,Sideways trading continues throughout the session.
+2022-10-10,-0.473,Negative,Bears dominating as support levels break.
+2022-10-11,0.091,Neutral,Sideways trading continues throughout the session.
+2022-10-12,-0.166,Neutral,Low volatility day ahead of fed meeting.
+2022-10-13,0.006,Neutral,Sideways trading continues throughout the session.
+2022-10-14,-0.212,Neutral,Market consolidating around key levels.
+2022-10-15,-0.043,Neutral,Low volatility day ahead of fed meeting.
+2022-10-16,0.183,Neutral,Sideways trading continues throughout the session.
+2022-10-17,0.227,Neutral,Sideways trading continues throughout the session.
+2022-10-18,0.07,Neutral,Trading sideways with no clear direction.
+2022-10-19,-0.203,Neutral,Trading sideways with no clear direction.
+2022-10-20,0.04,Neutral,Market consolidating around key levels.
+2022-10-21,-0.007,Neutral,Trading sideways with no clear direction.
+2022-10-22,0.062,Neutral,Sideways trading continues throughout the session.
+2022-10-23,0.287,Neutral,Low volatility day ahead of fed meeting.
+2022-10-24,-0.228,Neutral,Market participants remain undecided.
+2022-10-25,0.863,Positive,Positive regulatory news sparks a rally.
+2022-10-26,0.868,Positive,Market shows strong resilience.
+2022-10-27,0.997,Positive,Record high inflows seen in crypto funds.
+2022-10-28,1.0,Positive,Bulls taking control of the market.
+2022-10-29,0.963,Positive,Positive regulatory news sparks a rally.
+2022-10-30,-0.342,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-10-31,0.937,Positive,Market shows strong resilience.
+2022-11-01,1.0,Positive,Market shows strong resilience.
+2022-11-02,-0.912,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-11-03,-0.757,Negative,Bears dominating as support levels break.
+2022-11-04,0.315,Positive,Institutional adoption continues to grow.
+2022-11-05,-0.108,Neutral,Market consolidating around key levels.
+2022-11-06,-0.962,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-11-07,-0.619,Negative,Fears of regulatory crackdown loom.
+2022-11-08,-0.967,Negative,Major exchange hack sparks panic selling.
+2022-11-09,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-11-10,1.0,Positive,Market shows strong resilience.
+2022-11-11,-0.742,Negative,Bears dominating as support levels break.
+2022-11-12,0.725,Positive,Record high inflows seen in crypto funds.
+2022-11-13,-0.733,Negative,Investors fleeing risk-on assets.
+2022-11-14,-0.008,Neutral,Sideways trading continues throughout the session.
+2022-11-15,0.148,Neutral,Trading sideways with no clear direction.
+2022-11-16,-0.291,Neutral,Low volatility day ahead of fed meeting.
+2022-11-17,-0.083,Neutral,Low volatility day ahead of fed meeting.
+2022-11-18,-0.101,Neutral,Low volatility day ahead of fed meeting.
+2022-11-19,-0.137,Neutral,Sideways trading continues throughout the session.
+2022-11-20,-0.989,Negative,Fears of regulatory crackdown loom.
+2022-11-21,-0.324,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-11-22,0.991,Positive,Positive regulatory news sparks a rally.
+2022-11-23,0.444,Positive,Institutional adoption continues to grow.
+2022-11-24,0.035,Neutral,Trading sideways with no clear direction.
+2022-11-25,1.0,Positive,Market shows strong resilience.
+2022-11-26,0.047,Neutral,Market consolidating around key levels.
+2022-11-27,0.804,Positive,Record high inflows seen in crypto funds.
+2022-11-28,-0.679,Negative,Bears dominating as support levels break.
+2022-11-29,1.0,Positive,Positive regulatory news sparks a rally.
+2022-11-30,0.653,Positive,Market shows strong resilience.
+2022-12-01,-0.786,Negative,Major exchange hack sparks panic selling.
+2022-12-02,0.103,Neutral,Sideways trading continues throughout the session.
+2022-12-03,-0.261,Neutral,Low volatility day ahead of fed meeting.
+2022-12-04,0.706,Positive,Record high inflows seen in crypto funds.
+2022-12-05,-0.503,Negative,Fears of regulatory crackdown loom.
+2022-12-06,-0.359,Negative,Investors fleeing risk-on assets.
+2022-12-07,-0.503,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-12-08,0.26,Neutral,Market participants remain undecided.
+2022-12-09,-0.272,Neutral,Sideways trading continues throughout the session.
+2022-12-10,0.119,Neutral,Low volatility day ahead of fed meeting.
+2022-12-11,-0.728,Negative,Investors fleeing risk-on assets.
+2022-12-12,-0.381,Negative,Fears of regulatory crackdown loom.
+2022-12-13,0.199,Neutral,Market consolidating around key levels.
+2022-12-14,-0.417,Negative,Bears dominating as support levels break.
+2022-12-15,-0.434,Negative,Fears of regulatory crackdown loom.
+2022-12-16,-0.857,Negative,Bears dominating as support levels break.
+2022-12-17,0.561,Positive,Positive regulatory news sparks a rally.
+2022-12-18,-0.315,Negative,Market bleeds amidst macroeconomic uncertainty.
+2022-12-19,-0.906,Negative,Major exchange hack sparks panic selling.
+2022-12-20,0.774,Positive,Bulls taking control of the market.
+2022-12-21,-0.226,Neutral,Trading sideways with no clear direction.
+2022-12-22,0.554,Positive,Record high inflows seen in crypto funds.
+2022-12-23,0.172,Neutral,Market consolidating around key levels.
+2022-12-24,-0.043,Neutral,Market participants remain undecided.
+2022-12-25,-0.195,Neutral,Low volatility day ahead of fed meeting.
+2022-12-26,-0.029,Neutral,Sideways trading continues throughout the session.
+2022-12-27,-0.443,Negative,Fears of regulatory crackdown loom.
+2022-12-28,-0.56,Negative,Major exchange hack sparks panic selling.
+2022-12-29,0.102,Neutral,Sideways trading continues throughout the session.
+2022-12-30,-0.576,Negative,Fears of regulatory crackdown loom.
+2022-12-31,0.537,Positive,Positive regulatory news sparks a rally.
+2023-01-01,0.016,Neutral,Market participants remain undecided.
+2023-01-02,0.285,Neutral,Low volatility day ahead of fed meeting.
+2023-01-03,-0.344,Negative,Major exchange hack sparks panic selling.
+2023-01-04,0.455,Positive,Bulls taking control of the market.
+2023-01-05,-0.178,Neutral,Trading sideways with no clear direction.
+2023-01-06,0.138,Neutral,Trading sideways with no clear direction.
+2023-01-07,-0.125,Neutral,Low volatility day ahead of fed meeting.
+2023-01-08,0.216,Neutral,Low volatility day ahead of fed meeting.
+2023-01-09,0.597,Positive,Positive regulatory news sparks a rally.
+2023-01-10,0.233,Neutral,Market participants remain undecided.
+2023-01-11,0.249,Neutral,Sideways trading continues throughout the session.
+2023-01-12,0.327,Positive,Record high inflows seen in crypto funds.
+2023-01-13,0.826,Positive,Record high inflows seen in crypto funds.
+2023-01-14,0.404,Positive,Market shows strong resilience.
+2023-01-15,-0.404,Negative,Fears of regulatory crackdown loom.
+2023-01-16,-0.437,Negative,Fears of regulatory crackdown loom.
+2023-01-17,-0.067,Neutral,Trading sideways with no clear direction.
+2023-01-18,-0.467,Negative,Fears of regulatory crackdown loom.
+2023-01-19,0.412,Positive,Record high inflows seen in crypto funds.
+2023-01-20,0.855,Positive,Record high inflows seen in crypto funds.
+2023-01-21,-0.254,Neutral,Market consolidating around key levels.
+2023-01-22,0.538,Positive,Record high inflows seen in crypto funds.
+2023-01-23,-0.033,Neutral,Market participants remain undecided.
+2023-01-24,-0.905,Negative,Fears of regulatory crackdown loom.
+2023-01-25,0.403,Positive,Positive regulatory news sparks a rally.
+2023-01-26,0.03,Neutral,Market participants remain undecided.
+2023-01-27,0.268,Neutral,Market participants remain undecided.
+2023-01-28,-0.054,Neutral,Trading sideways with no clear direction.
+2023-01-29,0.249,Neutral,Trading sideways with no clear direction.
+2023-01-30,-0.313,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-01-31,1.0,Positive,Bulls taking control of the market.
+2023-02-01,-0.267,Neutral,Market participants remain undecided.
+2023-02-02,-0.335,Negative,Major exchange hack sparks panic selling.
+2023-02-03,0.219,Neutral,Trading sideways with no clear direction.
+2023-02-04,0.317,Positive,Market shows strong resilience.
+2023-02-05,-0.373,Negative,Investors fleeing risk-on assets.
+2023-02-06,-0.386,Negative,Bears dominating as support levels break.
+2023-02-07,0.602,Positive,Institutional adoption continues to grow.
+2023-02-08,-0.348,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-02-09,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-02-10,-0.258,Neutral,Market participants remain undecided.
+2023-02-11,0.205,Neutral,Sideways trading continues throughout the session.
+2023-02-12,-0.107,Neutral,Market participants remain undecided.
+2023-02-13,0.103,Neutral,Low volatility day ahead of fed meeting.
+2023-02-14,0.287,Neutral,Market participants remain undecided.
+2023-02-15,1.0,Positive,Record high inflows seen in crypto funds.
+2023-02-16,-0.726,Negative,Bears dominating as support levels break.
+2023-02-17,0.423,Positive,Institutional adoption continues to grow.
+2023-02-18,0.104,Neutral,Market consolidating around key levels.
+2023-02-19,-0.45,Negative,Major exchange hack sparks panic selling.
+2023-02-20,0.402,Positive,Market shows strong resilience.
+2023-02-21,-0.373,Negative,Major exchange hack sparks panic selling.
+2023-02-22,-0.032,Neutral,Market participants remain undecided.
+2023-02-23,-0.229,Neutral,Market consolidating around key levels.
+2023-02-24,-0.407,Negative,Major exchange hack sparks panic selling.
+2023-02-25,-0.071,Neutral,Low volatility day ahead of fed meeting.
+2023-02-26,0.17,Neutral,Sideways trading continues throughout the session.
+2023-02-27,-0.044,Neutral,Low volatility day ahead of fed meeting.
+2023-02-28,-0.08,Neutral,Market participants remain undecided.
+2023-03-01,0.068,Neutral,Market consolidating around key levels.
+2023-03-02,-0.201,Neutral,Low volatility day ahead of fed meeting.
+2023-03-03,-0.579,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-03-04,-0.462,Negative,Fears of regulatory crackdown loom.
+2023-03-05,0.185,Neutral,Trading sideways with no clear direction.
+2023-03-06,-0.176,Neutral,Market consolidating around key levels.
+2023-03-07,0.017,Neutral,Sideways trading continues throughout the session.
+2023-03-08,-0.718,Negative,Fears of regulatory crackdown loom.
+2023-03-09,-0.908,Negative,Investors fleeing risk-on assets.
+2023-03-10,0.098,Neutral,Low volatility day ahead of fed meeting.
+2023-03-11,-0.025,Neutral,Trading sideways with no clear direction.
+2023-03-12,0.911,Positive,Bulls taking control of the market.
+2023-03-13,0.46,Positive,Bulls taking control of the market.
+2023-03-14,0.394,Positive,Market shows strong resilience.
+2023-03-15,-0.815,Negative,Fears of regulatory crackdown loom.
+2023-03-16,0.785,Positive,Positive regulatory news sparks a rally.
+2023-03-17,0.622,Positive,Record high inflows seen in crypto funds.
+2023-03-18,-0.749,Negative,Fears of regulatory crackdown loom.
+2023-03-19,0.323,Positive,Institutional adoption continues to grow.
+2023-03-20,-0.601,Negative,Major exchange hack sparks panic selling.
+2023-03-21,0.932,Positive,Institutional adoption continues to grow.
+2023-03-22,-0.679,Negative,Fears of regulatory crackdown loom.
+2023-03-23,0.647,Positive,Bulls taking control of the market.
+2023-03-24,-0.481,Negative,Major exchange hack sparks panic selling.
+2023-03-25,-0.092,Neutral,Sideways trading continues throughout the session.
+2023-03-26,0.07,Neutral,Trading sideways with no clear direction.
+2023-03-27,-0.446,Negative,Fears of regulatory crackdown loom.
+2023-03-28,0.138,Neutral,Market consolidating around key levels.
+2023-03-29,0.163,Neutral,Market participants remain undecided.
+2023-03-30,-0.196,Neutral,Market consolidating around key levels.
+2023-03-31,0.426,Positive,Positive regulatory news sparks a rally.
+2023-04-01,1.0,Positive,Positive regulatory news sparks a rally.
+2023-04-02,-0.554,Negative,Bears dominating as support levels break.
+2023-04-03,1.0,Positive,Record high inflows seen in crypto funds.
+2023-04-04,-0.139,Neutral,Trading sideways with no clear direction.
+2023-04-05,-0.2,Neutral,Market consolidating around key levels.
+2023-04-06,-1.0,Negative,Investors fleeing risk-on assets.
+2023-04-07,-0.705,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-04-08,-0.332,Negative,Investors fleeing risk-on assets.
+2023-04-09,0.244,Neutral,Sideways trading continues throughout the session.
+2023-04-10,0.455,Positive,Market shows strong resilience.
+2023-04-11,0.008,Neutral,Trading sideways with no clear direction.
+2023-04-12,-0.288,Neutral,Trading sideways with no clear direction.
+2023-04-13,0.706,Positive,Bulls taking control of the market.
+2023-04-14,0.37,Positive,Bulls taking control of the market.
+2023-04-15,-0.041,Neutral,Market consolidating around key levels.
+2023-04-16,0.456,Positive,Market shows strong resilience.
+2023-04-17,0.329,Positive,Market shows strong resilience.
+2023-04-18,0.571,Positive,Bulls taking control of the market.
+2023-04-19,-1.0,Negative,Major exchange hack sparks panic selling.
+2023-04-20,-0.835,Negative,Fears of regulatory crackdown loom.
+2023-04-21,-0.815,Negative,Bears dominating as support levels break.
+2023-04-22,0.328,Positive,Bulls taking control of the market.
+2023-04-23,-0.314,Negative,Investors fleeing risk-on assets.
+2023-04-24,0.052,Neutral,Market participants remain undecided.
+2023-04-25,0.145,Neutral,Trading sideways with no clear direction.
+2023-04-26,-0.361,Negative,Bears dominating as support levels break.
+2023-04-27,0.31,Positive,Record high inflows seen in crypto funds.
+2023-04-28,-0.104,Neutral,Market consolidating around key levels.
+2023-04-29,0.333,Positive,Record high inflows seen in crypto funds.
+2023-04-30,-0.245,Neutral,Low volatility day ahead of fed meeting.
+2023-05-01,-0.104,Neutral,Market participants remain undecided.
+2023-05-02,0.167,Neutral,Market participants remain undecided.
+2023-05-03,0.18,Neutral,Market consolidating around key levels.
+2023-05-04,-0.121,Neutral,Trading sideways with no clear direction.
+2023-05-05,0.219,Neutral,Sideways trading continues throughout the session.
+2023-05-06,-0.628,Negative,Bears dominating as support levels break.
+2023-05-07,0.048,Neutral,Sideways trading continues throughout the session.
+2023-05-08,-0.91,Negative,Investors fleeing risk-on assets.
+2023-05-09,0.012,Neutral,Market consolidating around key levels.
+2023-05-10,0.193,Neutral,Market participants remain undecided.
+2023-05-11,-0.096,Neutral,Low volatility day ahead of fed meeting.
+2023-05-12,0.096,Neutral,Low volatility day ahead of fed meeting.
+2023-05-13,0.005,Neutral,Low volatility day ahead of fed meeting.
+2023-05-14,0.122,Neutral,Low volatility day ahead of fed meeting.
+2023-05-15,0.085,Neutral,Market participants remain undecided.
+2023-05-16,0.363,Positive,Positive regulatory news sparks a rally.
+2023-05-17,0.435,Positive,Record high inflows seen in crypto funds.
+2023-05-18,-0.316,Negative,Investors fleeing risk-on assets.
+2023-05-19,-0.102,Neutral,Market consolidating around key levels.
+2023-05-20,0.022,Neutral,Trading sideways with no clear direction.
+2023-05-21,-0.247,Neutral,Market participants remain undecided.
+2023-05-22,0.294,Neutral,Market participants remain undecided.
+2023-05-23,-0.164,Neutral,Market participants remain undecided.
+2023-05-24,-0.372,Negative,Major exchange hack sparks panic selling.
+2023-05-25,-0.146,Neutral,Trading sideways with no clear direction.
+2023-05-26,0.215,Neutral,Sideways trading continues throughout the session.
+2023-05-27,0.382,Positive,Market shows strong resilience.
+2023-05-28,0.261,Neutral,Trading sideways with no clear direction.
+2023-05-29,-0.241,Neutral,Low volatility day ahead of fed meeting.
+2023-05-30,-0.22,Neutral,Market participants remain undecided.
+2023-05-31,-0.012,Neutral,Market consolidating around key levels.
+2023-06-01,-0.07,Neutral,Sideways trading continues throughout the session.
+2023-06-02,0.293,Neutral,Trading sideways with no clear direction.
+2023-06-03,0.196,Neutral,Market participants remain undecided.
+2023-06-04,0.071,Neutral,Market consolidating around key levels.
+2023-06-05,-0.824,Negative,Investors fleeing risk-on assets.
+2023-06-06,0.827,Positive,Positive regulatory news sparks a rally.
+2023-06-07,-0.702,Negative,Major exchange hack sparks panic selling.
+2023-06-08,0.351,Positive,Market shows strong resilience.
+2023-06-09,0.424,Positive,Bulls taking control of the market.
+2023-06-10,-0.849,Negative,Fears of regulatory crackdown loom.
+2023-06-11,-0.201,Neutral,Sideways trading continues throughout the session.
+2023-06-12,-0.123,Neutral,Market consolidating around key levels.
+2023-06-13,0.137,Neutral,Low volatility day ahead of fed meeting.
+2023-06-14,-0.338,Negative,Fears of regulatory crackdown loom.
+2023-06-15,0.165,Neutral,Low volatility day ahead of fed meeting.
+2023-06-16,0.088,Neutral,Low volatility day ahead of fed meeting.
+2023-06-17,-0.075,Neutral,Low volatility day ahead of fed meeting.
+2023-06-18,0.046,Neutral,Market participants remain undecided.
+2023-06-19,0.183,Neutral,Sideways trading continues throughout the session.
+2023-06-20,0.179,Neutral,Market consolidating around key levels.
+2023-06-21,0.398,Positive,Market shows strong resilience.
+2023-06-22,-0.182,Neutral,Market consolidating around key levels.
+2023-06-23,0.528,Positive,Bulls taking control of the market.
+2023-06-24,-0.158,Neutral,Market participants remain undecided.
+2023-06-25,0.006,Neutral,Market consolidating around key levels.
+2023-06-26,-0.285,Neutral,Trading sideways with no clear direction.
+2023-06-27,0.346,Positive,Market shows strong resilience.
+2023-06-28,-0.652,Negative,Major exchange hack sparks panic selling.
+2023-06-29,0.28,Neutral,Market participants remain undecided.
+2023-06-30,0.63,Positive,Bulls taking control of the market.
+2023-07-01,0.586,Positive,Positive regulatory news sparks a rally.
+2023-07-02,-0.087,Neutral,Trading sideways with no clear direction.
+2023-07-03,-0.038,Neutral,Market participants remain undecided.
+2023-07-04,0.131,Neutral,Market participants remain undecided.
+2023-07-05,-0.584,Negative,Major exchange hack sparks panic selling.
+2023-07-06,-0.491,Negative,Bears dominating as support levels break.
+2023-07-07,0.107,Neutral,Sideways trading continues throughout the session.
+2023-07-08,0.261,Neutral,Sideways trading continues throughout the session.
+2023-07-09,-0.11,Neutral,Market consolidating around key levels.
+2023-07-10,-0.151,Neutral,Low volatility day ahead of fed meeting.
+2023-07-11,0.183,Neutral,Trading sideways with no clear direction.
+2023-07-12,0.118,Neutral,Market consolidating around key levels.
+2023-07-13,1.0,Positive,Record high inflows seen in crypto funds.
+2023-07-14,-0.392,Negative,Major exchange hack sparks panic selling.
+2023-07-15,0.608,Positive,Positive regulatory news sparks a rally.
+2023-07-16,-0.41,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-07-17,-0.122,Neutral,Sideways trading continues throughout the session.
+2023-07-18,-0.332,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-07-19,0.344,Positive,Market shows strong resilience.
+2023-07-20,-0.006,Neutral,Market consolidating around key levels.
+2023-07-21,0.399,Positive,Positive regulatory news sparks a rally.
+2023-07-22,-0.459,Negative,Bears dominating as support levels break.
+2023-07-23,0.315,Positive,Positive regulatory news sparks a rally.
+2023-07-24,0.525,Positive,Record high inflows seen in crypto funds.
+2023-07-25,0.875,Positive,Institutional adoption continues to grow.
+2023-07-26,-0.759,Negative,Bears dominating as support levels break.
+2023-07-27,-0.155,Neutral,Market participants remain undecided.
+2023-07-28,-0.187,Neutral,Trading sideways with no clear direction.
+2023-07-29,0.605,Positive,Institutional adoption continues to grow.
+2023-07-30,-0.309,Negative,Fears of regulatory crackdown loom.
+2023-07-31,0.108,Neutral,Market participants remain undecided.
+2023-08-01,-0.075,Neutral,Market consolidating around key levels.
+2023-08-02,-0.685,Negative,Major exchange hack sparks panic selling.
+2023-08-03,0.028,Neutral,Market participants remain undecided.
+2023-08-04,-0.127,Neutral,Market participants remain undecided.
+2023-08-05,0.439,Positive,Institutional adoption continues to grow.
+2023-08-06,-0.461,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-08-07,-0.09,Neutral,Market consolidating around key levels.
+2023-08-08,0.395,Positive,Positive regulatory news sparks a rally.
+2023-08-09,0.087,Neutral,Market participants remain undecided.
+2023-08-10,0.12,Neutral,Trading sideways with no clear direction.
+2023-08-11,0.026,Neutral,Sideways trading continues throughout the session.
+2023-08-12,0.008,Neutral,Trading sideways with no clear direction.
+2023-08-13,-0.313,Negative,Investors fleeing risk-on assets.
+2023-08-14,0.059,Neutral,Market consolidating around key levels.
+2023-08-15,-0.576,Negative,Major exchange hack sparks panic selling.
+2023-08-16,-0.66,Negative,Fears of regulatory crackdown loom.
+2023-08-17,-1.0,Negative,Major exchange hack sparks panic selling.
+2023-08-18,0.536,Positive,Institutional adoption continues to grow.
+2023-08-19,-0.047,Neutral,Sideways trading continues throughout the session.
+2023-08-20,0.144,Neutral,Market consolidating around key levels.
+2023-08-21,-0.486,Negative,Investors fleeing risk-on assets.
+2023-08-22,-0.185,Neutral,Low volatility day ahead of fed meeting.
+2023-08-23,0.163,Neutral,Market participants remain undecided.
+2023-08-24,-0.21,Neutral,Sideways trading continues throughout the session.
+2023-08-25,0.068,Neutral,Low volatility day ahead of fed meeting.
+2023-08-26,0.093,Neutral,Sideways trading continues throughout the session.
+2023-08-27,-0.097,Neutral,Low volatility day ahead of fed meeting.
+2023-08-28,0.163,Neutral,Low volatility day ahead of fed meeting.
+2023-08-29,0.609,Positive,Record high inflows seen in crypto funds.
+2023-08-30,-0.199,Neutral,Market consolidating around key levels.
+2023-08-31,-0.46,Negative,Investors fleeing risk-on assets.
+2023-09-01,-0.12,Neutral,Market consolidating around key levels.
+2023-09-02,-0.042,Neutral,Market participants remain undecided.
+2023-09-03,0.069,Neutral,Sideways trading continues throughout the session.
+2023-09-04,0.164,Neutral,Trading sideways with no clear direction.
+2023-09-05,0.324,Positive,Positive regulatory news sparks a rally.
+2023-09-06,-0.251,Neutral,Trading sideways with no clear direction.
+2023-09-07,-0.018,Neutral,Trading sideways with no clear direction.
+2023-09-08,-0.132,Neutral,Market participants remain undecided.
+2023-09-09,-0.246,Neutral,Low volatility day ahead of fed meeting.
+2023-09-10,-0.437,Negative,Major exchange hack sparks panic selling.
+2023-09-11,-0.391,Negative,Investors fleeing risk-on assets.
+2023-09-12,0.043,Neutral,Sideways trading continues throughout the session.
+2023-09-13,-0.031,Neutral,Sideways trading continues throughout the session.
+2023-09-14,0.284,Neutral,Market participants remain undecided.
+2023-09-15,-0.059,Neutral,Trading sideways with no clear direction.
+2023-09-16,0.004,Neutral,Trading sideways with no clear direction.
+2023-09-17,0.002,Neutral,Trading sideways with no clear direction.
+2023-09-18,0.096,Neutral,Trading sideways with no clear direction.
+2023-09-19,0.202,Neutral,Trading sideways with no clear direction.
+2023-09-20,-0.089,Neutral,Sideways trading continues throughout the session.
+2023-09-21,-0.133,Neutral,Sideways trading continues throughout the session.
+2023-09-22,-0.127,Neutral,Trading sideways with no clear direction.
+2023-09-23,-0.103,Neutral,Trading sideways with no clear direction.
+2023-09-24,-0.085,Neutral,Low volatility day ahead of fed meeting.
+2023-09-25,0.139,Neutral,Sideways trading continues throughout the session.
+2023-09-26,-0.06,Neutral,Market participants remain undecided.
+2023-09-27,-0.001,Neutral,Sideways trading continues throughout the session.
+2023-09-28,0.144,Neutral,Sideways trading continues throughout the session.
+2023-09-29,0.331,Positive,Positive regulatory news sparks a rally.
+2023-09-30,0.105,Neutral,Market participants remain undecided.
+2023-10-01,0.211,Neutral,Sideways trading continues throughout the session.
+2023-10-02,-0.31,Negative,Fears of regulatory crackdown loom.
+2023-10-03,-0.112,Neutral,Market consolidating around key levels.
+2023-10-04,0.111,Neutral,Low volatility day ahead of fed meeting.
+2023-10-05,-0.071,Neutral,Market participants remain undecided.
+2023-10-06,0.322,Positive,Record high inflows seen in crypto funds.
+2023-10-07,-0.157,Neutral,Market participants remain undecided.
+2023-10-08,-0.073,Neutral,Low volatility day ahead of fed meeting.
+2023-10-09,-0.537,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-10-10,0.293,Neutral,Trading sideways with no clear direction.
+2023-10-11,0.04,Neutral,Sideways trading continues throughout the session.
+2023-10-12,-0.276,Neutral,Sideways trading continues throughout the session.
+2023-10-13,0.321,Positive,Record high inflows seen in crypto funds.
+2023-10-14,0.258,Neutral,Market participants remain undecided.
+2023-10-15,-0.047,Neutral,Low volatility day ahead of fed meeting.
+2023-10-16,0.166,Neutral,Low volatility day ahead of fed meeting.
+2023-10-17,-0.422,Negative,Investors fleeing risk-on assets.
+2023-10-18,-0.084,Neutral,Market consolidating around key levels.
+2023-10-19,-0.09,Neutral,Trading sideways with no clear direction.
+2023-10-20,0.157,Neutral,Sideways trading continues throughout the session.
+2023-10-21,0.376,Positive,Record high inflows seen in crypto funds.
+2023-10-22,-0.07,Neutral,Market participants remain undecided.
+2023-10-23,0.806,Positive,Institutional adoption continues to grow.
+2023-10-24,-0.2,Neutral,Sideways trading continues throughout the session.
+2023-10-25,0.502,Positive,Record high inflows seen in crypto funds.
+2023-10-26,0.837,Positive,Record high inflows seen in crypto funds.
+2023-10-27,-0.655,Negative,Fears of regulatory crackdown loom.
+2023-10-28,0.158,Neutral,Market consolidating around key levels.
+2023-10-29,0.087,Neutral,Sideways trading continues throughout the session.
+2023-10-30,0.117,Neutral,Low volatility day ahead of fed meeting.
+2023-10-31,-0.377,Negative,Fears of regulatory crackdown loom.
+2023-11-01,0.23,Neutral,Sideways trading continues throughout the session.
+2023-11-02,-0.105,Neutral,Sideways trading continues throughout the session.
+2023-11-03,-0.111,Neutral,Market consolidating around key levels.
+2023-11-04,0.177,Neutral,Sideways trading continues throughout the session.
+2023-11-05,0.294,Neutral,Market consolidating around key levels.
+2023-11-06,1.0,Positive,Institutional adoption continues to grow.
+2023-11-07,-0.667,Negative,Bears dominating as support levels break.
+2023-11-08,0.25,Neutral,Market consolidating around key levels.
+2023-11-09,-0.518,Negative,Major exchange hack sparks panic selling.
+2023-11-10,0.563,Positive,Record high inflows seen in crypto funds.
+2023-11-11,0.588,Positive,Record high inflows seen in crypto funds.
+2023-11-12,0.007,Neutral,Trading sideways with no clear direction.
+2023-11-13,-0.644,Negative,Investors fleeing risk-on assets.
+2023-11-14,-0.427,Negative,Major exchange hack sparks panic selling.
+2023-11-15,0.945,Positive,Positive regulatory news sparks a rally.
+2023-11-16,0.728,Positive,Bulls taking control of the market.
+2023-11-17,0.805,Positive,Record high inflows seen in crypto funds.
+2023-11-18,-0.941,Negative,Bears dominating as support levels break.
+2023-11-19,0.096,Neutral,Market participants remain undecided.
+2023-11-20,-0.634,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-11-21,-0.921,Negative,Fears of regulatory crackdown loom.
+2023-11-22,1.0,Positive,Bulls taking control of the market.
+2023-11-23,0.127,Neutral,Low volatility day ahead of fed meeting.
+2023-11-24,0.213,Neutral,Sideways trading continues throughout the session.
+2023-11-25,0.085,Neutral,Low volatility day ahead of fed meeting.
+2023-11-26,-0.104,Neutral,Market participants remain undecided.
+2023-11-27,0.155,Neutral,Sideways trading continues throughout the session.
+2023-11-28,0.491,Positive,Institutional adoption continues to grow.
+2023-11-29,-0.241,Neutral,Market participants remain undecided.
+2023-11-30,0.588,Positive,Record high inflows seen in crypto funds.
+2023-12-01,0.133,Neutral,Low volatility day ahead of fed meeting.
+2023-12-02,0.309,Positive,Bulls taking control of the market.
+2023-12-03,0.014,Neutral,Low volatility day ahead of fed meeting.
+2023-12-04,1.0,Positive,Record high inflows seen in crypto funds.
+2023-12-05,0.349,Positive,Market shows strong resilience.
+2023-12-06,0.071,Neutral,Trading sideways with no clear direction.
+2023-12-07,0.164,Neutral,Market participants remain undecided.
+2023-12-08,1.0,Positive,Institutional adoption continues to grow.
+2023-12-09,-0.467,Negative,Fears of regulatory crackdown loom.
+2023-12-10,0.39,Positive,Institutional adoption continues to grow.
+2023-12-11,-1.0,Negative,Fears of regulatory crackdown loom.
+2023-12-12,-0.244,Neutral,Trading sideways with no clear direction.
+2023-12-13,0.537,Positive,Record high inflows seen in crypto funds.
+2023-12-14,0.409,Positive,Institutional adoption continues to grow.
+2023-12-15,-0.946,Negative,Investors fleeing risk-on assets.
+2023-12-16,0.532,Positive,Institutional adoption continues to grow.
+2023-12-17,-0.833,Negative,Bears dominating as support levels break.
+2023-12-18,-0.031,Neutral,Market consolidating around key levels.
+2023-12-19,-0.462,Negative,Bears dominating as support levels break.
+2023-12-20,0.325,Positive,Bulls taking control of the market.
+2023-12-21,0.763,Positive,Bulls taking control of the market.
+2023-12-22,0.144,Neutral,Market participants remain undecided.
+2023-12-23,-0.384,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-12-24,-0.179,Neutral,Trading sideways with no clear direction.
+2023-12-25,0.401,Positive,Institutional adoption continues to grow.
+2023-12-26,-0.508,Negative,Market bleeds amidst macroeconomic uncertainty.
+2023-12-27,0.341,Positive,Positive regulatory news sparks a rally.
+2023-12-28,-0.434,Negative,Major exchange hack sparks panic selling.
+2023-12-29,-0.023,Neutral,Low volatility day ahead of fed meeting.
+2023-12-30,-0.024,Neutral,Market consolidating around key levels.
+2023-12-31,-0.093,Neutral,Market participants remain undecided.
+2024-01-01,0.457,Positive,Market shows strong resilience.
+2024-01-02,-0.285,Neutral,Market consolidating around key levels.
+2024-01-03,-1.0,Negative,Bears dominating as support levels break.
+2024-01-04,0.2,Neutral,Sideways trading continues throughout the session.
+2024-01-05,-0.268,Neutral,Low volatility day ahead of fed meeting.
+2024-01-06,-0.543,Negative,Major exchange hack sparks panic selling.
+2024-01-07,-0.396,Negative,Fears of regulatory crackdown loom.
+2024-01-08,0.771,Positive,Positive regulatory news sparks a rally.
+2024-01-09,-0.341,Negative,Major exchange hack sparks panic selling.
+2024-01-10,0.631,Positive,Institutional adoption continues to grow.
+2024-01-11,0.36,Positive,Market shows strong resilience.
+2024-01-12,-0.793,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-01-13,0.138,Neutral,Trading sideways with no clear direction.
+2024-01-14,-0.125,Neutral,Market participants remain undecided.
+2024-01-15,0.108,Neutral,Low volatility day ahead of fed meeting.
+2024-01-16,0.007,Neutral,Market participants remain undecided.
+2024-01-17,-0.313,Negative,Fears of regulatory crackdown loom.
+2024-01-18,-0.437,Negative,Fears of regulatory crackdown loom.
+2024-01-19,0.143,Neutral,Sideways trading continues throughout the session.
+2024-01-20,1.0,Positive,Record high inflows seen in crypto funds.
+2024-01-21,-0.403,Negative,Bears dominating as support levels break.
+2024-01-22,-0.77,Negative,Fears of regulatory crackdown loom.
+2024-01-23,-0.374,Negative,Investors fleeing risk-on assets.
+2024-01-24,0.201,Neutral,Market consolidating around key levels.
+2024-01-25,-0.151,Neutral,Low volatility day ahead of fed meeting.
+2024-01-26,0.215,Neutral,Low volatility day ahead of fed meeting.
+2024-01-27,0.176,Neutral,Trading sideways with no clear direction.
+2024-01-28,-0.386,Negative,Major exchange hack sparks panic selling.
+2024-01-29,0.365,Positive,Positive regulatory news sparks a rally.
+2024-01-30,-0.321,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-01-31,-0.34,Negative,Major exchange hack sparks panic selling.
+2024-02-01,0.242,Neutral,Sideways trading continues throughout the session.
+2024-02-02,-0.011,Neutral,Market consolidating around key levels.
+2024-02-03,-0.055,Neutral,Trading sideways with no clear direction.
+2024-02-04,-0.102,Neutral,Market participants remain undecided.
+2024-02-05,-0.08,Neutral,Market consolidating around key levels.
+2024-02-06,-0.165,Neutral,Market participants remain undecided.
+2024-02-07,0.368,Positive,Institutional adoption continues to grow.
+2024-02-08,-0.151,Neutral,Market participants remain undecided.
+2024-02-09,0.297,Neutral,Low volatility day ahead of fed meeting.
+2024-02-10,0.021,Neutral,Trading sideways with no clear direction.
+2024-02-11,0.091,Neutral,Market consolidating around key levels.
+2024-02-12,0.315,Positive,Record high inflows seen in crypto funds.
+2024-02-13,-0.373,Negative,Major exchange hack sparks panic selling.
+2024-02-14,0.627,Positive,Institutional adoption continues to grow.
+2024-02-15,-0.188,Neutral,Market consolidating around key levels.
+2024-02-16,0.034,Neutral,Sideways trading continues throughout the session.
+2024-02-17,-0.582,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-02-18,0.108,Neutral,Low volatility day ahead of fed meeting.
+2024-02-19,0.615,Positive,Market shows strong resilience.
+2024-02-20,-0.442,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-02-21,-0.383,Negative,Investors fleeing risk-on assets.
+2024-02-22,-0.187,Neutral,Market consolidating around key levels.
+2024-02-23,0.085,Neutral,Market participants remain undecided.
+2024-02-24,0.103,Neutral,Market consolidating around key levels.
+2024-02-25,-0.141,Neutral,Sideways trading continues throughout the session.
+2024-02-26,0.545,Positive,Institutional adoption continues to grow.
+2024-02-27,1.0,Positive,Bulls taking control of the market.
+2024-02-28,1.0,Positive,Record high inflows seen in crypto funds.
+2024-02-29,0.183,Neutral,Trading sideways with no clear direction.
+2024-03-01,1.0,Positive,Record high inflows seen in crypto funds.
+2024-03-02,0.132,Neutral,Sideways trading continues throughout the session.
+2024-03-03,0.881,Positive,Institutional adoption continues to grow.
+2024-03-04,0.91,Positive,Bulls taking control of the market.
+2024-03-05,-0.945,Negative,Investors fleeing risk-on assets.
+2024-03-06,0.656,Positive,Institutional adoption continues to grow.
+2024-03-07,0.103,Neutral,Sideways trading continues throughout the session.
+2024-03-08,0.721,Positive,Record high inflows seen in crypto funds.
+2024-03-09,0.9,Positive,Positive regulatory news sparks a rally.
+2024-03-10,-0.875,Negative,Major exchange hack sparks panic selling.
+2024-03-11,0.966,Positive,Market shows strong resilience.
+2024-03-12,-1.0,Negative,Major exchange hack sparks panic selling.
+2024-03-13,0.139,Neutral,Low volatility day ahead of fed meeting.
+2024-03-14,0.623,Positive,Institutional adoption continues to grow.
+2024-03-15,-1.0,Negative,Bears dominating as support levels break.
+2024-03-16,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-03-17,1.0,Positive,Record high inflows seen in crypto funds.
+2024-03-18,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-03-19,-0.849,Negative,Investors fleeing risk-on assets.
+2024-03-20,0.916,Positive,Institutional adoption continues to grow.
+2024-03-21,0.316,Positive,Institutional adoption continues to grow.
+2024-03-22,-0.424,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-03-23,0.761,Positive,Institutional adoption continues to grow.
+2024-03-24,0.833,Positive,Institutional adoption continues to grow.
+2024-03-25,-0.029,Neutral,Sideways trading continues throughout the session.
+2024-03-26,0.492,Positive,Record high inflows seen in crypto funds.
+2024-03-27,0.566,Positive,Market shows strong resilience.
+2024-03-28,1.0,Positive,Bulls taking control of the market.
+2024-03-29,-0.523,Negative,Bears dominating as support levels break.
+2024-03-30,-1.0,Negative,Bears dominating as support levels break.
+2024-03-31,0.87,Positive,Market shows strong resilience.
+2024-04-01,-0.931,Negative,Fears of regulatory crackdown loom.
+2024-04-02,-1.0,Negative,Investors fleeing risk-on assets.
+2024-04-03,-0.763,Negative,Bears dominating as support levels break.
+2024-04-04,0.5,Positive,Market shows strong resilience.
+2024-04-05,-0.382,Negative,Investors fleeing risk-on assets.
+2024-04-06,0.701,Positive,Positive regulatory news sparks a rally.
+2024-04-07,0.872,Positive,Positive regulatory news sparks a rally.
+2024-04-08,0.481,Positive,Market shows strong resilience.
+2024-04-09,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-04-10,0.864,Positive,Positive regulatory news sparks a rally.
+2024-04-11,-0.442,Negative,Major exchange hack sparks panic selling.
+2024-04-12,-1.0,Negative,Bears dominating as support levels break.
+2024-04-13,-1.0,Negative,Fears of regulatory crackdown loom.
+2024-04-14,1.0,Positive,Record high inflows seen in crypto funds.
+2024-04-15,-0.276,Neutral,Low volatility day ahead of fed meeting.
+2024-04-16,-0.288,Neutral,Trading sideways with no clear direction.
+2024-04-17,-0.637,Negative,Investors fleeing risk-on assets.
+2024-04-18,0.404,Positive,Market shows strong resilience.
+2024-04-19,0.377,Positive,Record high inflows seen in crypto funds.
+2024-04-20,0.736,Positive,Institutional adoption continues to grow.
+2024-04-21,-0.574,Negative,Major exchange hack sparks panic selling.
+2024-04-22,0.111,Neutral,Market consolidating around key levels.
+2024-04-23,-0.078,Neutral,Market consolidating around key levels.
+2024-04-24,-0.973,Negative,Bears dominating as support levels break.
+2024-04-25,-0.063,Neutral,Market consolidating around key levels.
+2024-04-26,-0.353,Negative,Major exchange hack sparks panic selling.
+2024-04-27,-0.05,Neutral,Trading sideways with no clear direction.
+2024-04-28,0.041,Neutral,Market consolidating around key levels.
+2024-04-29,-0.383,Negative,Major exchange hack sparks panic selling.
+2024-04-30,-0.973,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-05-01,-0.469,Negative,Fears of regulatory crackdown loom.
+2024-05-02,0.381,Positive,Positive regulatory news sparks a rally.
+2024-05-03,1.0,Positive,Institutional adoption continues to grow.
+2024-05-04,0.886,Positive,Record high inflows seen in crypto funds.
+2024-05-05,0.226,Neutral,Market participants remain undecided.
+2024-05-06,-0.477,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-05-07,-0.524,Negative,Investors fleeing risk-on assets.
+2024-05-08,-0.588,Negative,Investors fleeing risk-on assets.
+2024-05-09,1.0,Positive,Institutional adoption continues to grow.
+2024-05-10,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-05-11,0.044,Neutral,Sideways trading continues throughout the session.
+2024-05-12,-0.298,Neutral,Trading sideways with no clear direction.
+2024-05-13,0.839,Positive,Institutional adoption continues to grow.
+2024-05-14,-0.442,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-05-15,0.968,Positive,Market shows strong resilience.
+2024-05-16,-0.556,Negative,Major exchange hack sparks panic selling.
+2024-05-17,0.436,Positive,Bulls taking control of the market.
+2024-05-18,-0.196,Neutral,Market participants remain undecided.
+2024-05-19,-0.482,Negative,Major exchange hack sparks panic selling.
+2024-05-20,0.877,Positive,Market shows strong resilience.
+2024-05-21,0.575,Positive,Market shows strong resilience.
+2024-05-22,-0.415,Negative,Major exchange hack sparks panic selling.
+2024-05-23,-0.495,Negative,Investors fleeing risk-on assets.
+2024-05-24,0.498,Positive,Record high inflows seen in crypto funds.
+2024-05-25,1.0,Positive,Institutional adoption continues to grow.
+2024-05-26,-0.713,Negative,Fears of regulatory crackdown loom.
+2024-05-27,0.159,Neutral,Low volatility day ahead of fed meeting.
+2024-05-28,-0.172,Neutral,Market consolidating around key levels.
+2024-05-29,0.087,Neutral,Sideways trading continues throughout the session.
+2024-05-30,-0.433,Negative,Major exchange hack sparks panic selling.
+2024-05-31,-0.049,Neutral,Sideways trading continues throughout the session.
+2024-06-01,-0.073,Neutral,Sideways trading continues throughout the session.
+2024-06-02,-0.321,Negative,Major exchange hack sparks panic selling.
+2024-06-03,0.03,Neutral,Market participants remain undecided.
+2024-06-04,0.101,Neutral,Trading sideways with no clear direction.
+2024-06-05,0.222,Neutral,Trading sideways with no clear direction.
+2024-06-06,-0.359,Negative,Investors fleeing risk-on assets.
+2024-06-07,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-06-08,-0.224,Neutral,Market consolidating around key levels.
+2024-06-09,-0.089,Neutral,Low volatility day ahead of fed meeting.
+2024-06-10,-0.108,Neutral,Sideways trading continues throughout the session.
+2024-06-11,-0.604,Negative,Major exchange hack sparks panic selling.
+2024-06-12,0.698,Positive,Bulls taking control of the market.
+2024-06-13,-0.602,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-06-14,-0.505,Negative,Bears dominating as support levels break.
+2024-06-15,0.234,Neutral,Market participants remain undecided.
+2024-06-16,0.159,Neutral,Market consolidating around key levels.
+2024-06-17,-0.851,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-06-18,-0.624,Negative,Bears dominating as support levels break.
+2024-06-19,0.189,Neutral,Market participants remain undecided.
+2024-06-20,0.274,Neutral,Market consolidating around key levels.
+2024-06-21,0.05,Neutral,Market participants remain undecided.
+2024-06-22,-0.146,Neutral,Sideways trading continues throughout the session.
+2024-06-23,-0.309,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-06-24,-0.339,Negative,Investors fleeing risk-on assets.
+2024-06-25,0.791,Positive,Record high inflows seen in crypto funds.
+2024-06-26,-0.55,Negative,Bears dominating as support levels break.
+2024-06-27,0.692,Positive,Positive regulatory news sparks a rally.
+2024-06-28,-0.436,Negative,Major exchange hack sparks panic selling.
+2024-06-29,-0.281,Neutral,Market consolidating around key levels.
+2024-06-30,0.409,Positive,Bulls taking control of the market.
+2024-07-01,-0.188,Neutral,Trading sideways with no clear direction.
+2024-07-02,0.3,Positive,Record high inflows seen in crypto funds.
+2024-07-03,-0.794,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-07-04,-0.828,Negative,Investors fleeing risk-on assets.
+2024-07-05,-0.007,Neutral,Market consolidating around key levels.
+2024-07-06,1.0,Positive,Bulls taking control of the market.
+2024-07-07,-0.831,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-07-08,0.634,Positive,Institutional adoption continues to grow.
+2024-07-09,0.133,Neutral,Trading sideways with no clear direction.
+2024-07-10,-0.007,Neutral,Trading sideways with no clear direction.
+2024-07-11,-0.216,Neutral,Trading sideways with no clear direction.
+2024-07-12,0.144,Neutral,Market participants remain undecided.
+2024-07-13,0.688,Positive,Record high inflows seen in crypto funds.
+2024-07-14,0.343,Positive,Market shows strong resilience.
+2024-07-15,0.997,Positive,Institutional adoption continues to grow.
+2024-07-16,0.182,Neutral,Market participants remain undecided.
+2024-07-17,-0.323,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-07-18,-0.217,Neutral,Market consolidating around key levels.
+2024-07-19,0.662,Positive,Institutional adoption continues to grow.
+2024-07-20,0.848,Positive,Market shows strong resilience.
+2024-07-21,0.775,Positive,Institutional adoption continues to grow.
+2024-07-22,-0.223,Neutral,Low volatility day ahead of fed meeting.
+2024-07-23,-0.986,Negative,Investors fleeing risk-on assets.
+2024-07-24,-0.083,Neutral,Low volatility day ahead of fed meeting.
+2024-07-25,-0.276,Neutral,Market consolidating around key levels.
+2024-07-26,1.0,Positive,Positive regulatory news sparks a rally.
+2024-07-27,-0.176,Neutral,Market participants remain undecided.
+2024-07-28,-0.086,Neutral,Trading sideways with no clear direction.
+2024-07-29,-0.262,Neutral,Market participants remain undecided.
+2024-07-30,-0.48,Negative,Fears of regulatory crackdown loom.
+2024-07-31,-0.609,Negative,Fears of regulatory crackdown loom.
+2024-08-01,-0.3,Neutral,Trading sideways with no clear direction.
+2024-08-02,-0.962,Negative,Bears dominating as support levels break.
+2024-08-03,-0.27,Neutral,Sideways trading continues throughout the session.
+2024-08-04,-0.436,Negative,Fears of regulatory crackdown loom.
+2024-08-05,-0.859,Negative,Fears of regulatory crackdown loom.
+2024-08-06,0.34,Positive,Record high inflows seen in crypto funds.
+2024-08-07,-0.046,Neutral,Market participants remain undecided.
+2024-08-08,1.0,Positive,Record high inflows seen in crypto funds.
+2024-08-09,-0.355,Negative,Bears dominating as support levels break.
+2024-08-10,0.182,Neutral,Trading sideways with no clear direction.
+2024-08-11,-0.808,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-08-12,1.0,Positive,Bulls taking control of the market.
+2024-08-13,-0.146,Neutral,Market consolidating around key levels.
+2024-08-14,-0.637,Negative,Major exchange hack sparks panic selling.
+2024-08-15,-0.207,Neutral,Low volatility day ahead of fed meeting.
+2024-08-16,-0.058,Neutral,Low volatility day ahead of fed meeting.
+2024-08-17,0.264,Neutral,Trading sideways with no clear direction.
+2024-08-18,-0.266,Neutral,Market participants remain undecided.
+2024-08-19,0.026,Neutral,Low volatility day ahead of fed meeting.
+2024-08-20,0.406,Positive,Positive regulatory news sparks a rally.
+2024-08-21,0.456,Positive,Bulls taking control of the market.
+2024-08-22,-0.053,Neutral,Low volatility day ahead of fed meeting.
+2024-08-23,1.0,Positive,Bulls taking control of the market.
+2024-08-24,-0.061,Neutral,Trading sideways with no clear direction.
+2024-08-25,-0.503,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-08-26,-0.785,Negative,Investors fleeing risk-on assets.
+2024-08-27,-0.9,Negative,Investors fleeing risk-on assets.
+2024-08-28,0.3,Neutral,Sideways trading continues throughout the session.
+2024-08-29,0.125,Neutral,Market participants remain undecided.
+2024-08-30,0.387,Positive,Bulls taking control of the market.
+2024-08-31,-0.085,Neutral,Sideways trading continues throughout the session.
+2024-09-01,-0.821,Negative,Investors fleeing risk-on assets.
+2024-09-02,0.605,Positive,Institutional adoption continues to grow.
+2024-09-03,-0.274,Neutral,Market participants remain undecided.
+2024-09-04,0.033,Neutral,Market participants remain undecided.
+2024-09-05,0.169,Neutral,Market participants remain undecided.
+2024-09-06,-1.0,Negative,Bears dominating as support levels break.
+2024-09-07,0.278,Neutral,Low volatility day ahead of fed meeting.
+2024-09-08,0.108,Neutral,Market consolidating around key levels.
+2024-09-09,1.0,Positive,Bulls taking control of the market.
+2024-09-10,-0.289,Neutral,Low volatility day ahead of fed meeting.
+2024-09-11,-0.394,Negative,Fears of regulatory crackdown loom.
+2024-09-12,0.292,Neutral,Market consolidating around key levels.
+2024-09-13,0.815,Positive,Record high inflows seen in crypto funds.
+2024-09-14,-0.286,Neutral,Sideways trading continues throughout the session.
+2024-09-15,-0.456,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-09-16,-0.273,Neutral,Market participants remain undecided.
+2024-09-17,0.174,Neutral,Sideways trading continues throughout the session.
+2024-09-18,0.243,Neutral,Market participants remain undecided.
+2024-09-19,0.006,Neutral,Market participants remain undecided.
+2024-09-20,0.197,Neutral,Market participants remain undecided.
+2024-09-21,0.572,Positive,Record high inflows seen in crypto funds.
+2024-09-22,-0.393,Negative,Major exchange hack sparks panic selling.
+2024-09-23,0.156,Neutral,Trading sideways with no clear direction.
+2024-09-24,0.187,Neutral,Market participants remain undecided.
+2024-09-25,-0.132,Neutral,Trading sideways with no clear direction.
+2024-09-26,1.0,Positive,Market shows strong resilience.
+2024-09-27,0.856,Positive,Record high inflows seen in crypto funds.
+2024-09-28,0.463,Positive,Market shows strong resilience.
+2024-09-29,-0.386,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-09-30,-0.867,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-10-01,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-10-02,-0.459,Negative,Investors fleeing risk-on assets.
+2024-10-03,-0.056,Neutral,Sideways trading continues throughout the session.
+2024-10-04,0.625,Positive,Bulls taking control of the market.
+2024-10-05,-0.159,Neutral,Trading sideways with no clear direction.
+2024-10-06,0.395,Positive,Bulls taking control of the market.
+2024-10-07,-0.434,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-10-08,0.006,Neutral,Trading sideways with no clear direction.
+2024-10-09,0.161,Neutral,Low volatility day ahead of fed meeting.
+2024-10-10,-0.19,Neutral,Market participants remain undecided.
+2024-10-11,0.705,Positive,Record high inflows seen in crypto funds.
+2024-10-12,0.01,Neutral,Trading sideways with no clear direction.
+2024-10-13,0.105,Neutral,Low volatility day ahead of fed meeting.
+2024-10-14,0.894,Positive,Institutional adoption continues to grow.
+2024-10-15,0.261,Neutral,Trading sideways with no clear direction.
+2024-10-16,0.86,Positive,Positive regulatory news sparks a rally.
+2024-10-17,0.377,Positive,Market shows strong resilience.
+2024-10-18,0.77,Positive,Positive regulatory news sparks a rally.
+2024-10-19,0.627,Positive,Bulls taking control of the market.
+2024-10-20,-0.08,Neutral,Low volatility day ahead of fed meeting.
+2024-10-21,0.247,Neutral,Market consolidating around key levels.
+2024-10-22,-0.611,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-10-23,0.159,Neutral,Trading sideways with no clear direction.
+2024-10-24,0.389,Positive,Record high inflows seen in crypto funds.
+2024-10-25,-0.986,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-10-26,0.674,Positive,Record high inflows seen in crypto funds.
+2024-10-27,0.758,Positive,Bulls taking control of the market.
+2024-10-28,1.0,Positive,Record high inflows seen in crypto funds.
+2024-10-29,0.808,Positive,Record high inflows seen in crypto funds.
+2024-10-30,-0.622,Negative,Investors fleeing risk-on assets.
+2024-10-31,-0.789,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-11-01,-0.21,Neutral,Market participants remain undecided.
+2024-11-02,-0.14,Neutral,Low volatility day ahead of fed meeting.
+2024-11-03,-0.758,Negative,Investors fleeing risk-on assets.
+2024-11-04,0.586,Positive,Bulls taking control of the market.
+2024-11-05,0.906,Positive,Bulls taking control of the market.
+2024-11-06,0.99,Positive,Record high inflows seen in crypto funds.
+2024-11-07,-0.445,Negative,Bears dominating as support levels break.
+2024-11-08,0.622,Positive,Record high inflows seen in crypto funds.
+2024-11-09,1.0,Positive,Record high inflows seen in crypto funds.
+2024-11-10,1.0,Positive,Market shows strong resilience.
+2024-11-11,0.896,Positive,Institutional adoption continues to grow.
+2024-11-12,1.0,Positive,Record high inflows seen in crypto funds.
+2024-11-13,0.713,Positive,Market shows strong resilience.
+2024-11-14,-0.869,Negative,Bears dominating as support levels break.
+2024-11-15,0.942,Positive,Record high inflows seen in crypto funds.
+2024-11-16,-0.55,Negative,Fears of regulatory crackdown loom.
+2024-11-17,-0.02,Neutral,Trading sideways with no clear direction.
+2024-11-18,0.235,Neutral,Sideways trading continues throughout the session.
+2024-11-19,0.784,Positive,Record high inflows seen in crypto funds.
+2024-11-20,-0.443,Negative,Fears of regulatory crackdown loom.
+2024-11-21,0.29,Neutral,Market participants remain undecided.
+2024-11-22,0.844,Positive,Bulls taking control of the market.
+2024-11-23,0.718,Positive,Market shows strong resilience.
+2024-11-24,0.168,Neutral,Trading sideways with no clear direction.
+2024-11-25,-0.952,Negative,Major exchange hack sparks panic selling.
+2024-11-26,-0.095,Neutral,Market participants remain undecided.
+2024-11-27,0.491,Positive,Bulls taking control of the market.
+2024-11-28,0.18,Neutral,Trading sideways with no clear direction.
+2024-11-29,0.775,Positive,Positive regulatory news sparks a rally.
+2024-11-30,-0.06,Neutral,Sideways trading continues throughout the session.
+2024-12-01,0.519,Positive,Bulls taking control of the market.
+2024-12-02,-0.442,Negative,Bears dominating as support levels break.
+2024-12-03,-0.489,Negative,Major exchange hack sparks panic selling.
+2024-12-04,0.938,Positive,Record high inflows seen in crypto funds.
+2024-12-05,-0.291,Neutral,Trading sideways with no clear direction.
+2024-12-06,0.193,Neutral,Low volatility day ahead of fed meeting.
+2024-12-07,0.535,Positive,Institutional adoption continues to grow.
+2024-12-08,0.561,Positive,Bulls taking control of the market.
+2024-12-09,-0.804,Negative,Bears dominating as support levels break.
+2024-12-10,-0.688,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-12-11,0.766,Positive,Market shows strong resilience.
+2024-12-12,-0.168,Neutral,Market consolidating around key levels.
+2024-12-13,0.133,Neutral,Low volatility day ahead of fed meeting.
+2024-12-14,-0.497,Negative,Bears dominating as support levels break.
+2024-12-15,0.204,Neutral,Low volatility day ahead of fed meeting.
+2024-12-16,-0.323,Negative,Bears dominating as support levels break.
+2024-12-17,-0.353,Negative,Fears of regulatory crackdown loom.
+2024-12-18,-0.915,Negative,Market bleeds amidst macroeconomic uncertainty.
+2024-12-19,-0.921,Negative,Investors fleeing risk-on assets.
+2024-12-20,0.291,Neutral,Market participants remain undecided.
+2024-12-21,-0.02,Neutral,Low volatility day ahead of fed meeting.
+2024-12-22,-0.53,Negative,Investors fleeing risk-on assets.
+2024-12-23,0.556,Positive,Record high inflows seen in crypto funds.
+2024-12-24,0.435,Positive,Positive regulatory news sparks a rally.
+2024-12-25,-0.194,Neutral,Sideways trading continues throughout the session.
+2024-12-26,-1.0,Negative,Investors fleeing risk-on assets.
+2024-12-27,0.062,Neutral,Market consolidating around key levels.
+2024-12-28,0.51,Positive,Record high inflows seen in crypto funds.
+2024-12-29,-0.34,Negative,Bears dominating as support levels break.
+2024-12-30,0.075,Neutral,Low volatility day ahead of fed meeting.
+2024-12-31,-0.073,Neutral,Market consolidating around key levels.
+2025-01-01,0.473,Positive,Institutional adoption continues to grow.
+2025-01-02,0.674,Positive,Record high inflows seen in crypto funds.
+2025-01-03,1.0,Positive,Bulls taking control of the market.
+2025-01-04,0.688,Positive,Institutional adoption continues to grow.
+2025-01-05,-0.486,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-01-06,0.289,Neutral,Sideways trading continues throughout the session.
+2025-01-07,-1.0,Negative,Bears dominating as support levels break.
+2025-01-08,-0.093,Neutral,Low volatility day ahead of fed meeting.
+2025-01-09,-1.0,Negative,Investors fleeing risk-on assets.
+2025-01-10,0.761,Positive,Institutional adoption continues to grow.
+2025-01-11,0.52,Positive,Record high inflows seen in crypto funds.
+2025-01-12,-0.293,Neutral,Trading sideways with no clear direction.
+2025-01-13,0.239,Neutral,Trading sideways with no clear direction.
+2025-01-14,0.981,Positive,Institutional adoption continues to grow.
+2025-01-15,0.817,Positive,Record high inflows seen in crypto funds.
+2025-01-16,-0.354,Negative,Investors fleeing risk-on assets.
+2025-01-17,0.809,Positive,Market shows strong resilience.
+2025-01-18,-0.528,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-01-19,-0.886,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-01-20,-0.255,Neutral,Market consolidating around key levels.
+2025-01-21,0.555,Positive,Positive regulatory news sparks a rally.
+2025-01-22,-0.246,Neutral,Market participants remain undecided.
+2025-01-23,-0.312,Negative,Bears dominating as support levels break.
+2025-01-24,0.094,Neutral,Sideways trading continues throughout the session.
+2025-01-25,0.288,Neutral,Market consolidating around key levels.
+2025-01-26,-0.55,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-01-27,-0.139,Neutral,Trading sideways with no clear direction.
+2025-01-28,-0.567,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-01-29,0.202,Neutral,Trading sideways with no clear direction.
+2025-01-30,0.538,Positive,Positive regulatory news sparks a rally.
+2025-01-31,-0.15,Neutral,Low volatility day ahead of fed meeting.
+2025-02-01,-1.0,Negative,Investors fleeing risk-on assets.
+2025-02-02,-1.0,Negative,Major exchange hack sparks panic selling.
+2025-02-03,1.0,Positive,Positive regulatory news sparks a rally.
+2025-02-04,-0.811,Negative,Investors fleeing risk-on assets.
+2025-02-05,-0.226,Neutral,Market consolidating around key levels.
+2025-02-06,-0.305,Negative,Fears of regulatory crackdown loom.
+2025-02-07,-0.247,Neutral,Market participants remain undecided.
+2025-02-08,0.263,Neutral,Sideways trading continues throughout the session.
+2025-02-09,-0.151,Neutral,Market consolidating around key levels.
+2025-02-10,0.318,Positive,Record high inflows seen in crypto funds.
+2025-02-11,-0.044,Neutral,Sideways trading continues throughout the session.
+2025-02-12,0.665,Positive,Market shows strong resilience.
+2025-02-13,-0.08,Neutral,Sideways trading continues throughout the session.
+2025-02-14,0.588,Positive,Record high inflows seen in crypto funds.
+2025-02-15,-0.052,Neutral,Market consolidating around key levels.
+2025-02-16,-0.171,Neutral,Sideways trading continues throughout the session.
+2025-02-17,-0.277,Neutral,Market consolidating around key levels.
+2025-02-18,-0.52,Negative,Fears of regulatory crackdown loom.
+2025-02-19,0.347,Positive,Record high inflows seen in crypto funds.
+2025-02-20,-0.044,Neutral,Trading sideways with no clear direction.
+2025-02-21,-0.983,Negative,Fears of regulatory crackdown loom.
+2025-02-22,0.588,Positive,Bulls taking control of the market.
+2025-02-23,-0.203,Neutral,Sideways trading continues throughout the session.
+2025-02-24,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-02-25,0.253,Neutral,Low volatility day ahead of fed meeting.
+2025-02-26,-0.716,Negative,Bears dominating as support levels break.
+2025-02-27,0.415,Positive,Positive regulatory news sparks a rally.
+2025-02-28,-0.284,Neutral,Market participants remain undecided.
+2025-03-01,0.53,Positive,Bulls taking control of the market.
+2025-03-02,1.0,Positive,Record high inflows seen in crypto funds.
+2025-03-03,-1.0,Negative,Fears of regulatory crackdown loom.
+2025-03-04,0.123,Neutral,Sideways trading continues throughout the session.
+2025-03-05,0.431,Positive,Market shows strong resilience.
+2025-03-06,-0.214,Neutral,Market participants remain undecided.
+2025-03-07,-0.169,Neutral,Market consolidating around key levels.
+2025-03-08,-0.566,Negative,Fears of regulatory crackdown loom.
+2025-03-09,-1.0,Negative,Major exchange hack sparks panic selling.
+2025-03-10,-1.0,Negative,Bears dominating as support levels break.
+2025-03-11,0.844,Positive,Market shows strong resilience.
+2025-03-12,0.7,Positive,Market shows strong resilience.
+2025-03-13,-0.824,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-03-14,0.573,Positive,Market shows strong resilience.
+2025-03-15,0.223,Neutral,Trading sideways with no clear direction.
+2025-03-16,-0.473,Negative,Major exchange hack sparks panic selling.
+2025-03-17,0.591,Positive,Market shows strong resilience.
+2025-03-18,-0.554,Negative,Fears of regulatory crackdown loom.
+2025-03-19,0.99,Positive,Positive regulatory news sparks a rally.
+2025-03-20,-0.857,Negative,Fears of regulatory crackdown loom.
+2025-03-21,-0.234,Neutral,Low volatility day ahead of fed meeting.
+2025-03-22,-0.049,Neutral,Market participants remain undecided.
+2025-03-23,0.29,Neutral,Low volatility day ahead of fed meeting.
+2025-03-24,1.0,Positive,Bulls taking control of the market.
+2025-03-25,0.49,Positive,Institutional adoption continues to grow.
+2025-03-26,0.29,Neutral,Market participants remain undecided.
+2025-03-27,-0.419,Negative,Fears of regulatory crackdown loom.
+2025-03-28,-0.777,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-03-29,-0.689,Negative,Major exchange hack sparks panic selling.
+2025-03-30,-0.08,Neutral,Trading sideways with no clear direction.
+2025-03-31,0.064,Neutral,Sideways trading continues throughout the session.
+2025-04-01,0.736,Positive,Institutional adoption continues to grow.
+2025-04-02,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-04-03,-0.333,Negative,Major exchange hack sparks panic selling.
+2025-04-04,0.669,Positive,Bulls taking control of the market.
+2025-04-05,-0.216,Neutral,Market participants remain undecided.
+2025-04-06,-1.0,Negative,Major exchange hack sparks panic selling.
+2025-04-07,-0.129,Neutral,Low volatility day ahead of fed meeting.
+2025-04-08,-0.659,Negative,Investors fleeing risk-on assets.
+2025-04-09,1.0,Positive,Positive regulatory news sparks a rally.
+2025-04-10,-0.73,Negative,Fears of regulatory crackdown loom.
+2025-04-11,0.496,Positive,Market shows strong resilience.
+2025-04-12,0.637,Positive,Record high inflows seen in crypto funds.
+2025-04-13,-0.62,Negative,Major exchange hack sparks panic selling.
+2025-04-14,-0.313,Negative,Major exchange hack sparks panic selling.
+2025-04-15,-0.436,Negative,Fears of regulatory crackdown loom.
+2025-04-16,0.182,Neutral,Low volatility day ahead of fed meeting.
+2025-04-17,0.189,Neutral,Trading sideways with no clear direction.
+2025-04-18,0.258,Neutral,Trading sideways with no clear direction.
+2025-04-19,0.07,Neutral,Sideways trading continues throughout the session.
+2025-04-20,-0.277,Neutral,Sideways trading continues throughout the session.
+2025-04-21,0.471,Positive,Record high inflows seen in crypto funds.
+2025-04-22,1.0,Positive,Record high inflows seen in crypto funds.
+2025-04-23,0.067,Neutral,Trading sideways with no clear direction.
+2025-04-24,0.409,Positive,Institutional adoption continues to grow.
+2025-04-25,-0.191,Neutral,Sideways trading continues throughout the session.
+2025-04-26,-0.139,Neutral,Sideways trading continues throughout the session.
+2025-04-27,-0.347,Negative,Bears dominating as support levels break.
+2025-04-28,0.082,Neutral,Low volatility day ahead of fed meeting.
+2025-04-29,-0.502,Negative,Fears of regulatory crackdown loom.
+2025-04-30,-0.02,Neutral,Sideways trading continues throughout the session.
+2025-05-01,0.602,Positive,Positive regulatory news sparks a rally.
+2025-05-02,0.132,Neutral,Low volatility day ahead of fed meeting.
+2025-05-03,-0.559,Negative,Bears dominating as support levels break.
+2025-05-04,-0.306,Negative,Fears of regulatory crackdown loom.
+2025-05-05,0.018,Neutral,Trading sideways with no clear direction.
+2025-05-06,0.203,Neutral,Market participants remain undecided.
+2025-05-07,-0.003,Neutral,Trading sideways with no clear direction.
+2025-05-08,0.877,Positive,Market shows strong resilience.
+2025-05-09,0.688,Positive,Bulls taking control of the market.
+2025-05-10,0.959,Positive,Market shows strong resilience.
+2025-05-11,-0.867,Negative,Investors fleeing risk-on assets.
+2025-05-12,0.081,Neutral,Low volatility day ahead of fed meeting.
+2025-05-13,0.718,Positive,Institutional adoption continues to grow.
+2025-05-14,-0.405,Negative,Major exchange hack sparks panic selling.
+2025-05-15,-0.839,Negative,Major exchange hack sparks panic selling.
+2025-05-16,0.131,Neutral,Trading sideways with no clear direction.
+2025-05-17,-0.574,Negative,Major exchange hack sparks panic selling.
+2025-05-18,0.839,Positive,Record high inflows seen in crypto funds.
+2025-05-19,-0.691,Negative,Major exchange hack sparks panic selling.
+2025-05-20,0.276,Neutral,Market participants remain undecided.
+2025-05-21,0.457,Positive,Bulls taking control of the market.
+2025-05-22,0.756,Positive,Record high inflows seen in crypto funds.
+2025-05-23,-1.0,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-05-24,-0.036,Neutral,Market participants remain undecided.
+2025-05-25,-0.027,Neutral,Market participants remain undecided.
+2025-05-26,-0.098,Neutral,Sideways trading continues throughout the session.
+2025-05-27,0.109,Neutral,Low volatility day ahead of fed meeting.
+2025-05-28,-0.144,Neutral,Sideways trading continues throughout the session.
+2025-05-29,-0.61,Negative,Investors fleeing risk-on assets.
+2025-05-30,-1.0,Negative,Bears dominating as support levels break.
+2025-05-31,-0.24,Neutral,Trading sideways with no clear direction.
+2025-06-01,0.022,Neutral,Market consolidating around key levels.
+2025-06-02,-0.073,Neutral,Trading sideways with no clear direction.
+2025-06-03,-0.153,Neutral,Sideways trading continues throughout the session.
+2025-06-04,-0.329,Negative,Fears of regulatory crackdown loom.
+2025-06-05,-0.837,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-06-06,0.796,Positive,Record high inflows seen in crypto funds.
+2025-06-07,0.508,Positive,Institutional adoption continues to grow.
+2025-06-08,-0.042,Neutral,Trading sideways with no clear direction.
+2025-06-09,0.752,Positive,Market shows strong resilience.
+2025-06-10,0.407,Positive,Bulls taking control of the market.
+2025-06-11,-0.28,Neutral,Low volatility day ahead of fed meeting.
+2025-06-12,-0.866,Negative,Investors fleeing risk-on assets.
+2025-06-13,-0.23,Neutral,Low volatility day ahead of fed meeting.
+2025-06-14,-0.033,Neutral,Trading sideways with no clear direction.
+2025-06-15,-0.388,Negative,Investors fleeing risk-on assets.
+2025-06-16,-0.257,Neutral,Trading sideways with no clear direction.
+2025-06-17,-0.133,Neutral,Trading sideways with no clear direction.
+2025-06-18,0.015,Neutral,Market participants remain undecided.
+2025-06-19,-0.115,Neutral,Sideways trading continues throughout the session.
+2025-06-20,-0.843,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-06-21,-0.754,Negative,Investors fleeing risk-on assets.
+2025-06-22,-0.293,Neutral,Trading sideways with no clear direction.
+2025-06-23,1.0,Positive,Market shows strong resilience.
+2025-06-24,0.043,Neutral,Sideways trading continues throughout the session.
+2025-06-25,-0.13,Neutral,Market consolidating around key levels.
+2025-06-26,-0.61,Negative,Major exchange hack sparks panic selling.
+2025-06-27,0.278,Neutral,Sideways trading continues throughout the session.
+2025-06-28,0.081,Neutral,Trading sideways with no clear direction.
+2025-06-29,0.473,Positive,Positive regulatory news sparks a rally.
+2025-06-30,-0.201,Neutral,Sideways trading continues throughout the session.
+2025-07-01,-0.808,Negative,Fears of regulatory crackdown loom.
+2025-07-02,1.0,Positive,Institutional adoption continues to grow.
+2025-07-03,0.313,Positive,Market shows strong resilience.
+2025-07-04,-0.923,Negative,Major exchange hack sparks panic selling.
+2025-07-05,0.316,Positive,Market shows strong resilience.
+2025-07-06,0.524,Positive,Bulls taking control of the market.
+2025-07-07,-0.328,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-07-08,0.207,Neutral,Sideways trading continues throughout the session.
+2025-07-09,0.654,Positive,Positive regulatory news sparks a rally.
+2025-07-10,0.922,Positive,Bulls taking control of the market.
+2025-07-11,0.355,Positive,Market shows strong resilience.
+2025-07-12,-0.465,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-07-13,0.258,Neutral,Trading sideways with no clear direction.
+2025-07-14,-0.188,Neutral,Low volatility day ahead of fed meeting.
+2025-07-15,-0.014,Neutral,Market consolidating around key levels.
+2025-07-16,1.0,Positive,Institutional adoption continues to grow.
+2025-07-17,0.274,Neutral,Market participants remain undecided.
+2025-07-18,1.0,Positive,Record high inflows seen in crypto funds.
+2025-07-19,0.404,Positive,Bulls taking control of the market.
+2025-07-20,1.0,Positive,Institutional adoption continues to grow.
+2025-07-21,0.07,Neutral,Market consolidating around key levels.
+2025-07-22,0.015,Neutral,Trading sideways with no clear direction.
+2025-07-23,-0.949,Negative,Major exchange hack sparks panic selling.
+2025-07-24,-0.612,Negative,Fears of regulatory crackdown loom.
+2025-07-25,0.192,Neutral,Trading sideways with no clear direction.
+2025-07-26,-0.071,Neutral,Market consolidating around key levels.
+2025-07-27,0.201,Neutral,Trading sideways with no clear direction.
+2025-07-28,-0.854,Negative,Fears of regulatory crackdown loom.
+2025-07-29,-0.322,Negative,Investors fleeing risk-on assets.
+2025-07-30,-0.107,Neutral,Market participants remain undecided.
+2025-07-31,-0.861,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-08-01,-0.627,Negative,Investors fleeing risk-on assets.
+2025-08-02,-0.595,Negative,Fears of regulatory crackdown loom.
+2025-08-03,0.727,Positive,Record high inflows seen in crypto funds.
+2025-08-04,1.0,Positive,Positive regulatory news sparks a rally.
+2025-08-05,-0.582,Negative,Fears of regulatory crackdown loom.
+2025-08-06,0.218,Neutral,Market consolidating around key levels.
+2025-08-07,0.955,Positive,Record high inflows seen in crypto funds.
+2025-08-08,0.383,Positive,Record high inflows seen in crypto funds.
+2025-08-09,0.528,Positive,Market shows strong resilience.
+2025-08-10,-0.421,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-08-11,-0.789,Negative,Fears of regulatory crackdown loom.
+2025-08-12,0.863,Positive,Record high inflows seen in crypto funds.
+2025-08-13,0.716,Positive,Positive regulatory news sparks a rally.
+2025-08-14,-0.844,Negative,Bears dominating as support levels break.
+2025-08-15,0.172,Neutral,Trading sideways with no clear direction.
+2025-08-16,0.216,Neutral,Low volatility day ahead of fed meeting.
+2025-08-17,0.036,Neutral,Trading sideways with no clear direction.
+2025-08-18,-0.961,Negative,Investors fleeing risk-on assets.
+2025-08-19,-0.711,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-08-20,0.977,Positive,Positive regulatory news sparks a rally.
+2025-08-21,-0.5,Negative,Investors fleeing risk-on assets.
+2025-08-22,1.0,Positive,Institutional adoption continues to grow.
+2025-08-23,-0.393,Negative,Investors fleeing risk-on assets.
+2025-08-24,-0.416,Negative,Investors fleeing risk-on assets.
+2025-08-25,-1.0,Negative,Bears dominating as support levels break.
+2025-08-26,0.573,Positive,Record high inflows seen in crypto funds.
+2025-08-27,0.028,Neutral,Sideways trading continues throughout the session.
+2025-08-28,0.478,Positive,Positive regulatory news sparks a rally.
+2025-08-29,-0.791,Negative,Fears of regulatory crackdown loom.
+2025-08-30,0.253,Neutral,Sideways trading continues throughout the session.
+2025-08-31,-0.27,Neutral,Market participants remain undecided.
+2025-09-01,-0.301,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-09-02,0.288,Neutral,Market participants remain undecided.
+2025-09-03,0.503,Positive,Record high inflows seen in crypto funds.
+2025-09-04,-0.4,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-09-05,0.32,Positive,Market shows strong resilience.
+2025-09-06,-0.179,Neutral,Market participants remain undecided.
+2025-09-07,0.835,Positive,Market shows strong resilience.
+2025-09-08,0.751,Positive,Positive regulatory news sparks a rally.
+2025-09-09,-0.258,Neutral,Market participants remain undecided.
+2025-09-10,0.274,Neutral,Sideways trading continues throughout the session.
+2025-09-11,0.72,Positive,Record high inflows seen in crypto funds.
+2025-09-12,1.0,Positive,Positive regulatory news sparks a rally.
+2025-09-13,0.954,Positive,Bulls taking control of the market.
+2025-09-14,-0.514,Negative,Bears dominating as support levels break.
+2025-09-15,-0.458,Negative,Bears dominating as support levels break.
+2025-09-16,-0.041,Neutral,Sideways trading continues throughout the session.
+2025-09-17,0.832,Positive,Market shows strong resilience.
+2025-09-18,-0.3,Neutral,Market participants remain undecided.
+2025-09-19,-0.694,Negative,Major exchange hack sparks panic selling.
+2025-09-20,0.01,Neutral,Market consolidating around key levels.
+2025-09-21,-0.534,Negative,Bears dominating as support levels break.
+2025-09-22,-0.807,Negative,Investors fleeing risk-on assets.
+2025-09-23,-0.42,Negative,Major exchange hack sparks panic selling.
+2025-09-24,0.297,Neutral,Low volatility day ahead of fed meeting.
+2025-09-25,-1.0,Negative,Major exchange hack sparks panic selling.
+2025-09-26,0.514,Positive,Record high inflows seen in crypto funds.
+2025-09-27,0.063,Neutral,Trading sideways with no clear direction.
+2025-09-28,0.459,Positive,Institutional adoption continues to grow.
+2025-09-29,-0.305,Negative,Bears dominating as support levels break.
+2025-09-30,-0.115,Neutral,Trading sideways with no clear direction.
+2025-10-01,0.95,Positive,Positive regulatory news sparks a rally.
+2025-10-02,0.784,Positive,Record high inflows seen in crypto funds.
+2025-10-03,-0.312,Negative,Major exchange hack sparks panic selling.
+2025-10-04,-0.533,Negative,Investors fleeing risk-on assets.
+2025-10-05,0.163,Neutral,Sideways trading continues throughout the session.
+2025-10-06,0.633,Positive,Bulls taking control of the market.
+2025-10-07,-0.971,Negative,Investors fleeing risk-on assets.
+2025-10-08,0.659,Positive,Positive regulatory news sparks a rally.
+2025-10-09,-0.514,Negative,Fears of regulatory crackdown loom.
+2025-10-10,-1.0,Negative,Investors fleeing risk-on assets.
+2025-10-11,-0.531,Negative,Fears of regulatory crackdown loom.
+2025-10-12,1.0,Positive,Record high inflows seen in crypto funds.
+2025-10-13,0.349,Positive,Bulls taking control of the market.
+2025-10-14,-0.627,Negative,Investors fleeing risk-on assets.
+2025-10-15,-0.609,Negative,Major exchange hack sparks panic selling.
+2025-10-16,-0.77,Negative,Bears dominating as support levels break.
+2025-10-17,-0.264,Neutral,Market participants remain undecided.
+2025-10-18,0.552,Positive,Positive regulatory news sparks a rally.
+2025-10-19,0.426,Positive,Market shows strong resilience.
+2025-10-20,0.463,Positive,Bulls taking control of the market.
+2025-10-21,-0.346,Negative,Major exchange hack sparks panic selling.
+2025-10-22,-0.136,Neutral,Trading sideways with no clear direction.
+2025-10-23,0.223,Neutral,Market participants remain undecided.
+2025-10-24,0.037,Neutral,Sideways trading continues throughout the session.
+2025-10-25,0.083,Neutral,Market participants remain undecided.
+2025-10-26,0.864,Positive,Positive regulatory news sparks a rally.
+2025-10-27,-0.352,Negative,Fears of regulatory crackdown loom.
+2025-10-28,-0.329,Negative,Bears dominating as support levels break.
+2025-10-29,-0.268,Neutral,Market consolidating around key levels.
+2025-10-30,-0.854,Negative,Fears of regulatory crackdown loom.
+2025-10-31,0.35,Positive,Record high inflows seen in crypto funds.
+2025-11-01,0.209,Neutral,Market participants remain undecided.
+2025-11-02,0.056,Neutral,Trading sideways with no clear direction.
+2025-11-03,-0.834,Negative,Bears dominating as support levels break.
+2025-11-04,-0.31,Negative,Major exchange hack sparks panic selling.
+2025-11-05,0.491,Positive,Bulls taking control of the market.
+2025-11-06,-0.595,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-11-07,1.0,Positive,Positive regulatory news sparks a rally.
+2025-11-08,-0.097,Neutral,Sideways trading continues throughout the session.
+2025-11-09,0.356,Positive,Institutional adoption continues to grow.
+2025-11-10,0.285,Neutral,Market participants remain undecided.
+2025-11-11,-0.679,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-11-12,0.022,Neutral,Low volatility day ahead of fed meeting.
+2025-11-13,-0.689,Negative,Major exchange hack sparks panic selling.
+2025-11-14,-0.563,Negative,Major exchange hack sparks panic selling.
+2025-11-15,0.374,Positive,Positive regulatory news sparks a rally.
+2025-11-16,-0.558,Negative,Investors fleeing risk-on assets.
+2025-11-17,-0.416,Negative,Fears of regulatory crackdown loom.
+2025-11-18,0.968,Positive,Positive regulatory news sparks a rally.
+2025-11-19,-0.745,Negative,Bears dominating as support levels break.
+2025-11-20,-0.48,Negative,Fears of regulatory crackdown loom.
+2025-11-21,-0.706,Negative,Investors fleeing risk-on assets.
+2025-11-22,0.183,Neutral,Market participants remain undecided.
+2025-11-23,0.706,Positive,Market shows strong resilience.
+2025-11-24,0.746,Positive,Market shows strong resilience.
+2025-11-25,0.259,Neutral,Sideways trading continues throughout the session.
+2025-11-26,0.098,Neutral,Sideways trading continues throughout the session.
+2025-11-27,-0.298,Neutral,Trading sideways with no clear direction.
+2025-11-28,-0.225,Neutral,Sideways trading continues throughout the session.
+2025-11-29,-0.319,Negative,Investors fleeing risk-on assets.
+2025-11-30,-0.387,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-12-01,-0.998,Negative,Major exchange hack sparks panic selling.
+2025-12-02,1.0,Positive,Record high inflows seen in crypto funds.
+2025-12-03,0.408,Positive,Market shows strong resilience.
+2025-12-04,-0.428,Negative,Investors fleeing risk-on assets.
+2025-12-05,-0.904,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-12-06,-0.137,Neutral,Market participants remain undecided.
+2025-12-07,0.059,Neutral,Sideways trading continues throughout the session.
+2025-12-08,0.473,Positive,Bulls taking control of the market.
+2025-12-09,0.611,Positive,Positive regulatory news sparks a rally.
+2025-12-10,-0.421,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-12-11,-0.141,Neutral,Low volatility day ahead of fed meeting.
+2025-12-12,-0.27,Neutral,Low volatility day ahead of fed meeting.
+2025-12-13,0.35,Positive,Record high inflows seen in crypto funds.
+2025-12-14,-0.441,Negative,Investors fleeing risk-on assets.
+2025-12-15,-0.446,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-12-16,0.233,Neutral,Trading sideways with no clear direction.
+2025-12-17,-0.651,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-12-18,-0.611,Negative,Market bleeds amidst macroeconomic uncertainty.
+2025-12-19,0.965,Positive,Record high inflows seen in crypto funds.
+2025-12-20,-0.047,Neutral,Market participants remain undecided.
+2025-12-21,0.022,Neutral,Market consolidating around key levels.
+2025-12-22,0.283,Neutral,Market consolidating around key levels.
+2025-12-23,-0.391,Negative,Major exchange hack sparks panic selling.
+2025-12-24,0.063,Neutral,Market consolidating around key levels.
+2025-12-25,-0.378,Negative,Investors fleeing risk-on assets.
+2025-12-26,-0.225,Neutral,Sideways trading continues throughout the session.
+2025-12-27,0.254,Neutral,Market consolidating around key levels.
+2025-12-28,-0.069,Neutral,Market consolidating around key levels.
+2025-12-29,-0.185,Neutral,Sideways trading continues throughout the session.
+2025-12-30,0.095,Neutral,Low volatility day ahead of fed meeting.
+2025-12-31,-0.855,Negative,Investors fleeing risk-on assets.
+2026-01-01,1.0,Positive,Positive regulatory news sparks a rally.
+2026-01-02,1.0,Positive,Record high inflows seen in crypto funds.
+2026-01-03,0.015,Neutral,Market participants remain undecided.
+2026-01-04,0.815,Positive,Market shows strong resilience.
+2026-01-05,0.365,Positive,Bulls taking control of the market.
+2026-01-06,-0.008,Neutral,Low volatility day ahead of fed meeting.
+2026-01-07,-0.436,Negative,Major exchange hack sparks panic selling.
+2026-01-08,-0.403,Negative,Market bleeds amidst macroeconomic uncertainty.
+2026-01-09,-0.009,Neutral,Trading sideways with no clear direction.
+2026-01-10,0.065,Neutral,Low volatility day ahead of fed meeting.
+2026-01-11,-0.306,Negative,Bears dominating as support levels break.
+2026-01-12,0.001,Neutral,Market consolidating around key levels.
+2026-01-13,0.816,Positive,Positive regulatory news sparks a rally.
+2026-01-14,-0.055,Neutral,Sideways trading continues throughout the session.
+2026-01-15,-0.819,Negative,Fears of regulatory crackdown loom.
+2026-01-16,-0.244,Neutral,Trading sideways with no clear direction.
+2026-01-17,-0.008,Neutral,Market consolidating around key levels.
+2026-01-18,-0.683,Negative,Bears dominating as support levels break.
+2026-01-19,-0.236,Neutral,Market participants remain undecided.
+2026-01-20,-0.648,Negative,Fears of regulatory crackdown loom.
+2026-01-21,0.41,Positive,Bulls taking control of the market.
+2026-01-22,-0.064,Neutral,Market participants remain undecided.
+2026-01-23,0.036,Neutral,Market participants remain undecided.
+2026-01-24,-0.202,Neutral,Low volatility day ahead of fed meeting.
+2026-01-25,-0.399,Negative,Major exchange hack sparks panic selling.
+2026-01-26,0.477,Positive,Positive regulatory news sparks a rally.
+2026-01-27,0.471,Positive,Record high inflows seen in crypto funds.
+2026-01-28,-0.317,Negative,Major exchange hack sparks panic selling.
+2026-01-29,-0.859,Negative,Fears of regulatory crackdown loom.
+2026-01-30,-0.254,Neutral,Sideways trading continues throughout the session.
+2026-01-31,-0.892,Negative,Bears dominating as support levels break.
+2026-02-01,0.191,Neutral,Trading sideways with no clear direction.
+2026-02-02,0.4,Positive,Market shows strong resilience.
+2026-02-03,-0.141,Neutral,Sideways trading continues throughout the session.
+2026-02-04,-0.463,Negative,Investors fleeing risk-on assets.
+2026-02-05,-0.844,Negative,Fears of regulatory crackdown loom.
+2026-02-06,0.976,Positive,Record high inflows seen in crypto funds.
+2026-02-07,-0.133,Neutral,Market participants remain undecided.
+2026-02-08,-0.432,Negative,Bears dominating as support levels break.
+2026-02-09,0.046,Neutral,Sideways trading continues throughout the session.
+2026-02-10,-0.41,Negative,Fears of regulatory crackdown loom.
+2026-02-11,-0.286,Neutral,Low volatility day ahead of fed meeting.
+2026-02-12,0.363,Positive,Positive regulatory news sparks a rally.
+2026-02-13,0.515,Positive,Bulls taking control of the market.
+2026-02-14,0.86,Positive,Positive regulatory news sparks a rally.
+2026-02-15,-1.0,Negative,Investors fleeing risk-on assets.
+2026-02-16,-0.186,Neutral,Sideways trading continues throughout the session.
+2026-02-17,0.049,Neutral,Trading sideways with no clear direction.
+2026-02-18,-0.353,Negative,Major exchange hack sparks panic selling.
+2026-02-19,-0.137,Neutral,Market participants remain undecided.
+2026-02-20,0.342,Positive,Bulls taking control of the market.
+2026-02-21,-0.123,Neutral,Market consolidating around key levels.
+2026-02-22,-0.294,Neutral,Sideways trading continues throughout the session.
+2026-02-23,-0.407,Negative,Major exchange hack sparks panic selling.
+2026-02-24,-0.037,Neutral,Market consolidating around key levels.
+2026-02-25,0.875,Positive,Institutional adoption continues to grow.
+2026-02-26,-0.562,Negative,Market bleeds amidst macroeconomic uncertainty.
+2026-02-27,-0.574,Negative,Fears of regulatory crackdown loom.
+2026-02-28,0.037,Neutral,Sideways trading continues throughout the session.
+2026-03-01,-0.511,Negative,Market bleeds amidst macroeconomic uncertainty.
+2026-03-02,0.202,Neutral,Sideways trading continues throughout the session.
+2026-03-03,-0.729,Negative,Fears of regulatory crackdown loom.
+2026-03-04,0.949,Positive,Bulls taking control of the market.
+2026-03-05,-0.792,Negative,Major exchange hack sparks panic selling.
+2026-03-06,-0.32,Negative,Major exchange hack sparks panic selling.
+2026-03-07,-0.289,Neutral,Low volatility day ahead of fed meeting.
+2026-03-08,0.027,Neutral,Market participants remain undecided.
+2026-03-09,0.306,Positive,Institutional adoption continues to grow.
+2026-03-10,0.832,Positive,Institutional adoption continues to grow.
+2026-03-11,-0.325,Negative,Market bleeds amidst macroeconomic uncertainty.
+2026-03-12,0.286,Neutral,Sideways trading continues throughout the session.
+2026-03-13,-0.002,Neutral,Market consolidating around key levels.
+2026-03-14,-0.073,Neutral,Market participants remain undecided.
+2026-03-15,0.286,Neutral,Sideways trading continues throughout the session.
+2026-03-16,0.747,Positive,Bulls taking control of the market.
+2026-03-17,-0.454,Negative,Investors fleeing risk-on assets.
+2026-03-18,-0.839,Negative,Investors fleeing risk-on assets.
+2026-03-19,-0.35,Negative,Major exchange hack sparks panic selling.
+2026-03-20,0.108,Neutral,Sideways trading continues throughout the session.
+2026-03-21,-0.472,Negative,Fears of regulatory crackdown loom.
+2026-03-22,-0.393,Negative,Market bleeds amidst macroeconomic uncertainty.
+2026-03-23,0.616,Positive,Institutional adoption continues to grow.
+2026-03-24,0.305,Positive,Record high inflows seen in crypto funds.
+2026-03-25,0.06,Neutral,Trading sideways with no clear direction.
+2026-03-26,-0.746,Negative,Investors fleeing risk-on assets.
+2026-03-27,-0.279,Neutral,Market consolidating around key levels.
+2026-03-28,0.256,Neutral,Market consolidating around key levels.
+2026-03-29,0.083,Neutral,Trading sideways with no clear direction.
+2026-03-30,-0.048,Neutral,Low volatility day ahead of fed meeting.
+2026-03-31,0.058,Neutral,Market consolidating around key levels.
+2026-04-01,0.209,Neutral,Market consolidating around key levels.

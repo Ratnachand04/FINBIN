@@ -32,3 +32,22 @@ CREATE TABLE IF NOT EXISTS backtest_runs (
     pnl DOUBLE PRECISION,
     report JSONB DEFAULT '{}'::jsonb
 );
+
+-- User Authentication and API Keys
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    hashed_password TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS user_api_keys (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    provider TEXT NOT NULL, -- e.g. BINANCE, ALPHA_VANTAGE
+    api_key TEXT NOT NULL,
+    api_secret TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, provider)
+);

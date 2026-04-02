@@ -24,12 +24,13 @@ class Settings(BaseSettings):
     etherscan_api_key: str = ""
     binance_api_key: str = ""
     binance_secret: str = ""
+    blockcypher_api_key: str = ""
 
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "mistral:7b-instruct"
     ollama_timeout_seconds: int = 30
 
-    tracked_symbols: list[str] = Field(default_factory=lambda: ["BTCUSDT", "ETHUSDT", "SOLUSDT", "ADAUSDT", "DOTUSDT"])
+    tracked_symbols: list[str] = Field(default_factory=lambda: ["BTCUSDT", "ETHUSDT", "DOGEUSDT"])
 
     reddit_rate_limit_per_minute: int = 60
     etherscan_rate_limit_per_second: int = 5
@@ -59,7 +60,7 @@ class Settings(BaseSettings):
             return symbols
         if isinstance(value, list):
             return [str(item).upper() for item in value]
-        return ["BTCUSDT", "ETHUSDT"]
+        return ["BTCUSDT", "ETHUSDT", "DOGEUSDT"]
 
     def is_production(self) -> bool:
         return self.environment == "production"

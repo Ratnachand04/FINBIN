@@ -4,7 +4,6 @@ import asyncio
 import logging
 
 from data_ingestion.collectors.binance_collector import BinanceCollector
-from data_ingestion.collectors.etherscan_collector import EtherscanCollector
 from data_ingestion.collectors.reddit_collector import RedditCollector
 
 logger = logging.getLogger(__name__)
@@ -13,12 +12,10 @@ logger = logging.getLogger(__name__)
 async def run_collectors() -> None:
     reddit = RedditCollector()
     binance = BinanceCollector()
-    etherscan = EtherscanCollector()
 
     tasks = [
         asyncio.create_task(reddit.stream_posts()),
-        asyncio.create_task(binance.stream_ohlcv("BTCUSDT")),
-        asyncio.create_task(etherscan.poll_whale_transactions("0xbtc")),
+        asyncio.create_task(binance.stream_ohlcv()),
     ]
     await asyncio.gather(*tasks)
 

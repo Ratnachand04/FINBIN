@@ -14,10 +14,6 @@ logger = logging.getLogger(__name__)
 
 COIN_PATTERNS = {
     "BTC": re.compile(r"\b(?:BTC|Bitcoin|\$BTC)\b", re.IGNORECASE),
-    "ETH": re.compile(r"\b(?:ETH|Ethereum|\$ETH)\b", re.IGNORECASE),
-    "SOL": re.compile(r"\b(?:SOL|Solana|\$SOL)\b", re.IGNORECASE),
-    "ADA": re.compile(r"\b(?:ADA|Cardano|\$ADA)\b", re.IGNORECASE),
-    "DOT": re.compile(r"\b(?:DOT|Polkadot|\$DOT)\b", re.IGNORECASE),
 }
 
 
@@ -56,7 +52,7 @@ class TokenBucket:
 class RedditCollector:
     def __init__(self) -> None:
         self.settings = get_settings()
-        self.subreddits = ["cryptocurrency", "bitcoin", "ethereum"]
+        self.subreddits = ["bitcoin", "BitcoinMarkets", "CryptoMarkets"]
         self.bucket = TokenBucket(self.settings.reddit_rate_limit_per_minute)
         self._seen_ids: deque[str] = deque(maxlen=5000)
         self._seen_set: set[str] = set()

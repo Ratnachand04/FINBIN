@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS price_data (
     metadata JSONB NOT NULL DEFAULT '{}'::JSONB,
     UNIQUE(symbol, interval, ts)
 );
-SELECT create_hypertable('price_data', 'ts', if_not_exists => TRUE);
 
 CREATE TABLE IF NOT EXISTS sentiment_scores (
     id BIGSERIAL PRIMARY KEY,
@@ -26,7 +25,6 @@ CREATE TABLE IF NOT EXISTS sentiment_scores (
     confidence DOUBLE PRECISION,
     metadata JSONB NOT NULL DEFAULT '{}'::JSONB
 );
-SELECT create_hypertable('sentiment_scores', 'ts', if_not_exists => TRUE);
 
 CREATE TABLE IF NOT EXISTS reddit_posts (
     id BIGSERIAL PRIMARY KEY,
@@ -42,12 +40,30 @@ CREATE TABLE IF NOT EXISTS reddit_posts (
 
 CREATE TABLE IF NOT EXISTS news_articles (
     id BIGSERIAL PRIMARY KEY,
+    ts TIMESTAMPTZ NOT NULL,
     url_hash TEXT UNIQUE NOT NULL,
-    source_name TEXT,
+    source_name TEXT NOT NULL,
     title TEXT NOT NULL,
     content TEXT,
-    published_at TIMESTAMPTZ,
+    author TEXT,
+    url TEXT,
+    image_url TEXT,
     mentioned_coins TEXT[] DEFAULT ARRAY[]::TEXT[],
+    primary_symbol TEXT,
+    sentiment_keywords TEXT[],
+    metadata JSONB NOT NULL DEFAULT '{}'::JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Link table for many-to-many relationship between news and price data
+CREATE TABLE IF NOT EXISTS news_market_linkage (
+    id BIGSERIAL PRIMARY KEY,
+    ts TIMESTAMPTZ NOT NULL,
+    news_id BIGINT NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+    symbol TEXT NOT NULL,
+    time_window TEXT NOT NULL DEFAULT '1h',
+    price_correlation DOUBLE PRECISION,
+    lagged_price_change_pct DOUBLE PRECISION,
     metadata JSONB NOT NULL DEFAULT '{}'::JSONB
 );
 
@@ -62,7 +78,6 @@ CREATE TABLE IF NOT EXISTS whale_transactions (
     is_whale BOOLEAN NOT NULL DEFAULT TRUE,
     metadata JSONB NOT NULL DEFAULT '{}'::JSONB
 );
-SELECT create_hypertable('whale_transactions', 'ts', if_not_exists => TRUE);
 
 CREATE TABLE IF NOT EXISTS predictions (
     id BIGSERIAL PRIMARY KEY,
@@ -75,7 +90,6 @@ CREATE TABLE IF NOT EXISTS predictions (
     model_name TEXT NOT NULL,
     metadata JSONB NOT NULL DEFAULT '{}'::JSONB
 );
-SELECT create_hypertable('predictions', 'ts', if_not_exists => TRUE);
 
 CREATE TABLE IF NOT EXISTS signals (
     id BIGSERIAL PRIMARY KEY,
@@ -91,7 +105,6 @@ CREATE TABLE IF NOT EXISTS signals (
     explanation TEXT,
     metadata JSONB NOT NULL DEFAULT '{}'::JSONB
 );
-SELECT create_hypertable('signals', 'ts', if_not_exists => TRUE);
 
 CREATE TABLE IF NOT EXISTS backtest_results (
     id BIGSERIAL PRIMARY KEY,
@@ -115,23 +128,25 @@ CREATE INDEX IF NOT EXISTS idx_whale_symbol_ts ON whale_transactions(symbol, ts 
 CREATE INDEX IF NOT EXISTS idx_predictions_symbol_ts ON predictions(symbol, ts DESC);
 CREATE INDEX IF NOT EXISTS idx_signals_symbol_ts ON signals(symbol, ts DESC);
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS sentiment_agg_1h
-WITH (timescaledb.continuous) AS
+-- News article indexes for efficient time-series queries and linking
+CREATE INDEX IF NOT EXISTS idx_news_articles_ts_desc ON news_articles(ts DESC);
+CREATE INDEX IF NOT EXISTS idx_news_articles_symbol_ts ON news_articles(primary_symbol, ts DESC);
+CREATE INDEX IF NOT EXISTS idx_news_articles_source_ts ON news_articles(source_name, ts DESC);
+CREATE INDEX IF NOT EXISTS idx_news_articles_mentioned_coins ON news_articles USING GIN(mentioned_coins);
+CREATE INDEX IF NOT EXISTS idx_news_articles_url_hash ON news_articles(url_hash);
+
+-- Link table indexes for efficient joins
+CREATE INDEX IF NOT EXISTS idx_news_market_linkage_symbol_ts ON news_market_linkage(symbol, ts DESC);
+CREATE INDEX IF NOT EXISTS idx_news_market_linkage_news_id ON news_market_linkage(news_id);
+CREATE INDEX IF NOT EXISTS idx_news_market_linkage_time_window ON news_market_linkage(symbol, time_window, ts DESC);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS sentiment_agg_1h AS
 SELECT
-    time_bucket('1 hour', ts) AS bucket,
+    date_trunc('hour', ts) AS bucket,
     symbol,
     avg(sentiment_score) AS avg_sentiment,
     count(*) AS sample_count
 FROM sentiment_scores
-GROUP BY bucket, symbol;
+GROUP BY date_trunc('hour', ts), symbol;
 
-SELECT add_continuous_aggregate_policy('sentiment_agg_1h',
-    start_offset => INTERVAL '2 days',
-    end_offset => INTERVAL '5 minutes',
-    schedule_interval => INTERVAL '15 minutes');
-
-SELECT add_retention_policy('price_data', INTERVAL '365 days', if_not_exists => TRUE);
-SELECT add_retention_policy('sentiment_scores', INTERVAL '180 days', if_not_exists => TRUE);
-SELECT add_retention_policy('whale_transactions', INTERVAL '365 days', if_not_exists => TRUE);
-SELECT add_retention_policy('predictions', INTERVAL '180 days', if_not_exists => TRUE);
-SELECT add_retention_policy('signals', INTERVAL '365 days', if_not_exists => TRUE);
+-- Timescale retention policies are disabled here because these tables are currently regular PostgreSQL tables.
