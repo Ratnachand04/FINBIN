@@ -15,23 +15,47 @@ Self-hosted crypto trading intelligence system using open-source LLMs to analyze
 ## Architecture
 
 ```mermaid
-flowchart LR
-	A[Collectors\nReddit News Onchain Price] --> B[(PostgreSQL/TimescaleDB)]
-	A --> C[(Redis)]
-	B --> D[ML Worker\nSentiment + Prediction]
-	C --> D
-	D --> B
-	D --> C
-	B --> E[Signal Worker]
-	C --> E
-	E --> B
-	E --> C
-	F[FastAPI Backend] --> B
-	F --> C
-	G[Streamlit Dashboard] --> F
-	H[Rich CLI Dashboard] --> F
-	I[Prometheus/Grafana] --> F
-	I --> B
+flowchart TD
+    subgraph DataSources["Data Sources (Free APIs)"]
+        direction LR
+        A["Binance API\nPrice OHLCV"] 
+        B["NewsAPI\nCrypto News"]
+        C["Reddit API\nr/cryptocurrency"]
+        D["Etherscan API\nWhale Txns"]
+    end
+
+    subgraph Backend["Python Backend (FastAPI)"]
+        E["Data Ingestion\nPipeline"]
+        F[("PostgreSQL +\nTimescaleDB")]
+        G["Sentiment Engine\nFinBERT"]
+        H["Price Prediction\nProphet + XGBoost"]
+        I["Signal Generator\nBUY/SELL/HOLD"]
+        J["Backtesting Engine\nSharpe Ratio"]
+        K["Ollama/Mistral 7B\nAI Insights"]
+
+        E --> F
+        F --> G
+        F --> H
+        G --> I
+        H --> I
+        I --> J
+    end
+
+    subgraph Frontend["Frontend Dashboard"]
+        L["HTML/CSS/JS\nApexCharts"]
+    end
+
+    A --> E
+    B --> E
+    C --> E
+    D --> E
+
+    F --> L
+    G --> L
+    H --> L
+    I --> L
+    J --> L
+    K --> L
 ```
 
 ## Technology Stack
