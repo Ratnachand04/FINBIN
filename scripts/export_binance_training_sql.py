@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 BASE_URL = os.getenv("BINANCE_REST_URL", "https://api.binance.com")
 MAX_LIMIT = 1000
-DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT"]
+DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT", "DOGEUSDT"]
 DEFAULT_INTERVALS = ["15m", "1h", "4h", "1d"]
 EARLIEST_OPEN_TIME_MS = 1502942400000  # First Binance spot candles in Aug 2017
 
@@ -26,7 +26,7 @@ def parse_args() -> argparse.Namespace:
         "--symbols",
         nargs="+",
         default=DEFAULT_SYMBOLS,
-        help="Symbols to export (default: BTCUSDT ETHUSDT)",
+        help="Symbols to export (default: BTCUSDT ETHUSDT DOGEUSDT)",
     )
     parser.add_argument(
         "--intervals",
@@ -36,7 +36,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output-prefix",
-        default="database/btc_eth_training_data_part",
+        default="database/btc_training_data_part",
         help="Output SQL file prefix",
     )
     parser.add_argument(

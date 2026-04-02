@@ -52,7 +52,7 @@ echo "Downloading historical data (this may take a while)..."
 python scripts/download_historical_data.py || true
 
 echo "Training initial ML models..."
-python scripts/train_models.py --coins BTC ETH SOL || true
+python scripts/train_models.py --coins BTC ETH DOGE || true
 
 echo "Starting all services..."
 docker compose up -d

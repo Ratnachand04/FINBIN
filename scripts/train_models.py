@@ -9,7 +9,12 @@ from processing.prediction.main import PredictionEngine
 
 def synthetic_price_frame(symbol: str, n: int = 500) -> pd.DataFrame:
     now = datetime.now(UTC)
-    base = 70000.0 if symbol == "BTCUSDT" else 3500.0
+    base_map = {
+        "BTCUSDT": 70000.0,
+        "ETHUSDT": 3500.0,
+        "DOGEUSDT": 0.25,
+    }
+    base = base_map.get(symbol.upper(), 100.0)
     rows = []
     price = base
     for idx in range(n):
@@ -31,7 +36,7 @@ def synthetic_price_frame(symbol: str, n: int = 500) -> pd.DataFrame:
 
 def main() -> None:
     engine = PredictionEngine()
-    for symbol in ["BTCUSDT", "ETHUSDT"]:
+    for symbol in ["BTCUSDT", "ETHUSDT", "DOGEUSDT"]:
         frame = synthetic_price_frame(symbol)
         pred = engine.train_and_predict(symbol, frame)
         print(
