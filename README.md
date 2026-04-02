@@ -144,3 +144,53 @@ To ensure the large language model (Mistral-7B) runs efficiently on consumer or 
 - **4-Bit Quantization (QLoRA):** The base Mistral model has been fully quantized to 4-bit precision using the bitsandbytes library. This dramatically decreases the required GPU VRAM for both inference and continuous fine-tuning without sacrificing context reasoning.
 - **Low-Rank Adaptation (LoRA):** Rather than updating all 7-billion parameters, our local trainer scripts inject small, trainable rank decomposition matrices. This targets only the weights necessary for financial sentiment interpretation, compounding training speeds exponentially.
 - **Split Workload RAG:** The heavy generative text-streaming task is strictly pinned to the GPU via Ollama, while Retrieval-Augmented Generation retrieval operations (vector embeddings, database routing) are purposely offloaded to the CPU. This cleanly preserves scarce GPU memory.
+
+## Latest Accuracy and Backtest Scores
+
+Performance snapshot generated on **2026-04-02** from live `price_data` in PostgreSQL.
+
+### Runtime Notes
+
+- GPU runtime availability for TensorFlow LSTM path: **false** (native Windows TensorFlow fallback to CPU)
+- Evaluated market series available in database: **10 series total**
+    - BTCUSDT: 15m, 1h, 4h, 1d
+    - ETHUSDT: 15m, 1h, 4h, 1d
+    - DOGEUSDT: 4h, 1d
+
+### Aggregate Model Scores
+
+| Model Path | Directional Accuracy | Backtested Sharpe Ratio | Signal Win Rate | Total Trades |
+|-----------|----------------------|-------------------------|-----------------|--------------|
+| CPU Model (`GradientBoostingRegressor`) | **52.44%** | **4.5398** | **30.23%** | 210 |
+| GPU Path Model (`TensorFlow LSTM`) | **49.44%** | **-1.3907** | **1.43%** | 8 |
+
+### Asset-Level Breakdown
+
+| Asset | CPU Accuracy | CPU Sharpe | CPU Win Rate | CPU Trades | GPU Path Accuracy | GPU Path Sharpe | GPU Path Win Rate | GPU Path Trades |
+|-------|--------------|------------|--------------|------------|-------------------|-----------------|-------------------|-----------------|
+| BTC | 52.08% | 1.8146 | 29.54% | 53 | 51.26% | 0.0000 | 0.00% | 0 |
+| ETH | 53.89% | 7.7973 | 33.86% | 103 | 50.28% | 0.0000 | 0.00% | 0 |
+| DOGE | 50.28% | 3.4752 | 24.33% | 54 | 44.13% | -6.9534 | 7.14% | 8 |
+
+### Interval-Level Breakdown
+
+| Series | CPU Accuracy | CPU Sharpe | CPU Win Rate | GPU Path Accuracy | GPU Path Sharpe | GPU Path Win Rate |
+|-------|--------------|------------|--------------|-------------------|-----------------|-------------------|
+| BTCUSDT 15m | 54.44% | 11.0564 | 36.00% | 47.49% | 0.0000 | 0.00% |
+| BTCUSDT 1h | 55.56% | 3.4250 | 23.81% | 50.84% | 0.0000 | 0.00% |
+| BTCUSDT 4h | 52.78% | 9.8752 | 25.00% | 51.96% | 0.0000 | 0.00% |
+| BTCUSDT 1d | 45.56% | -17.0983 | 33.33% | 54.75% | 0.0000 | 0.00% |
+| DOGEUSDT 4h | 55.00% | 15.6140 | 26.09% | 48.60% | 0.7579 | 0.00% |
+| DOGEUSDT 1d | 45.56% | -8.6637 | 22.58% | 39.66% | -14.6648 | 14.29% |
+| ETHUSDT 15m | 52.22% | 8.8520 | 32.00% | 49.72% | 0.0000 | 0.00% |
+| ETHUSDT 1h | 55.00% | 5.1060 | 35.71% | 50.28% | 0.0000 | 0.00% |
+| ETHUSDT 4h | 53.89% | 23.6538 | 45.00% | 48.60% | 0.0000 | 0.00% |
+| ETHUSDT 1d | 54.44% | -6.4225 | 22.73% | 52.51% | 0.0000 | 0.00% |
+
+### How These Scores Were Computed
+
+- **Accuracy metric:** directional accuracy = percentage of correct next-candle direction predictions.
+- **Backtest Sharpe ratio:** calculated from strategy equity curve returns.
+- **Signal win rate:** percentage of profitable closed trades in backtest.
+- **Data source:** latest 900 rows per available symbol/interval in `price_data`.
+- **Evaluation coverage:** BTC, ETH, and DOGE multi-asset price series currently present in database.
