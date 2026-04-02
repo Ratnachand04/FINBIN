@@ -17,5 +17,6 @@ class SignalResponse(BaseModel):
 async def latest_signals() -> list[SignalResponse]:
     return [
         SignalResponse(symbol="BTCUSDT", side="BUY", confidence=0.79, strength=0.65),
-        SignalResponse(symbol="ETHUSDT", side="SELL", confidence=0.74, strength=0.58),
+        SignalResponse(symbol="ETHUSDT", side="BUY", confidence=0.73, strength=0.61),
+        SignalResponse(symbol="DOGEUSDT", side="HOLD", confidence=0.66, strength=0.58),
     ]

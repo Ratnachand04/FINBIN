@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     postgres_db: str = "binfin"
     redis_host: str = "localhost"
     redis_port: int = 6379
+    secret_key: str = "supersecretkey_change_in_production"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 1440 # 24 hours
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

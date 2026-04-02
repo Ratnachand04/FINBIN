@@ -13,12 +13,14 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 
 from backend.api.backtest import router as backtest_router
 from backend.api.coins import router as coins_router
 from backend.api.health import router as health_v1_router
+from backend.api.llm import router as llm_router
 from backend.api.model_ops import router as model_ops_router
 from backend.api.predictions import router as predictions_router
 from backend.api.routes.health import router as legacy_health_router
@@ -28,6 +30,7 @@ from backend.api.sentiment import router as sentiment_router
 from backend.api.signals import router as signals_router
 from backend.config import settings
 from backend.database import db_manager
+from backend.workers.finetune_worker import celery_app  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +159,11 @@ app.include_router(legacy_health_router, prefix="/api")
 app.include_router(legacy_market_router, prefix="/api")
 app.include_router(legacy_signals_router, prefix="/api")
 
+from backend.api.auth import router as auth_router
+from backend.api.keys import router as keys_router
+app.include_router(auth_router)
+app.include_router(keys_router)
+
 # New API v1 routers.
 app.include_router(health_v1_router)
 app.include_router(coins_router)
@@ -164,3 +172,12 @@ app.include_router(sentiment_router)
 app.include_router(predictions_router)
 app.include_router(backtest_router)
 app.include_router(model_ops_router)
+app.include_router(llm_router)
+
+from backend.api.rag import router as rag_router
+app.include_router(rag_router)
+
+import os
+static_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "public")
+if os.path.exists(static_dir):
+	app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")

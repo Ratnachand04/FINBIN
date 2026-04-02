@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import csv
 import asyncio
 import importlib
+import json
 import logging
 import os
+import re
 import time
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any, AsyncGenerator, Iterable, Mapping
 
 from prometheus_client import Gauge, Histogram
@@ -134,7 +139,7 @@ class DatabaseManager:
 
     async def seed_initial_data(self) -> None:
         logger.info("Seeding default coin configs")
-        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,SOL,ADA,DOT")
+        tracked = os.getenv("TRACKED_COINS", "BTC,ETH,DOGE")
         defaults = [coin.strip().upper() for coin in tracked.split(",") if coin.strip()]
         async with self.session_factory() as session:
             try:
@@ -156,6 +161,97 @@ class DatabaseManager:
                 await session.rollback()
                 logger.exception("Failed to seed initial coin configs: %s", exc)
                 raise
+
+    async def ensure_whale_transactions_loaded(self) -> None:
+        whale_files = self._whale_export_files()
+        if not whale_files:
+            logger.info("No whale export files found; skipping whale dataset bootstrap")
+            return
+
+        async with self.session_factory() as session:
+            await execute_raw_sql(
+                session,
+                """
+                CREATE TABLE IF NOT EXISTS whale_transactions (
+                    id BIGSERIAL PRIMARY KEY,
+                    ts TIMESTAMPTZ NOT NULL,
+                    chain TEXT NOT NULL,
+                    tx_hash TEXT UNIQUE NOT NULL,
+                    symbol TEXT NOT NULL,
+                    amount_usd DOUBLE PRECISION NOT NULL,
+                    flow_direction TEXT,
+                    is_whale BOOLEAN NOT NULL DEFAULT TRUE,
+                    metadata JSONB NOT NULL DEFAULT '{}'::JSONB
+                )
+                """,
+            )
+            result = await execute_raw_sql(session, "SELECT COUNT(*) AS count FROM whale_transactions")
+            count_row = result.first()
+            current_count = int(count_row.count or 0) if count_row else 0
+            if current_count > 0:
+                logger.info("Whale transactions already present (%s rows); bootstrap skipped", current_count)
+                return
+
+            rows = self._parse_whale_export_rows(whale_files)
+            if not rows:
+                logger.warning("No whale rows parsed from export files")
+                return
+
+            logger.info("Bootstrapping whale_transactions with %s rows from %s files", len(rows), len(whale_files))
+            for row in rows:
+                await upsert(
+                    session=session,
+                    table_name="whale_transactions",
+                    values=row,
+                    conflict_columns=["tx_hash"],
+                    update_columns=["amount_usd", "flow_direction", "is_whale", "metadata"],
+                )
+            await session.commit()
+
+    def _parse_whale_export_rows(self, files: list[Path]) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        for path in files:
+            with path.open("r", encoding="utf-8") as file_handle:
+                for raw_line in file_handle:
+                    parsed = self._parse_sql_tuple(raw_line)
+                    if not parsed or len(parsed) < 8:
+                        continue
+                    try:
+                        ts = self._parse_timestamp(parsed[0])
+                        metadata = json.loads(parsed[7]) if parsed[7] not in {"NULL", ""} else {}
+                        rows.append(
+                            {
+                                "ts": ts,
+                                "chain": str(parsed[1]).upper(),
+                                "tx_hash": str(parsed[2]),
+                                "symbol": str(parsed[3]).upper(),
+                                "amount_usd": float(parsed[4]),
+                                "flow_direction": None if parsed[5] in {"NULL", ""} else str(parsed[5]),
+                                "is_whale": str(parsed[6]).upper() in {"TRUE", "T", "1"},
+                                "metadata": metadata,
+                            }
+                        )
+                    except Exception as exc:
+                        logger.warning("Skipping malformed whale row in %s: %s", path, exc)
+                        continue
+        return rows
+
+    def _parse_sql_tuple(self, line: str) -> list[str] | None:
+        text = line.strip().rstrip(",")
+        if not text.startswith("(") or not text.endswith(")"):
+            return None
+        inner = text[1:-1]
+        try:
+            return next(csv.reader([inner], delimiter=",", quotechar="'", skipinitialspace=True))
+        except Exception:
+            return None
+
+    def _parse_timestamp(self, value: str) -> datetime:
+        text = str(value).strip()
+        if text.endswith("Z"):
+            text = text[:-1] + "+00:00"
+        parsed = datetime.fromisoformat(text)
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
 
     async def check_db_health(self) -> bool:
         try:
