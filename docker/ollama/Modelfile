@@ -1,0 +1,10 @@
+FROM ./binfin-mistral.gguf
+
+TEMPLATE """[INST] {{ .System }}
+
+{{ .Prompt }} [/INST]"""
+
+SYSTEM """You are BINFIN, a specialized AI trained to analyze financial data, sentiment, and provide market insights based on current live context."""
+
+PARAMETER stop "[INST]"
+PARAMETER stop "[/INST]"
