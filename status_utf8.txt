@@ -1,0 +1,187 @@
+ M .env.example
+ M .gitignore
+ M README.md
+ M api/main.py
+ M api/routes/signals.py
+ M api/websocket.py
+ M backend/Dockerfile
+ M backend/__init__.py
+ M backend/api/__init__.py
+ M backend/api/backtest.py
+ M backend/api/coins.py
+ M backend/api/deps.py
+ M backend/api/health.py
+MM backend/api/model_ops.py
+ M backend/api/predictions.py
+ M backend/api/routes/__init__.py
+ M backend/api/routes/health.py
+ M backend/api/routes/market.py
+ M backend/api/routes/signals.py
+ M backend/api/sentiment.py
+ M backend/api/signals.py
+ M backend/backtest/__init__.py
+ M backend/backtest/engine.py
+ M backend/backtest/metrics.py
+ M backend/collectors/__init__.py
+ M backend/collectors/market_collector.py
+ M backend/collectors/news_collector.py
+ D backend/collectors/onchain_collector.py
+ M backend/collectors/price_collector.py
+ M backend/collectors/reddit_collector.py
+ M backend/config.py
+ M backend/database.py
+ M backend/main.py
+ M backend/ml/__init__.py
+ M backend/ml/feature_engineer.py
+ M backend/ml/features.py
+ M backend/ml/inference.py
+ M backend/ml/model_trainer.py
+ M backend/ml/price_predictor.py
+ M backend/ml/sentiment_analyzer.py
+ M backend/ml/trainer.py
+ M backend/requirements.txt
+ M backend/signal/__init__.py
+ M backend/signal/explainer.py
+ M backend/signal/generator.py
+ M backend/signal/risk.py
+ M backend/utils/__init__.py
+ M backend/utils/logger.py
+ M backend/utils/notifier.py
+ M backend/utils/redis_client.py
+ M backend/workers/__init__.py
+ M backend/workers/backtest_worker.py
+ M backend/workers/collector_worker.py
+ M backend/workers/ingestion.py
+ M backend/workers/ml_processor.py
+ M backend/workers/signal_generator.py
+ M backend/workers/signal_worker.py
+ M backtesting/engine.py
+ M backtesting/metrics.py
+ M backtesting/visualizer.py
+ M cli/__init__.py
+ M cli/dashboard.py
+ M cli/main.py
+ M cli/terminal.py
+ M config/settings.py
+ M dashboard/app.py
+ M dashboard/components/charts.py
+ M data_ingestion/collectors/binance_collector.py
+ D data_ingestion/collectors/etherscan_collector.py
+ M data_ingestion/collectors/reddit_collector.py
+ M data_ingestion/main.py
+ D database/eth_onchain_training_data_part_001.sql
+ M database/init.sql
+ M database/models.py
+ M database/schema.sql
+ M db/schema.sql
+ M docker-compose.gpu.yml
+ M docker-compose.yml
+ M docker/backend.Dockerfile
+ M docker/frontend.Dockerfile
+A  docker/ollama/Dockerfile
+A  docker/ollama/Modelfile
+ M docker/worker.Dockerfile
+ M docs/CUDA_INTEGRATION_PLAN.md
+ M docs/DEPLOYMENT.md
+AM docs/LLM_FINETUNE_GUIDE.md
+AM docs/MODEL_DEPLOYMENT_SCHEMA.md
+ M frontend/Dockerfile
+ M frontend/app.py
+ M frontend/components/__init__.py
+ M frontend/components/charts.py
+ M frontend/components/tables.py
+ M frontend/pages/1_Market_Overview.py
+ M frontend/pages/2_Signals.py
+ M frontend/pages/3_Backtest.py
+ M frontend/requirements.txt
+AM llm_trainer/package_ollama.py
+ M llm_trainer/train_lora_cpu.py
+AM llm_trainer/train_qlora.py
+A  local_trainer/merge_and_compile.sh
+ M local_trainer/train_crypto_lora_cpu.py
+A  local_trainer/train_crypto_qlora.py
+ M monitoring/grafana/provisioning/datasources/datasource.yml
+ M monitoring/prometheus.yml
+ M processing/prediction/features/feature_engineering.py
+ M processing/prediction/features/technical_indicators.py
+ M processing/prediction/main.py
+ M processing/sentiment/aggregator.py
+ M processing/sentiment/finbert_analyzer.py
+ M processing/sentiment/main.py
+ M processing/sentiment/ollama_analyzer.py
+ M pyproject.toml
+ M pytest.ini
+ M requirements.txt
+ M scripts/deploy_model.ps1
+ M scripts/export_binance_training_sql.py
+ D scripts/export_etherscan_eth_sql.py
+AM scripts/replace_active_model.ps1
+A  scripts/replace_active_model.sh
+A  scripts/replace_model.sh
+ M scripts/seed_database.py
+ M scripts/setup.ps1
+ M scripts/setup.sh
+ M scripts/train_model.py
+ M scripts/train_models.py
+ M setup.py
+ M signals/main.py
+ M signals/notifier.py
+ M signals/risk_manager.py
+ M signals/signal_generator.py
+ M terminal/cli.py
+ M tests/__init__.py
+ M tests/conftest.py
+ M tests/integration/__init__.py
+ M tests/integration/test_api.py
+ M tests/integration/test_api_health.py
+ M tests/test_backtest.py
+ M tests/test_prediction.py
+ M tests/test_sentiment.py
+ M tests/unit/__init__.py
+ M tests/unit/test_collectors.py
+ M tests/unit/test_ml.py
+ M tests/unit/test_ml_features.py
+ M tests/unit/test_signal_generator.py
+?? .compose.llm.rendered.yml
+?? .compose.rendered.yml
+?? .gitattributes
+?? EXECUTION_GUIDE.md
+?? MODEL_TRAINING_WORKFLOW.md
+?? NEWS_SYSTEM_COMPLETE.md
+?? backend/api/auth.py
+?? backend/api/keys.py
+?? backend/api/llm.py
+?? backend/api/queries_news_market.py
+?? backend/api/rag.py
+?? backend/auth/
+?? backend/workers/finetune_worker.py
+?? data_ingestion/output/
+?? data_ingestion/scripts/
+?? database/newsdata_articles_20260401_195702_001.sql
+?? docs/API_FINETUNE.md
+?? docs/FINETUNE_API_CHECKLIST.md
+?? docs/IMPLEMENTATION_SUMMARY.md
+?? docs/LLM_FINETUNE_API_GUIDE.md
+?? docs/NEWSAPI_IMPLEMENTATION_GUIDE.md
+?? docs/NEWSAPI_TOKEN_OPTIMIZATION.md
+?? docs/NEWS_MARKET_LINKING_GUIDE.md
+?? frontend/nginx.conf
+?? frontend/public/
+?? llm_trainer/Dockerfile
+?? llm_trainer/export_dataset.py
+?? llm_trainer/requirements.txt
+?? local_trainer/finance_crypto_sft.jsonl
+?? local_trainer/prepare_dataset.py
+?? local_trainer/start_full_training_pipeline.ps1
+?? scripts/collect_long_horizon_training_data.py
+?? scripts/export_newsdata_to_sql.py
+?? scripts/pull_news_and_link_market_data.py
+?? scripts/run_llm_finetune.ps1
+?? scripts/run_llm_finetune.sh
+?? scripts/run_news_pipeline.ps1
+?? scripts/start_celery_worker.ps1
+?? scripts/start_celery_worker.sh
+?? start.bat
+?? start.sh
+?? status.txt
+?? status_utf8.txt

@@ -4,13 +4,7 @@ import os
 from typing import Any
 
 import requests
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import text
-from sqlalchemy.orm import Session
-
-from backend.auth.dependencies import get_current_user
-from backend.database import get_db
-from backend.models.user import User
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter(prefix="/api/v1/rag-query", tags=["RAG"])
 
@@ -22,48 +16,42 @@ def _env_flag(name: str, default: bool) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _build_context_blocks(db: Session, user_id: int, timeout_seconds: int) -> list[str]:
-    keys_result = db.execute(
-        text("SELECT provider, api_key FROM user_api_keys WHERE user_id = :uid"),
-        {"uid": user_id},
-    ).mappings().all()
-
+def _build_context_blocks(timeout_seconds: int) -> list[str]:
     context_blocks: list[str] = []
-    for row in keys_result:
-        provider = row["provider"]
-        api_key = row["api_key"]
 
-        if provider == "NEWS_API":
-            try:
-                res = requests.get(
-                    f"https://newsapi.org/v2/top-headlines?category=business&apiKey={api_key}",
-                    timeout=timeout_seconds,
-                )
-                if res.status_code == 200:
-                    articles = res.json().get("articles", [])[:3]
-                    headlines = [a.get("title") for a in articles if a.get("title")]
-                    if headlines:
-                        context_blocks.append(f"Recent Financial News: {', '.join(headlines)}")
-            except Exception:
-                pass
+    news_api_key = os.getenv("NEWSAPI_KEY", "").strip()
+    if news_api_key:
+        try:
+            res = requests.get(
+                f"https://newsapi.org/v2/top-headlines?category=business&apiKey={news_api_key}",
+                timeout=timeout_seconds,
+            )
+            if res.status_code == 200:
+                articles = res.json().get("articles", [])[:3]
+                headlines = [a.get("title") for a in articles if a.get("title")]
+                if headlines:
+                    context_blocks.append(f"Recent Financial News: {', '.join(headlines)}")
+        except Exception:
+            pass
 
-        elif provider == "BINANCE":
-            try:
-                res = requests.get(
-                    "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
-                    timeout=timeout_seconds,
-                )
-                if res.status_code == 200:
-                    price = res.json().get("price")
-                    if price:
-                        context_blocks.append(f"Live Market: BTC=$ {price}")
-            except Exception:
-                pass
+    try:
+        symbol = os.getenv("RAG_BINANCE_SYMBOL", "BTCUSDT").strip().upper() or "BTCUSDT"
+        res = requests.get(
+            "https://api.binance.com/api/v3/ticker/price",
+            params={"symbol": symbol},
+            timeout=timeout_seconds,
+        )
+        if res.status_code == 200:
+            price = res.json().get("price")
+            if price:
+                context_blocks.append(f"Live Market: {symbol}=$ {price}")
+    except Exception:
+        pass
 
     return context_blocks
 
 @router.post("/")
-def run_rag_query(payload: dict, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> dict[str, Any]:
+def run_rag_query(payload: dict) -> dict[str, Any]:
     prompt = payload.get("prompt")
     if not prompt:
         raise HTTPException(status_code=400, detail="Missing prompt")
@@ -78,7 +66,7 @@ def run_rag_query(payload: dict, current_user: User = Depends(get_current_user),
         context_device = "cpu"
 
     # 1. Retrieval Phase: build external context using CPU-only networking + parsing.
-    context_blocks = _build_context_blocks(db, current_user.id, timeout_seconds=context_timeout)
+    context_blocks = _build_context_blocks(timeout_seconds=context_timeout)
 
     joined_context = "\n".join(context_blocks)
     if not joined_context:

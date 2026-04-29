@@ -479,7 +479,7 @@ docker compose exec celery-worker celery -A backend.workers.finetune_worker insp
 
 - [ ] WebSocket for real-time progress (`/ws/finetune/{job_id}`)
 - [ ] Job priority queue (urgent vs background)
-- [ ] Streamlit dashboard UI for job management
+- [ ] Web dashboard UI for job management
 - [ ] Email/webhook notifications on completion
 - [ ] GPU utilization metrics per job
 - [ ] Model registry and versioning

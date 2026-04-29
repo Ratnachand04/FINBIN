@@ -39,9 +39,9 @@ docker exec -it binfin-celery-worker bash /workspace/scripts/replace_model.sh
 1. **Weight Merging**: The script loads the base model weights and merges your freshly trained PEFT adapter into a cohesive set.
 2. **Quantization & Format Conversion**: It utilizes `llama.cpp` to instantly convert the merged PyTorch weights into the widely-supported `.gguf` format (`q4_k_m` optimized for speed/quality).
 3. **Ollama Integration**: It constructs a custom `Modelfile` embedding your system prompts, then pipes the `.gguf` directly into the active `binfin-ollama` container via API.
-4. **Live Switch**: The model, now named `binfin-custom`, is instantly available for queries via the BINFIN REST backend and Streamlit dashboard.
+4. **Live Switch**: The model, now named `binfin-custom`, is instantly available for queries via the BINFIN REST backend and the HTML/CSS/JS web dashboard.
 
 ## 4. Automatic Live Data Loop
-Within the **BINFIN Frontend Dashboard**, users can now navigate to the **API Keys** tab. By saving their API Keys for sources like Binance, NewsAPI, and HuggingFace, the backend workers fetch live feeds tailored to the user's accounts. 
+Within the **BINFIN Web Dashboard**, users can now navigate to the **Settings / Model Ops** views to trigger training and monitor live system data.
 
 You can funnel this live parsed data into the training data loop regularly to keep `binfin-custom` constantly updated and optimized against shifting market regimes.

@@ -428,7 +428,7 @@ If issues occur:
 
 1. [WebSocket Support] Real-time job progress via `/ws/finetune/{job_id}`
 2. [Job Queuing] Priority queue for jobs (urgent vs. background)
-3. [Dashboard Integration] Fine-tuning UI in Streamlit dashboard
+3. [Dashboard Integration] Fine-tuning UI in HTML/CSS/JS web dashboard
 4. [Email Notifications] Notify when jobs complete
 5. [Cost Tracking] Log compute time and GPU utilization per job
 6. [Model Registry] Persistent registry of trained models

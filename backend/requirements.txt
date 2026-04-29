@@ -4,6 +4,9 @@ pydantic==2.10.6
 pydantic-settings==2.8.1
 python-dotenv==1.0.1
 httpx==0.28.1
+requests==2.32.3
+python-binance==1.0.19
+praw==7.8.1
 redis==5.2.1
 sqlalchemy==2.0.38
 psycopg2-binary==2.9.10

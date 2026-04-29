@@ -76,7 +76,7 @@ async def trigger_finetune(req: FinetuneJobRequest) -> FinetuneJobResponse:
                 learning_rate=str(req.learning_rate),
                 batch_size=req.batch_size,
                 grad_accum=req.grad_accum,
-                metadata={"created_from": "api", "trainer_mode": req.trainer_mode},
+                job_metadata={"created_from": "api", "trainer_mode": req.trainer_mode},
             )
             session.add(job)
             await session.commit()
@@ -119,7 +119,7 @@ async def get_finetune_job(job_id: str) -> FinetuneJobDetailResponse:
             if not job:
                 raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
 
-            metadata = job.metadata if isinstance(job.metadata, dict) else {}
+            metadata = job.job_metadata if isinstance(job.job_metadata, dict) else {}
 
             return FinetuneJobDetailResponse(
                 job_id=job.job_id,
@@ -169,7 +169,7 @@ async def list_finetune_jobs(
                     status=j.status,
                     adapter_name=j.adapter_name,
                     ollama_model_name=j.ollama_model_name,
-                    trainer_mode=str((j.metadata or {}).get("trainer_mode", "gpu-qlora")) if isinstance(j.metadata, dict) else "gpu-qlora",
+                    trainer_mode=str((j.job_metadata or {}).get("trainer_mode", "gpu-qlora")) if isinstance(j.job_metadata, dict) else "gpu-qlora",
                     progress_percent=j.progress_percent,
                     created_at=j.created_at.isoformat() if j.created_at else None,
                     started_at=j.started_at.isoformat() if j.started_at else None,

@@ -299,60 +299,50 @@ GET /api/v1/llm/finetune/{job_id}/cancel
 
 ## Integration with Dashboard
 
-### Example: Streamlit Component
+### Example: HTML/JS Dashboard Component
 
-```python
-# frontend/components/finetune.py
-import streamlit as st
-import requests
-import time
+```html
+<section id="finetune-panel">
+  <h3>Mistral Fine-Tuning</h3>
+  <button onclick="startFinetune()">Start Fine-Tuning</button>
+  <p id="finetune-status">Idle</p>
+</section>
 
-BASE_URL = "http://backend:8000"
+<script>
+const BASE_URL = `${window.location.origin}/api/v1`;
+let currentJobId = null;
 
-st.subheader("🤖 Mistral Fine-Tuning")
+async function startFinetune() {
+  const payload = {
+    adapter_name: "custom-v1",
+    ollama_model_name: "finance-model",
+    dataset_limit: 15000,
+    epochs: 1.0,
+    learning_rate: 0.0002,
+  };
 
-with st.form("finetune_form"):
-    adapter_name = st.text_input("Adapter Name", value="custom-v1")
-    model_name = st.text_input("Ollama Model Name", value="finance-model")
-    dataset_limit = st.slider("Dataset Size", 100, 100000, 15000, step=1000)
-    epochs = st.slider("Epochs", 0.1, 10.0, 1.0, step=0.1)
-    lr = st.select_slider("Learning Rate", options=[1e-5, 1e-4, 3e-4, 1e-3], value=2e-4)
-    
-    submitted = st.form_submit_button("🚀 Start Fine-Tuning")
-    
-    if submitted:
-        response = requests.post(
-            f"{BASE_URL}/api/v1/llm/finetune",
-            json={
-                "adapter_name": adapter_name,
-                "ollama_model_name": model_name,
-                "dataset_limit": dataset_limit,
-                "epochs": epochs,
-                "learning_rate": lr,
-            }
-        )
-        
-        if response.status_code == 200:
-            job = response.json()
-            st.success(f"✅ Job started: {job['job_id']}")
-            st.session_state.job_id = job['job_id']
-            st.session_state.start_time = time.time()
+  const res = await fetch(`${BASE_URL}/llm/finetune`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 
-# Status monitor
-if hasattr(st.session_state, 'job_id'):
-    job_id = st.session_state.job_id
-    status = requests.get(f"{BASE_URL}/api/v1/llm/finetune/{job_id}").json()
-    
-    col1, col2 = st.columns(2)
-    col1.metric("Status", status['status'].upper())
-    col2.metric("Progress", f"{status['progress_percent']}%")
-    
-    if status['status'] == "running":
-        st.progress(status['progress_percent'] / 100.0)
-    elif status['status'] == "completed":
-        st.success(f"✅ Model ready: **{status['ollama_model_name']}**")
-    elif status['status'] == "failed":
-        st.error(f"❌ Error: {status['error_message']}")
+  const data = await res.json();
+  currentJobId = data.job_id;
+  document.getElementById("finetune-status").textContent = `Queued: ${currentJobId}`;
+  pollFinetuneStatus();
+}
+
+async function pollFinetuneStatus() {
+  if (!currentJobId) return;
+  const res = await fetch(`${BASE_URL}/llm/finetune/${currentJobId}`);
+  const data = await res.json();
+  document.getElementById("finetune-status").textContent = `${data.status} (${data.progress_percent}%)`;
+  if (data.status === "running" || data.status === "pending") {
+    setTimeout(pollFinetuneStatus, 3000);
+  }
+}
+</script>
 ```
 
 ---

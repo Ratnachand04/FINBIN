@@ -57,8 +57,5 @@ models/
 *.pid
 docker-compose.override.yml
 
-# Streamlit
-.streamlit/secrets.toml
-
 # Jupyter
 .ipynb_checkpoints/

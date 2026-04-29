@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 PRICE_TICKS_TOTAL = Counter("binfin_price_ticks_total", "Total realtime price ticks processed")
 PRICE_WS_UP = Gauge("binfin_price_ws_up", "Binance websocket health status (1=up, 0=down)")
+BINANCE_LAST_PRICE = Gauge("binfin_binance_last_price", "Latest Binance last trade price", ["symbol"])
+BINANCE_LAST_VOLUME = Gauge("binfin_binance_last_volume", "Latest Binance base volume", ["symbol"])
 PRICE_WRITE_LATENCY = Histogram(
     "binfin_price_write_seconds",
     "Price/indicator persistence latency",
@@ -33,6 +35,8 @@ class PriceCollector:
 
     def __init__(self) -> None:
         self.binance_rest_url = os.getenv("BINANCE_REST_URL", "https://api.binance.com")
+        self.binance_api_key = os.getenv("BINANCE_API_KEY", "").strip()
+        self.binance_api_secret = (os.getenv("BINANCE_SECRET", "") or os.getenv("BINANCE_API_SECRET", "")).strip()
         self.cache_flush_seconds = 1
         self.db_flush_seconds = 15 * 60
         self.historical_refresh_seconds = 60 * 30
@@ -75,7 +79,13 @@ class PriceCollector:
         while not self._shutdown.is_set():
             client = None
             try:
-                client = await AsyncClient.create()
+                if self.binance_api_key and self.binance_api_secret:
+                    client = await AsyncClient.create(
+                        api_key=self.binance_api_key,
+                        api_secret=self.binance_api_secret,
+                    )
+                else:
+                    client = await AsyncClient.create()
                 bsm = BinanceSocketManager(client)
                 stream_name = "/".join([f"{sym}@ticker" for sym in stream_symbols])
                 socket = bsm.multiplex_socket(stream_name.split("/"))
@@ -111,12 +121,13 @@ class PriceCollector:
 
     async def _stream_realtime_prices_http_fallback(self, symbols: list[str]) -> None:
         logger.warning("python-binance unavailable; using HTTP polling fallback")
+        headers = {"X-MBX-APIKEY": self.binance_api_key} if self.binance_api_key else None
         async with httpx.AsyncClient(timeout=10) as client:
             while not self._shutdown.is_set():
                 try:
                     for symbol in symbols:
                         endpoint = f"{self.binance_rest_url}/api/v3/ticker/24hr"
-                        response = await client.get(endpoint, params={"symbol": symbol})
+                        response = await client.get(endpoint, params={"symbol": symbol}, headers=headers)
                         response.raise_for_status()
                         payload = response.json()
                         tick = {
@@ -128,6 +139,8 @@ class PriceCollector:
                             "ts": datetime.now(UTC),
                         }
                         self._price_buffer[symbol].append(tick)
+                        BINANCE_LAST_PRICE.labels(symbol=symbol).set(float(tick["price"]))
+                        BINANCE_LAST_VOLUME.labels(symbol=symbol).set(float(tick.get("volume", 0.0)))
                         PRICE_TICKS_TOTAL.inc()
 
                     await self._flush_cache()
@@ -378,6 +391,8 @@ class PriceCollector:
         quote_volume = float(data.get("q", 0.0))
         trade_count = int(data.get("n", 0))
         now = datetime.now(UTC)
+        BINANCE_LAST_PRICE.labels(symbol=symbol).set(price)
+        BINANCE_LAST_VOLUME.labels(symbol=symbol).set(volume)
         return {
             "symbol": symbol,
             "price": price,
@@ -420,7 +435,7 @@ class PriceCollector:
                     "source": "binance_ws",
                     "metadata": {"ingest": "realtime"},
                     "ts": latest["ts"],
-+                    "created_at": datetime.now(UTC),
+                    "created_at": datetime.now(UTC),
                 }
             )
             ticks.clear()
@@ -459,7 +474,7 @@ class PriceCollector:
                     "source": "binance_rest",
                     "metadata": {"ingest": "historical"},
                     "ts": item["ts"].to_pydatetime() if hasattr(item["ts"], "to_pydatetime") else item["ts"],
-+                    "created_at": datetime.now(UTC),
+                    "created_at": datetime.now(UTC),
                 }
             )
         return rows
@@ -494,7 +509,7 @@ class PriceCollector:
                         "stoch_d": self._to_float(item.get("stoch_d")),
                     },
                     "ts": item["ts"].to_pydatetime() if hasattr(item["ts"], "to_pydatetime") else item["ts"],
-+                    "created_at": datetime.now(UTC),
+                    "created_at": datetime.now(UTC),
                 }
             )
         return rows

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import os
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from backend.database import db_session_context, execute_raw_sql
@@ -52,12 +51,6 @@ class CoinDetails(BaseModel):
     sentiment_score: float | None = None
     latest_signal: dict[str, Any] | None = None
     prediction: dict[str, Any] | None = None
-
-
-def _admin_guard(x_admin_token: str | None = Header(default=None)) -> None:
-    required = os.getenv("ADMIN_TOKEN", "admin")
-    if x_admin_token != required:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
 
 
 @router.get("/", response_model=list[CoinConfigOut])
@@ -224,7 +217,7 @@ async def get_technical_indicators(symbol: str) -> dict[str, Any]:
     return dict(row._mapping)
 
 
-@router.post("/", response_model=CoinConfigOut, dependencies=[Depends(_admin_guard)])
+@router.post("/", response_model=CoinConfigOut)
 async def add_coin(payload: CoinConfigIn) -> CoinConfigOut:
     symbol = payload.symbol.upper()
     async with db_session_context() as session:
@@ -258,7 +251,7 @@ async def add_coin(payload: CoinConfigIn) -> CoinConfigOut:
     return CoinConfigOut(**dict(row._mapping))
 
 
-@router.patch("/{symbol}", response_model=CoinConfigOut, dependencies=[Depends(_admin_guard)])
+@router.patch("/{symbol}", response_model=CoinConfigOut)
 async def update_coin(symbol: str, payload: CoinConfigPatch) -> CoinConfigOut:
     symbol = symbol.upper()
     updates = payload.model_dump(exclude_none=True)
@@ -292,7 +285,7 @@ async def update_coin(symbol: str, payload: CoinConfigPatch) -> CoinConfigOut:
     return CoinConfigOut(**dict(row._mapping))
 
 
-@router.delete("/{symbol}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(_admin_guard)])
+@router.delete("/{symbol}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_coin(symbol: str) -> None:
     symbol = symbol.upper()
     async with db_session_context() as session:

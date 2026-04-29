@@ -1,8 +1,10 @@
-FROM python:3.12-slim
+FROM nginx:alpine
 
-WORKDIR /app
-COPY frontend/requirements.txt /tmp/frontend-requirements.txt
-RUN pip install --no-cache-dir -r /tmp/frontend-requirements.txt
+RUN rm -rf /usr/share/nginx/html/*
 
-COPY . .
-CMD ["streamlit", "run", "frontend/app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+COPY frontend/public/ /usr/share/nginx/html/
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -14,7 +14,7 @@ from typing import Any, AsyncGenerator, Callable
 from prometheus_client import Counter, Gauge
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from backend.database import bulk_insert, db_manager, upsert
+from backend.database import bulk_insert, db_manager, execute_raw_sql, upsert
 
 logger = logging.getLogger(__name__)
 
@@ -247,29 +247,138 @@ class RedditCollector:
             self._refresh_posts_per_min_metric()
         return output
 
+    async def _resolve_target_table(self, session: Any) -> tuple[str, set[str]]:
+        for candidate in ("reddit_data", "reddit_posts"):
+            exists_row = (
+                await execute_raw_sql(
+                    session,
+                    "SELECT EXISTS ("
+                    "SELECT 1 FROM information_schema.tables "
+                    "WHERE table_schema = 'public' AND table_name = :table_name"
+                    ") AS exists",
+                    {"table_name": candidate},
+                )
+            ).first()
+            if not exists_row or not bool(exists_row.exists):
+                continue
+
+            col_rows = (
+                await execute_raw_sql(
+                    session,
+                    "SELECT column_name FROM information_schema.columns "
+                    "WHERE table_schema = 'public' AND table_name = :table_name",
+                    {"table_name": candidate},
+                )
+            ).all()
+            return candidate, {str(row.column_name) for row in col_rows}
+
+        raise RuntimeError("No supported Reddit table found (expected reddit_data or reddit_posts)")
+
+    def _shape_row(self, post: dict[str, Any], table_name: str, columns: set[str]) -> dict[str, Any]:
+        post_id = str(post.get("post_id", ""))
+        is_comment = post_id.startswith("comment_")
+        now = datetime.now(timezone.utc)
+
+        if table_name == "reddit_posts":
+            shaped = {
+                "post_id": post_id,
+                "subreddit": post.get("subreddit"),
+                "title": post.get("title"),
+                "body": post.get("body"),
+                "author": post.get("author"),
+                "score": int(post.get("score") or 0),
+                "mentioned_coins": list(post.get("mentioned_coins") or []),
+                "created_utc": post.get("created_utc") or now,
+            }
+            return {k: v for k, v in shaped.items() if k in columns}
+
+        # Current canonical schema in db/schema.sql
+        if "source_type" in columns and "reddit_id" in columns:
+            collected_at = post.get("collected_at") or now
+            collected_at_text = collected_at.isoformat() if hasattr(collected_at, "isoformat") else str(collected_at)
+            shaped = {
+                "ts": post.get("created_utc") or now,
+                "source_type": "comment" if is_comment else "post",
+                "subreddit": post.get("subreddit"),
+                "reddit_id": post_id,
+                "author": post.get("author"),
+                "title": post.get("title"),
+                "body": post.get("body"),
+                "score": int(post.get("score") or 0),
+                "upvote_ratio": float(post.get("upvote_ratio") or 0.0),
+                "num_comments": int(post.get("num_comments") or 0),
+                "permalink": post.get("url"),
+                "mentioned_coins": list(post.get("mentioned_coins") or []),
+                "metadata": {
+                    "collected_at": collected_at_text,
+                    "url": post.get("url"),
+                },
+                "created_at": now,
+            }
+            return {k: v for k, v in shaped.items() if k in columns}
+
+        # Legacy variant where reddit_data stores post-like rows directly.
+        shaped = {
+            "post_id": post_id,
+            "subreddit": post.get("subreddit"),
+            "title": post.get("title"),
+            "body": post.get("body"),
+            "author": post.get("author"),
+            "score": int(post.get("score") or 0),
+            "num_comments": int(post.get("num_comments") or 0),
+            "upvote_ratio": float(post.get("upvote_ratio") or 0.0),
+            "created_utc": post.get("created_utc") or now,
+            "url": post.get("url"),
+            "mentioned_coins": list(post.get("mentioned_coins") or []),
+            "collected_at": post.get("collected_at") or now,
+            "created_at": now,
+        }
+        return {k: v for k, v in shaped.items() if k in columns}
+
+    def _upsert_profile(self, table_name: str, columns: set[str]) -> tuple[list[str], list[str]]:
+        if table_name == "reddit_posts":
+            update_columns = [col for col in ["score", "mentioned_coins", "title", "body", "created_utc"] if col in columns]
+            return ["post_id"], update_columns
+
+        if "source_type" in columns and "reddit_id" in columns:
+            update_columns = [
+                col
+                for col in ["score", "num_comments", "upvote_ratio", "mentioned_coins", "metadata", "created_at"]
+                if col in columns
+            ]
+            return ["source_type", "reddit_id"], update_columns
+
+        update_columns = [
+            col
+            for col in ["score", "num_comments", "upvote_ratio", "mentioned_coins", "collected_at", "created_at"]
+            if col in columns
+        ]
+        return ["post_id"], update_columns
+
     async def save_to_db(self, posts: list[dict[str, Any]]) -> None:
         if not posts:
             return
 
         async with db_manager.session_factory() as session:
             try:
+                table_name, columns = await self._resolve_target_table(session)
+                rows = [self._shape_row(post, table_name, columns) for post in posts]
+                rows = [row for row in rows if row]
+                if not rows:
+                    return
+
+                conflict_columns, update_columns = self._upsert_profile(table_name, columns)
                 try:
-                    await bulk_insert(session, "reddit_data", posts)
+                    await bulk_insert(session, table_name, rows)
                 except IntegrityError:
                     # If duplicates exist, fallback to idempotent upsert.
-                    for post in posts:
+                    for post in rows:
                         await upsert(
                             session=session,
-                            table_name="reddit_data",
+                            table_name=table_name,
                             values=post,
-                            conflict_columns=["post_id"],
-                            update_columns=[
-                                "score",
-                                "num_comments",
-                                "upvote_ratio",
-                                "mentioned_coins",
-                                "collected_at",
-                            ],
+                            conflict_columns=conflict_columns,
+                            update_columns=update_columns,
                         )
 
                 await session.commit()

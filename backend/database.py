@@ -143,6 +143,24 @@ class DatabaseManager:
         defaults = [coin.strip().upper() for coin in tracked.split(",") if coin.strip()]
         async with self.session_factory() as session:
             try:
+                await execute_raw_sql(
+                    session,
+                    """
+                    CREATE TABLE IF NOT EXISTS coin_configs (
+                        symbol TEXT PRIMARY KEY,
+                        is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+                        min_signal_confidence DOUBLE PRECISION NOT NULL DEFAULT 0.75,
+                        min_signal_strength DOUBLE PRECISION NOT NULL DEFAULT 7.0,
+                        max_position_size_pct DOUBLE PRECISION NOT NULL DEFAULT 0.10,
+                        stop_loss_pct DOUBLE PRECISION,
+                        take_profit_pct DOUBLE PRECISION,
+                        tracked_intervals TEXT[] NOT NULL DEFAULT ARRAY['15m', '1h', '4h', '1d'],
+                        metadata JSONB NOT NULL DEFAULT '{}'::JSONB,
+                        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                    )
+                    """,
+                )
+
                 for symbol in defaults:
                     await upsert(
                         session=session,

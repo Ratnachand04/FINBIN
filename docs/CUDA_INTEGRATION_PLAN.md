@@ -46,7 +46,7 @@ Use GPU acceleration (CUDA) for local model inference when available, and automa
   - `cuda_available`
   - `selected_device`
   - `ollama_reachable`
-- Streamlit Model tab shows runtime metrics and can complete retraining for BTC.
+- Web dashboard Model Ops view shows runtime metrics and can complete retraining for BTC.
 - New rows are written to:
   - `sentiment_scores`
   - `price_predictions`
@@ -54,5 +54,5 @@ Use GPU acceleration (CUDA) for local model inference when available, and automa
 ## Rollback Plan
 If inference becomes unstable or memory usage spikes:
 - Set `ENABLE_GPU=false`.
-- Lower retraining rows per symbol in Streamlit.
+- Lower retraining rows per symbol in the web dashboard.
 - Keep sentiment-only flow active and pause retraining endpoint usage.

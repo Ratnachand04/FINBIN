@@ -17,7 +17,8 @@
    - `python -m processing.sentiment.main`
    - `python -m signals.main`
 8. Start dashboard:
-   - `streamlit run dashboard/app.py`
+   - `docker compose up -d frontend`
+   - Open `http://localhost:8501`
 9. Optional terminal dashboard:
    - `python -m terminal.cli status`
 
@@ -30,5 +31,5 @@
 ## Monitoring
 
 - Collect application logs in JSON format.
-- Add health checks for API `/health` and websocket endpoint `/ws/market`.
+- Add health checks for API `/api/v1/health` and websocket endpoint `/ws/live-data`.
 - Alert on ingestion lag, signal generation failures, and model prediction drift.
