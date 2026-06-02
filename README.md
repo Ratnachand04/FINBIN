@@ -240,3 +240,4 @@ This concept allows the terminal to adapt massive transformer models to local cr
 
 
 ### Model made at Haackathon in NMIMS, Indore
+- Time taken to build this model = 18hrs
