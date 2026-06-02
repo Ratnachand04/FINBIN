@@ -238,3 +238,5 @@ This concept allows the terminal to adapt massive transformer models to local cr
 - **Sharpe Ratio**: $S = \frac{\mu_{\text{returns}}}{\sigma_{\text{returns}}}$ (Normalizes profit against trading risk).
 - **Confidence Layer**: $\text{Conf} = \left( \frac{1}{M} \sum \max(P_m) \right) \times \text{Multiplier}$ (Measures divergence between independent models).
 
+
+### Model made at Haackathon in NMIMS, Indore
