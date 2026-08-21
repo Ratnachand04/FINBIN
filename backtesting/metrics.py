@@ -11,17 +11,39 @@ def max_drawdown(equity_curve: pd.Series) -> float:
     return float(drawdown.min()) if not drawdown.empty else 0.0
 
 
-def sharpe_ratio(returns: pd.Series, periods_per_year: int = 365 * 24 * 4) -> float:
-    if returns.empty:
+SECONDS_PER_YEAR = 365 * 24 * 3600
+DEFAULT_BAR_SECONDS = 900  # 15m
+
+
+def infer_periods_per_year(index: pd.Index) -> float:
+    """Derive the annualisation factor from the actual sample spacing.
+
+    Hardcoding a factor (this module previously assumed 15m bars unconditionally)
+    silently mis-annualises any series sampled at a different cadence, which is
+    the fastest way to manufacture an implausible Sharpe.
+    """
+    if not isinstance(index, pd.DatetimeIndex) or len(index) < 3:
+        return SECONDS_PER_YEAR / DEFAULT_BAR_SECONDS
+    deltas = index.to_series().diff().dt.total_seconds().dropna()
+    deltas = deltas[deltas > 0]
+    if deltas.empty:
+        return SECONDS_PER_YEAR / DEFAULT_BAR_SECONDS
+    return float(SECONDS_PER_YEAR / deltas.median())
+
+
+def sharpe_ratio(returns: pd.Series, periods_per_year: float | None = None) -> float:
+    if len(returns) < 2:
         return 0.0
-    vol = returns.std()
-    if vol == 0 or math.isnan(vol):
+    if periods_per_year is None:
+        periods_per_year = infer_periods_per_year(returns.index)
+    vol = returns.std(ddof=1)
+    if vol == 0 or math.isnan(vol) or periods_per_year <= 0:
         return 0.0
     return float((returns.mean() / vol) * math.sqrt(periods_per_year))
 
 
 def summary_stats(trades: pd.DataFrame, equity_curve: pd.Series) -> dict[str, float]:
-    returns = equity_curve.pct_change().dropna()
+    returns = equity_curve.pct_change().replace([float("inf"), float("-inf")], pd.NA).dropna()
     win_rate = float((trades["pnl"] > 0).mean()) if not trades.empty else 0.0
     profit_factor = 0.0
     if not trades.empty:
