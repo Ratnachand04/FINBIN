@@ -3,13 +3,21 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from statistics import median
 from typing import Any
 
 from backend.database import db_manager, execute_raw_sql
 
 logger = logging.getLogger(__name__)
+
+# Fallback bar cadence (15m) used only when the equity curve is too short to
+# infer one. Annualisation factors are derived from the actual bar spacing.
+DEFAULT_BAR_SECONDS = 900
+SECONDS_PER_YEAR = 365 * 24 * 3600
 
 
 @dataclass
@@ -73,48 +81,77 @@ class BacktestEngine:
         strategy_config: dict[str, Any] | None = None,
     ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         strategy_config = strategy_config or {}
-        transaction_cost = float(strategy_config.get("transaction_cost", 0.001))
+        # Binance spot taker fee is 4bp per side; the previous 10bp default was
+        # applied to notional *twice* which double-counted the round trip.
+        fee_rate = float(strategy_config.get("transaction_cost", 0.0004))
         slippage = float(strategy_config.get("slippage", 0.0005))
         max_position_pct = float(strategy_config.get("max_position_pct", 0.2))
         timeout_hours = int(strategy_config.get("timeout_hours", 24))
+        max_concurrent = int(strategy_config.get("max_concurrent_positions", 5))
+        allow_short = bool(strategy_config.get("allow_short", True))
 
-        price_index = {(row["symbol"], row["ts"]): row for row in prices}
-        price_by_symbol: dict[str, list[dict[str, Any]]] = {}
+        bars_by_symbol: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in prices:
-            price_by_symbol.setdefault(row["symbol"], []).append(row)
-        for symbol in price_by_symbol:
-            price_by_symbol[symbol].sort(key=lambda item: item["ts"])
+            bars_by_symbol[row["symbol"]].append(row)
+        for symbol in bars_by_symbol:
+            bars_by_symbol[symbol].sort(key=lambda item: item["ts"])
 
-        cash = initial_capital
-        open_positions: list[dict[str, Any]] = []
+        # A signal computed from the close of bar i can only be acted on at bar
+        # i+1. Scheduling entries here (rather than filling at the signal's own
+        # bar) is what removes the look-ahead from the fill path.
+        scheduled: dict[tuple[str, int], list[dict[str, Any]]] = defaultdict(list)
+        for signal in signals:
+            symbol = signal.get("symbol")
+            rows = bars_by_symbol.get(symbol)
+            if not rows:
+                continue
+            idx = self._bar_index_at_or_before(rows, signal["ts"])
+            if idx is None or idx + 1 >= len(rows):
+                continue
+            scheduled[(symbol, idx + 1)].append(signal)
+
+        cash = float(initial_capital)
+        positions: dict[str, dict[str, Any]] = {}
         trades: list[dict[str, Any]] = []
         equity_curve: list[dict[str, Any]] = []
 
-        for signal in sorted(signals, key=lambda row: row["ts"]):
-            ts = signal["ts"]
-            symbol = signal["symbol"]
-            signal_type = signal["signal"]
-            strength = float(signal.get("strength", 0.0))
+        timeline = sorted({row["ts"] for row in prices})
+        cursor = {symbol: 0 for symbol in bars_by_symbol}
 
-            current_price = self._nearest_price(symbol, ts, price_by_symbol)
-            if current_price <= 0:
-                continue
+        for ts in timeline:
+            # Advance each symbol to its bar at this timestamp, if it has one.
+            bars_now: dict[str, dict[str, Any]] = {}
+            for symbol, rows in bars_by_symbol.items():
+                i = cursor[symbol]
+                if i < len(rows) and rows[i]["ts"] == ts:
+                    bars_now[symbol] = rows[i]
+                    cursor[symbol] = i + 1
 
-            # Process open positions first.
-            remaining_positions: list[dict[str, Any]] = []
-            for pos in open_positions:
-                exit_info = self._check_exit_conditions(pos, ts, current_price, timeout_hours)
+            # 1. Exits, each position priced from its OWN symbol's bar.
+            for symbol, bar in bars_now.items():
+                pos = positions.get(symbol)
+                if pos is None:
+                    continue
+                exit_info = self._check_exit_conditions(pos, ts, bar, timeout_hours)
                 if exit_info is None:
-                    remaining_positions.append(pos)
                     continue
 
                 qty = pos["quantity"]
-                exit_price = exit_info["price"] * (1 - slippage if pos["side"] == "BUY" else 1 + slippage)
-                gross_pnl = (exit_price - pos["entry_price"]) * qty if pos["side"] == "BUY" else (pos["entry_price"] - exit_price) * qty
-                fees = (pos["entry_price"] * qty + exit_price * qty) * transaction_cost
+                is_long = pos["side"] == "BUY"
+                exit_price = exit_info["price"] * (1 - slippage if is_long else 1 + slippage)
+                notional_in = pos["entry_price"] * qty
+                notional_out = exit_price * qty
+                # Each leg is charged on its own notional. Splitting the round
+                # trip evenly would make the cash charged diverge from the fee
+                # reported on the trade whenever the price moved.
+                exit_fee = notional_out * fee_rate
+                fees = notional_in * fee_rate + exit_fee
+                gross_pnl = (exit_price - pos["entry_price"]) * qty if is_long else (pos["entry_price"] - exit_price) * qty
                 net_pnl = gross_pnl - fees
 
-                cash += (pos["entry_price"] * qty) + net_pnl
+                # Long: sell back into cash. Short: buy back, paying out cash.
+                cash += (notional_out - exit_fee) if is_long else -(notional_out + exit_fee)
+
                 trades.append(
                     {
                         "symbol": pos["symbol"],
@@ -126,41 +163,119 @@ class BacktestEngine:
                         "quantity": qty,
                         "fee": fees,
                         "pnl": net_pnl,
-                        "pnl_pct": net_pnl / (pos["entry_price"] * qty) if pos["entry_price"] > 0 else 0,
+                        "pnl_pct": net_pnl / notional_in if notional_in > 0 else 0.0,
                         "duration_seconds": int((ts - pos["entry_time"]).total_seconds()),
                         "signal_id": pos.get("signal_id"),
                         "exit_reason": exit_info["reason"],
                     }
                 )
+                del positions[symbol]
 
-            open_positions = remaining_positions
+            # 2. Entries scheduled for this bar, filled at the bar's open.
+            for symbol, bar in bars_now.items():
+                idx = cursor[symbol] - 1
+                for signal in scheduled.get((symbol, idx), []):
+                    signal_type = signal.get("signal")
+                    if signal_type not in {"BUY", "SELL"}:
+                        continue
+                    if signal_type == "SELL" and not allow_short:
+                        continue
+                    if symbol in positions or len(positions) >= max_concurrent:
+                        continue
 
-            # Execute new position when signal indicates and capital exists.
-            if signal_type in {"BUY", "SELL"} and cash > 0:
-                allocation = cash * max_position_pct * min(1.0, max(0.1, strength / 10.0))
-                if allocation > 0:
-                    quantity = allocation / (current_price * (1 + slippage))
-                    entry_price = current_price * (1 + slippage if signal_type == "BUY" else 1 - slippage)
-                    open_positions.append(
-                        {
-                            "symbol": symbol,
-                            "side": signal_type,
-                            "entry_time": ts,
-                            "entry_price": entry_price,
-                            "quantity": quantity,
-                            "target": float(signal.get("take_profit", current_price * (1.02 if signal_type == "BUY" else 0.98))),
-                            "stop": float(signal.get("stop_loss", current_price * (0.985 if signal_type == "BUY" else 1.015))),
-                            "signal_id": signal.get("id"),
-                        }
-                    )
-                    cash -= allocation
+                    fill = float(bar.get("open") or bar.get("close") or 0.0)
+                    if fill <= 0:
+                        continue
 
-            mark_to_market = sum(
-                (self._nearest_price(pos["symbol"], ts, price_by_symbol) * pos["quantity"]) for pos in open_positions
+                    equity_now = self._equity(cash, positions, bars_now, bars_by_symbol, cursor)
+                    strength = float(signal.get("strength", 0.0) or 0.0)
+                    size_mult = min(1.0, max(0.1, strength / 10.0))
+                    allocation = equity_now * max_position_pct * size_mult
+                    is_long = signal_type == "BUY"
+                    if is_long:
+                        allocation = min(allocation, cash)
+                    if allocation <= 0:
+                        continue
+
+                    entry_price = fill * (1 + slippage if is_long else 1 - slippage)
+                    quantity = allocation / entry_price
+                    entry_fee = allocation * fee_rate
+                    # Long consumes cash; short credits proceeds. The offsetting
+                    # short liability is carried in the equity calculation.
+                    cash += (-allocation - entry_fee) if is_long else (allocation - entry_fee)
+
+                    positions[symbol] = {
+                        "symbol": symbol,
+                        "side": signal_type,
+                        "entry_time": ts,
+                        "entry_price": entry_price,
+                        "quantity": quantity,
+                        "target": self._level(signal, "take_profit", fill, 1.02 if is_long else 0.98),
+                        "stop": self._level(signal, "stop_loss", fill, 0.985 if is_long else 1.015),
+                        "signal_id": signal.get("id"),
+                    }
+
+            equity = self._equity(cash, positions, bars_now, bars_by_symbol, cursor)
+            equity_curve.append(
+                {
+                    "ts": ts,
+                    "portfolio_value": equity,
+                    "cash": cash,
+                    "open_positions": len(positions),
+                }
             )
-            equity_curve.append({"ts": ts, "portfolio_value": cash + mark_to_market, "cash": cash, "open_positions": len(open_positions)})
 
         return trades, equity_curve
+
+    def _equity(
+        self,
+        cash: float,
+        positions: dict[str, dict[str, Any]],
+        bars_now: dict[str, dict[str, Any]],
+        bars_by_symbol: dict[str, list[dict[str, Any]]],
+        cursor: dict[str, int],
+    ) -> float:
+        """Cash plus long market value minus short liability.
+
+        Shorts must be subtracted: the previous implementation added
+        ``price * quantity`` for every position, so a short gained equity as the
+        price rose.
+        """
+        total = cash
+        for symbol, pos in positions.items():
+            bar = bars_now.get(symbol)
+            if bar is None:
+                rows = bars_by_symbol.get(symbol, [])
+                i = cursor.get(symbol, 0) - 1
+                bar = rows[i] if 0 <= i < len(rows) else None
+            mark = float(bar.get("close") or 0.0) if bar else pos["entry_price"]
+            value = mark * pos["quantity"]
+            total += value if pos["side"] == "BUY" else -value
+        return total
+
+    def _level(self, signal: dict[str, Any], key: str, reference: float, default_mult: float) -> float:
+        value = signal.get(key)
+        try:
+            level = float(value) if value is not None else 0.0
+        except (TypeError, ValueError):
+            level = 0.0
+        return level if level > 0 else reference * default_mult
+
+    def _bar_index_at_or_before(self, rows: list[dict[str, Any]], ts: datetime) -> int | None:
+        """Index of the last bar with ``bar.ts <= ts``.
+
+        The previous ``_nearest_price`` used absolute time distance, which could
+        select a bar *after* the signal and leak future prices into the fill.
+        """
+        lo, hi, found = 0, len(rows) - 1, None
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            if rows[mid]["ts"] <= ts:
+                found = mid
+                lo = mid + 1
+            else:
+                hi = mid - 1
+        return found
 
     def calculate_performance_metrics(self, trades: list[dict[str, Any]], portfolio_values: list[dict[str, Any]]) -> dict[str, Any]:
         total_trades = len(trades)
@@ -173,8 +288,13 @@ class BacktestEngine:
         final = portfolio_values[-1]["portfolio_value"] if portfolio_values else 0.0
         total_return = ((final - initial) / initial * 100) if initial else 0.0
 
-        returns = [float(t.get("pnl_pct", 0.0)) for t in trades]
-        sharpe = self.calculate_sharpe_ratio(returns)
+        # Sharpe must come from the equity curve sampled at a fixed cadence.
+        # Feeding per-trade returns into a sqrt(252) factor (the previous
+        # behaviour) annualises by an arbitrary number and is what produced the
+        # double-digit Sharpe values in earlier reports.
+        bar_returns = self._equity_returns(portfolio_values)
+        periods_per_year = self._periods_per_year(portfolio_values)
+        sharpe = self.calculate_sharpe_ratio(bar_returns, periods_per_year=periods_per_year)
         drawdown = self.calculate_max_drawdown(portfolio_values)
 
         gross_profit = sum(float(t.get("pnl", 0.0)) for t in winners)
@@ -205,19 +325,49 @@ class BacktestEngine:
             "worst_trade": round(worst_trade, 6),
         }
 
-    def calculate_sharpe_ratio(self, returns: list[float], risk_free_rate: float = 0.02) -> float:
-        if not returns:
-            return 0.0
-        import math
+    def calculate_sharpe_ratio(
+        self,
+        returns: list[float],
+        risk_free_rate: float = 0.02,
+        periods_per_year: float = 252.0,
+    ) -> float:
+        """Annualised Sharpe of a periodic return series.
 
-        rf_daily = risk_free_rate / 252
-        excess = [r - rf_daily for r in returns]
+        ``returns`` must be sampled at a constant cadence and ``periods_per_year``
+        must match that cadence. Passing per-trade returns here is a category
+        error: trades do not arrive on a fixed clock.
+        """
+        if len(returns) < 2 or periods_per_year <= 0:
+            return 0.0
+
+        rf_per_period = risk_free_rate / periods_per_year
+        excess = [r - rf_per_period for r in returns]
         mean = sum(excess) / len(excess)
-        variance = sum((r - mean) ** 2 for r in excess) / max(len(excess) - 1, 1)
+        variance = sum((r - mean) ** 2 for r in excess) / (len(excess) - 1)
         std = math.sqrt(variance)
         if std == 0:
             return 0.0
-        return (mean / std) * math.sqrt(252)
+        return (mean / std) * math.sqrt(periods_per_year)
+
+    def _equity_returns(self, equity_curve: list[dict[str, Any]]) -> list[float]:
+        returns: list[float] = []
+        for prev, curr in zip(equity_curve, equity_curve[1:]):
+            base = float(prev.get("portfolio_value", 0.0))
+            if base <= 0:
+                continue
+            returns.append(float(curr.get("portfolio_value", 0.0)) / base - 1.0)
+        return returns
+
+    def _periods_per_year(self, equity_curve: list[dict[str, Any]]) -> float:
+        """Infer the annualisation factor from the observed bar spacing."""
+        deltas = [
+            (curr["ts"] - prev["ts"]).total_seconds()
+            for prev, curr in zip(equity_curve, equity_curve[1:])
+            if isinstance(prev.get("ts"), datetime) and isinstance(curr.get("ts"), datetime)
+        ]
+        positive = [d for d in deltas if d > 0]
+        bar_seconds = median(positive) if positive else DEFAULT_BAR_SECONDS
+        return SECONDS_PER_YEAR / bar_seconds
 
     def calculate_max_drawdown(self, portfolio_values: list[dict[str, Any]]) -> dict[str, Any]:
         if not portfolio_values:
@@ -369,7 +519,7 @@ class BacktestEngine:
             rows = (
                 await execute_raw_sql(
                     session,
-                    "SELECT ts, symbol, close FROM price_data "
+                    "SELECT ts, symbol, open, high, low, close FROM price_data "
                     "WHERE ts BETWEEN :start AND :end AND symbol = ANY(:symbols) AND interval = '15m' "
                     "ORDER BY ts ASC",
                     {"start": start_date, "end": end_date, "symbols": symbols},
@@ -382,38 +532,45 @@ class BacktestEngine:
             mapped.append(item)
         return mapped
 
-    def _nearest_price(self, symbol: str, ts: datetime, prices: dict[str, list[dict[str, Any]]]) -> float:
-        rows = prices.get(symbol, [])
-        if not rows:
-            return 0.0
-        nearest = min(rows, key=lambda row: abs((row["ts"] - ts).total_seconds()))
-        return float(nearest.get("close", 0.0) or 0.0)
-
     def _check_exit_conditions(
         self,
         position: dict[str, Any],
         ts: datetime,
-        current_price: float,
+        bar: dict[str, Any],
         timeout_hours: int,
     ) -> dict[str, Any] | None:
+        """Resolve stop/target against the bar's range, not just its close.
+
+        When a bar touches both levels we cannot tell from OHLC which came
+        first, so we assume the stop filled — the pessimistic convention. The
+        fill is booked *at* the level, not at the close, since that is where the
+        resting order would have executed.
+        """
+        if ts == position["entry_time"]:
+            return None
+
         side = position["side"]
         target = float(position["target"])
         stop = float(position["stop"])
-        age = ts - position["entry_time"]
+        close = float(bar.get("close") or 0.0)
+        high = float(bar.get("high") or close)
+        low = float(bar.get("low") or close)
+        if close <= 0:
+            return None
 
         if side == "BUY":
-            if current_price >= target:
-                return {"reason": "target", "price": current_price}
-            if current_price <= stop:
-                return {"reason": "stop", "price": current_price}
-        if side == "SELL":
-            if current_price <= target:
-                return {"reason": "target", "price": current_price}
-            if current_price >= stop:
-                return {"reason": "stop", "price": current_price}
+            if low <= stop:
+                return {"reason": "stop", "price": stop}
+            if high >= target:
+                return {"reason": "target", "price": target}
+        else:
+            if high >= stop:
+                return {"reason": "stop", "price": stop}
+            if low <= target:
+                return {"reason": "target", "price": target}
 
-        if age >= timedelta(hours=timeout_hours):
-            return {"reason": "timeout", "price": current_price}
+        if ts - position["entry_time"] >= timedelta(hours=timeout_hours):
+            return {"reason": "timeout", "price": close}
         return None
 
 
