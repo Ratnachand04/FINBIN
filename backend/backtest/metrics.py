@@ -9,7 +9,7 @@ from typing import Any
 
 
 class PerformanceMetrics:
-    def calculate_risk_metrics(self, returns: list[float]) -> dict[str, float]:
+    def calculate_risk_metrics(self, returns: list[float], periods_per_year: float = 252.0) -> dict[str, float]:
         if not returns:
             return {
                 "volatility_annualized": 0.0,
@@ -20,17 +20,16 @@ class PerformanceMetrics:
                 "max_consecutive_losses": 0.0,
             }
 
-        volatility_daily = self._std(returns)
-        volatility_annualized = volatility_daily * math.sqrt(252)
+        volatility_per_period = self._std(returns)
+        volatility_annualized = volatility_per_period * math.sqrt(max(periods_per_year, 0.0))
         downside = [r for r in returns if r < 0]
         semi_deviation = self._std(downside)
 
         sorted_returns = sorted(returns)
-        idx_95 = max(0, int(len(sorted_returns) * 0.05) - 1)
-        idx_99 = max(0, int(len(sorted_returns) * 0.01) - 1)
-        var_95 = abs(sorted_returns[idx_95])
-        var_99 = abs(sorted_returns[idx_99])
-        cvar_95_tail = sorted_returns[: max(1, int(len(sorted_returns) * 0.05))]
+        last = len(sorted_returns) - 1
+        var_95 = abs(sorted_returns[min(last, max(0, int(round(0.05 * last))))])
+        var_99 = abs(sorted_returns[min(last, max(0, int(round(0.01 * last))))])
+        cvar_95_tail = sorted_returns[: max(1, int(math.ceil(len(sorted_returns) * 0.05)))]
         cvar_95 = abs(mean(cvar_95_tail))
 
         max_losses = self._max_consecutive(returns, lambda x: x < 0)
@@ -129,8 +128,19 @@ class PerformanceMetrics:
             "max_consecutive_losses": float(max_losses),
         }
 
-    def calculate_risk_adjusted_returns(self, returns: list[float], trades: list[dict[str, Any]]) -> dict[str, float]:
-        if not returns:
+    def calculate_risk_adjusted_returns(
+        self,
+        returns: list[float],
+        equity_curve: list[dict[str, Any]] | None = None,
+        periods_per_year: float = 252.0,
+    ) -> dict[str, float]:
+        """Risk-adjusted ratios from a periodic return series.
+
+        ``returns`` must be equally spaced (bar returns off the equity curve),
+        and ``periods_per_year`` must match that spacing — a 15m series
+        annualises by sqrt(35040), not sqrt(252).
+        """
+        if len(returns) < 2 or periods_per_year <= 0:
             return {
                 "sharpe_ratio": 0.0,
                 "sortino_ratio": 0.0,
@@ -138,21 +148,32 @@ class PerformanceMetrics:
                 "omega_ratio": 0.0,
             }
 
-        rf_daily = 0.02 / 252
-        excess = [r - rf_daily for r in returns]
-        sharpe = (mean(excess) / self._std(excess) * math.sqrt(252)) if self._std(excess) > 0 else 0.0
+        ann = math.sqrt(periods_per_year)
+        rf_per_period = 0.02 / periods_per_year
+        excess = [r - rf_per_period for r in returns]
+        std = self._std(excess)
+        sharpe = (mean(excess) / std * ann) if std > 0 else 0.0
 
-        downside = [r for r in excess if r < 0]
-        downside_dev = self._std(downside)
-        sortino = (mean(excess) / downside_dev * math.sqrt(252)) if downside_dev > 0 else 0.0
+        # Sortino's denominator is the root-mean-square of downside deviations
+        # about the target, not the sample stdev of the negative subset.
+        sq = [min(r, 0.0) ** 2 for r in excess]
+        downside_dev = math.sqrt(sum(sq) / len(sq))
+        sortino = (mean(excess) / downside_dev * ann) if downside_dev > 0 else 0.0
 
-        total_return = sum(returns)
-        drawdown_pct = abs(min([0.0] + [float(t.get("pnl_pct", 0.0)) for t in trades]))
-        calmar = (total_return / drawdown_pct) if drawdown_pct > 0 else 0.0
+        # Calmar is annualised return over *peak-to-trough* drawdown. The prior
+        # version divided by the single worst trade's return, which is unrelated.
+        calmar = 0.0
+        if equity_curve:
+            years = self._curve_years(equity_curve)
+            start = float(equity_curve[0].get("portfolio_value", 0.0))
+            end = float(equity_curve[-1].get("portfolio_value", 0.0))
+            max_dd = self.calculate_drawdown_metrics(equity_curve)["max_drawdown_pct"] / 100.0
+            if start > 0 and years > 0 and max_dd > 0 and end > 0:
+                cagr = (end / start) ** (1 / years) - 1
+                calmar = cagr / max_dd
 
-        threshold = 0.0
-        gains = sum(max(r - threshold, 0) for r in returns)
-        losses = abs(sum(min(r - threshold, 0) for r in returns))
+        gains = sum(max(r, 0.0) for r in returns)
+        losses = abs(sum(min(r, 0.0) for r in returns))
         omega = gains / losses if losses > 0 else gains
 
         return {
@@ -161,6 +182,14 @@ class PerformanceMetrics:
             "calmar_ratio": float(calmar),
             "omega_ratio": float(omega),
         }
+
+    def _curve_years(self, equity_curve: list[dict[str, Any]]) -> float:
+        try:
+            start = self._coerce_dt(equity_curve[0].get("ts"))
+            end = self._coerce_dt(equity_curve[-1].get("ts"))
+        except Exception:
+            return 0.0
+        return max((end - start).total_seconds() / (365.25 * 24 * 3600), 0.0)
 
     def calculate_drawdown_metrics(self, equity_curve: list[dict[str, Any]]) -> dict[str, float]:
         if not equity_curve:
@@ -226,36 +255,77 @@ class PerformanceMetrics:
         avg_loss = abs(mean(losses)) if losses else 0.0
         return (win_rate * avg_win) - (loss_rate * avg_loss)
 
-    def generate_monte_carlo_simulation(self, trades: list[dict[str, Any]], n_simulations: int = 1000) -> dict[str, Any]:
+    def generate_monte_carlo_simulation(
+        self,
+        trades: list[dict[str, Any]],
+        n_simulations: int = 1000,
+        seed: int | None = 7,
+    ) -> dict[str, Any]:
+        """Bootstrap the trade sequence to get a distribution of outcomes.
+
+        Resampling is done **with replacement**. The previous implementation
+        shuffled the P&L list and summed it; summation is invariant under
+        permutation, so every simulation returned the identical total, the
+        confidence interval collapsed to a point, and the probability of profit
+        was always exactly 0.0 or 1.0.
+
+        Because each path is resampled, we can also report the distribution of
+        peak-to-trough drawdown, which *is* order-dependent and is the reason to
+        run this at all.
+        """
         if not trades:
             return {
                 "simulations": 0,
                 "final_returns": [],
                 "ci_95": (0.0, 0.0),
                 "probability_of_profit": 0.0,
+                "max_drawdown_ci_95": (0.0, 0.0),
+                "median_max_drawdown": 0.0,
             }
 
+        rng = random.Random(seed)
         pnl_series = [float(t.get("pnl", 0.0)) for t in trades]
-        results = []
+        n = len(pnl_series)
+
+        totals: list[float] = []
+        drawdowns: list[float] = []
         for _ in range(n_simulations):
-            shuffled = pnl_series[:]
-            random.shuffle(shuffled)
-            results.append(sum(shuffled))
+            path = [pnl_series[rng.randrange(n)] for _ in range(n)]
+            equity = 0.0
+            peak = 0.0
+            worst = 0.0
+            for pnl in path:
+                equity += pnl
+                peak = max(peak, equity)
+                worst = min(worst, equity - peak)
+            totals.append(equity)
+            drawdowns.append(abs(worst))
 
-        ordered = sorted(results)
-        low_idx = max(0, int(len(ordered) * 0.025) - 1)
-        high_idx = min(len(ordered) - 1, int(len(ordered) * 0.975) - 1)
-        ci_95 = (ordered[low_idx], ordered[high_idx])
-        profit_prob = len([v for v in results if v > 0]) / len(results)
-
+        profit_prob = len([v for v in totals if v > 0]) / len(totals)
         return {
             "simulations": n_simulations,
-            "final_returns": results,
-            "ci_95": ci_95,
+            "final_returns": totals,
+            "ci_95": self._percentile_interval(totals, 0.025, 0.975),
             "probability_of_profit": profit_prob,
+            "max_drawdown_ci_95": self._percentile_interval(drawdowns, 0.025, 0.975),
+            "median_max_drawdown": float(median(drawdowns)),
         }
 
-    def compare_to_benchmark(self, strategy_returns: list[float], benchmark_returns: list[float]) -> dict[str, float]:
+    def _percentile_interval(self, values: list[float], low: float, high: float) -> tuple[float, float]:
+        if not values:
+            return (0.0, 0.0)
+        ordered = sorted(values)
+        last = len(ordered) - 1
+        lo_idx = min(last, max(0, int(round(low * last))))
+        hi_idx = min(last, max(0, int(round(high * last))))
+        return (float(ordered[lo_idx]), float(ordered[hi_idx]))
+
+    def compare_to_benchmark(
+        self,
+        strategy_returns: list[float],
+        benchmark_returns: list[float],
+        periods_per_year: float = 252.0,
+    ) -> dict[str, float]:
         if not strategy_returns or not benchmark_returns:
             return {
                 "alpha": 0.0,
@@ -269,12 +339,15 @@ class PerformanceMetrics:
         b = benchmark_returns[:n]
         excess = [sv - bv for sv, bv in zip(s, b)]
 
+        ann = math.sqrt(max(periods_per_year, 0.0))
         b_var = self._variance(b)
         cov = self._covariance(s, b)
         beta = cov / b_var if b_var > 0 else 0.0
-        alpha = mean(s) - beta * mean(b)
-        tracking_error = self._std(excess) * math.sqrt(252)
-        info_ratio = (mean(excess) / self._std(excess) * math.sqrt(252)) if self._std(excess) > 0 else 0.0
+        # Annualise alpha so it is comparable to the annualised ratios above.
+        alpha = (mean(s) - beta * mean(b)) * periods_per_year
+        te_std = self._std(excess)
+        tracking_error = te_std * ann
+        info_ratio = (mean(excess) / te_std * ann) if te_std > 0 else 0.0
 
         return {
             "alpha": float(alpha),
