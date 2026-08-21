@@ -2,6 +2,11 @@
 
 Self-hosted crypto trading intelligence system using open-source LLMs to analyze sentiment, predict prices, and generate actionable trading signals.
 
+> **Measured results:** [Performance Evaluation](#performance-evaluation) &nbsp;|&nbsp;
+> **Reproduce:** `python scripts/evaluate_walkforward.py` &nbsp;|&nbsp;
+> **Verify the backtester:** `python scripts/null_test_backtest.py` &nbsp;|&nbsp;
+> **Paper:** [`paper/crypto_direction_evaluation.tex`](paper/crypto_direction_evaluation.tex)
+
 ## Model Intro
 
 The **Crypto Intelligence Terminal** is a robust, hybrid-compute AI pipeline for cryptocurrency sentiment analysis and price prediction. It operates as a self-hosted platform running locally to maintain full data privacy and control. By leveraging both traditional quantitative modeling techniques (XGBoost, Prophet) and state-of-the-art Generative AI (Mistral-7B via QLoRA fine-tuning), the system provides an end-to-end framework for making informed, data-driven trading decisions.
@@ -145,55 +150,191 @@ To ensure the large language model (Mistral-7B) runs efficiently on consumer or 
 - **Low-Rank Adaptation (LoRA):** Rather than updating all 7-billion parameters, our local trainer scripts inject small, trainable rank decomposition matrices. This targets only the weights necessary for financial sentiment interpretation, compounding training speeds exponentially.
 - **Split Workload RAG:** The heavy generative text-streaming task is strictly pinned to the GPU via Ollama, while Retrieval-Augmented Generation retrieval operations (vector embeddings, database routing) are purposely offloaded to the CPU. This cleanly preserves scarce GPU memory.
 
-## Latest Accuracy and Backtest Scores
+## Performance Evaluation
 
-Performance snapshot generated on **2026-04-02** from live `price_data` in PostgreSQL.
+Reproduce with `python scripts/evaluate_walkforward.py`. Full output in
+[`docs/evaluation_results.json`](docs/evaluation_results.json).
 
-### Runtime Notes
+**Headline: the directional signal is statistically significant and economically
+marginal.** It predicts next-day direction at 52.9% against a 50% null
+(p < 0.0001), and it breaks even at 10.7 bps per side against real costs of
+roughly 9 bps. That margin is too thin to trade. Both halves of that sentence
+are the result; reporting only the first would be misleading.
 
-- GPU runtime availability for TensorFlow LSTM path: **false** (native Windows TensorFlow fallback to CPU)
-- Evaluated market series available in database: **10 series total**
-    - BTCUSDT: 15m, 1h, 4h, 1d
-    - ETHUSDT: 15m, 1h, 4h, 1d
-    - DOGEUSDT: 4h, 1d
+### Setup
 
-### Aggregate Model Scores
+| | |
+|---|---|
+| Data | Binance daily OHLCV. BTC/ETH from 2017-10-16, DOGE from its 2019-09-03 listing, all through 2026-03-31 (3,089 / 3,089 / 2,402 usable bars after the 60-day feature warm-up) |
+| Validation | Expanding-window walk-forward: 1,000-day initial train, 250-day test folds, **5-day embargo** between folds. 9 folds for BTC/ETH, 6 for DOGE |
+| Out-of-sample predictions | 5,565 (2,084 BTC / 2,084 ETH / 1,397 DOGE) |
+| Features | 34 causal features: multi-horizon log returns, realised vol, z-scored volume and trade count, taker-buy ratio, average trade size, RSI, MACD histogram, Bollinger position, ATR, day-of-week |
+| Preprocessing | `StandardScaler` fitted **inside each fold on training rows only** |
+| Costs | 4 bps taker fee + 5 bps slippage, per side |
 
-| Model Path | Directional Accuracy | Backtested Sharpe Ratio | Signal Win Rate | Total Trades |
-|-----------|----------------------|-------------------------|-----------------|--------------|
-| CPU Model (`GradientBoostingRegressor`) | **52.44%** | **4.5398** | **30.23%** | 210 |
-| GPU Path Model (`TensorFlow LSTM`) | **49.44%** | **-1.3907** | **1.43%** | 8 |
+### Directional accuracy (out-of-sample)
 
-### Asset-Level Breakdown
+| Symbol | Model | n | Accuracy | 95% CI | p vs 50% | Gross Sharpe |
+|---|---|---:|---:|---|---:|---:|
+| BTC | Logistic | 2,084 | 52.74% | [50.6%, 54.9%] | 0.013 | 0.44 |
+| BTC | GBDT | 2,084 | 52.11% | [50.0%, 54.3%] | 0.054 | -0.00 |
+| ETH | Logistic | 2,084 | 53.07% | [50.9%, 55.2%] | 0.005 | 0.41 |
+| ETH | GBDT | 2,084 | 51.34% | [49.2%, 53.5%] | 0.220 | 0.36 |
+| DOGE | Logistic | 1,397 | 53.04% | [50.4%, 55.7%] | 0.023 | 0.61 |
+| DOGE | GBDT | 1,397 | 51.90% | [49.3%, 54.5%] | 0.156 | 0.39 |
+| **Pooled** | **Logistic** | **5,565** | **52.94%** | **[51.6%, 54.3%]** | **<0.0001** (z=4.38) | **0.60** |
+| Pooled | GBDT | 5,565 | 51.77% | [50.5%, 53.1%] | 0.008 (z=2.64) | — |
 
-| Asset | CPU Accuracy | CPU Sharpe | CPU Win Rate | CPU Trades | GPU Path Accuracy | GPU Path Sharpe | GPU Path Win Rate | GPU Path Trades |
-|-------|--------------|------------|--------------|------------|-------------------|-----------------|-------------------|-----------------|
-| BTC | 52.08% | 1.8146 | 29.54% | 53 | 51.26% | 0.0000 | 0.00% | 0 |
-| ETH | 53.89% | 7.7973 | 33.86% | 103 | 50.28% | 0.0000 | 0.00% | 0 |
-| DOGE | 50.28% | 3.4752 | 24.33% | 54 | 44.13% | -6.9534 | 7.14% | 8 |
+Baselines over the same windows:
 
-### Interval-Level Breakdown
+| Baseline | BTC | ETH | DOGE |
+|---|---:|---:|---:|
+| Persistence (tomorrow repeats today) | 46.98% | 47.46% | 46.89% |
+| Majority class | 50.53% | 49.62% | 51.68% |
+| Buy-and-hold annualised Sharpe | 0.89 | 0.89 | 0.49 |
 
-| Series | CPU Accuracy | CPU Sharpe | CPU Win Rate | GPU Path Accuracy | GPU Path Sharpe | GPU Path Win Rate |
-|-------|--------------|------------|--------------|-------------------|-----------------|-------------------|
-| BTCUSDT 15m | 54.44% | 11.0564 | 36.00% | 47.49% | 0.0000 | 0.00% |
-| BTCUSDT 1h | 55.56% | 3.4250 | 23.81% | 50.84% | 0.0000 | 0.00% |
-| BTCUSDT 4h | 52.78% | 9.8752 | 25.00% | 51.96% | 0.0000 | 0.00% |
-| BTCUSDT 1d | 45.56% | -17.0983 | 33.33% | 54.75% | 0.0000 | 0.00% |
-| DOGEUSDT 4h | 55.00% | 15.6140 | 26.09% | 48.60% | 0.7579 | 0.00% |
-| DOGEUSDT 1d | 45.56% | -8.6637 | 22.58% | 39.66% | -14.6648 | 14.29% |
-| ETHUSDT 15m | 52.22% | 8.8520 | 32.00% | 49.72% | 0.0000 | 0.00% |
-| ETHUSDT 1h | 55.00% | 5.1060 | 35.71% | 50.28% | 0.0000 | 0.00% |
-| ETHUSDT 4h | 53.89% | 23.6538 | 45.00% | 48.60% | 0.0000 | 0.00% |
-| ETHUSDT 1d | 54.44% | -6.4225 | 22.73% | 52.51% | 0.0000 | 0.00% |
+The regularised linear model beats the gradient-boosted trees on every symbol —
+consistent with a weak, close-to-linear signal and a low signal-to-noise ratio,
+where the flexible model spends its capacity on noise.
 
-### How These Scores Were Computed
+### Cost sensitivity
 
-- **Accuracy metric:** directional accuracy = percentage of correct next-candle direction predictions.
-- **Backtest Sharpe ratio:** calculated from strategy equity curve returns.
-- **Signal win rate:** percentage of profitable closed trades in backtest.
-- **Data source:** latest 900 rows per available symbol/interval in `price_data`.
-- **Evaluation coverage:** BTC, ETH, and DOGE multi-asset price series currently present in database.
+Equal-weight daily long/short book on the logistic signal. Average daily
+turnover 0.774.
+
+| Cost per side (bps) | 0 | 2 | 5 | **9** | 15 | 20 |
+|---|---:|---:|---:|---:|---:|---:|
+| Annualised Sharpe | 0.60 | 0.49 | 0.32 | **0.10** | -0.24 | -0.52 |
+
+**Breakeven: 10.74 bps per side.** Actual assumed cost is 9 bps, so the strategy
+sits just inside breakeven — within the error bar of zero.
+
+### End-to-end backtest
+
+Running the same signals through the corrected engine, which imposes a realistic
+one-bar implementation lag (signal at close of day *t*, entry at open of *t+1*,
+exit at close of *t+2*):
+
+| Metric | Value |
+|---|---:|
+| Trades | 5,562 |
+| Win rate | 50.02% |
+| Total return | -70.45% |
+| Max drawdown | 72.73% |
+| **Sharpe (net)** | **-0.346** |
+| Profit factor | 0.920 |
+
+The gap between +0.10 (cost model, no lag) and -0.35 (engine, with lag) is the
+cost of implementation delay: the edge lives in the close-to-close window the
+label describes, and a one-bar delay spends most of it. That gap is a finding,
+not a discrepancy.
+
+### Honest conclusions
+
+1. There is weak but real short-horizon directional structure in daily crypto
+   returns, detectable at p < 0.0001 over 5,565 out-of-sample predictions.
+2. It does not survive transaction costs at daily frequency.
+3. It does not beat buy-and-hold on a risk-adjusted basis (0.60 gross vs 0.89).
+4. Capturing it would require either lower costs (maker rebates, sub-1bp
+   execution) or a shorter horizon where the signal has not yet decayed.
+
+### Excluded: the simulated sentiment feature
+
+`data_ingestion/output/sentiment/*.csv` is **not** used in this evaluation.
+Those files are generated by
+[`data_ingestion/scripts/fetch_sentiment_data.py`](data_ingestion/scripts/fetch_sentiment_data.py)
+as `clip(same_day_return * 15, -1, 1) + uniform(-0.2, 0.2)`, with a headline
+drawn from 15 fixed templates. Measured against BTC daily bars:
+
+| Relationship | Correlation | Sign agreement |
+|---|---:|---:|
+| `sentiment_score` vs **same-day** return | **0.916** | 87.0% |
+| `sentiment_score` vs **next-day** return | -0.018 | 47.2% |
+
+It is a re-encoding of the same day's label with noise, carrying no forward
+information. Including it as a predictor of same-day direction would produce a
+large and entirely spurious accuracy. Any sentiment claim requires real
+timestamped text, which this dataset does not contain.
+
+### What an earlier revision got wrong
+
+A previous version of this README published Sharpe ratios above 20. Those came
+from the defects below, all of which inflated or corrupted reported performance.
+Each is now pinned by a regression test in
+[`tests/test_backtest_engine_correctness.py`](tests/test_backtest_engine_correctness.py)
+and [`tests/test_feature_pipeline_correctness.py`](tests/test_feature_pipeline_correctness.py).
+
+| Defect | Effect on reported numbers |
+|---|---|
+| Open positions were priced from the *incoming signal's* symbol, not their own | In multi-asset runs, a BTC position could be stopped out at DOGE's price |
+| Price lookup selected the nearest bar by absolute time distance | Fills could resolve against a bar that had not occurred yet (look-ahead) |
+| Sharpe annualised per-trade returns by `sqrt(252)` | Trades do not arrive on a fixed clock; the factor was arbitrary. Source of the >20 Sharpe values |
+| Short positions marked to market as `+price x qty` | A short *gained* equity as the price rose, corrupting the equity curve and every metric derived from it |
+| Stops and targets evaluated only when a new signal arrived, and only against `close` | Intrabar stop hits were never simulated |
+| Monte Carlo shuffled the P&L list and summed it | Summation is permutation-invariant, so all simulated paths were identical, the confidence interval collapsed to a point, and P(profit) was always 0 or 1 |
+| Calmar divided return by the single worst *trade* | Calmar is defined against peak-to-trough drawdown of the equity curve |
+| Trainer reported `sharpe_ratio` and `profit_factor` built from +/-1 per correct prediction | Both are deterministic transforms of accuracy (`mean = 2*acc - 1`, `PF = acc/(1-acc)`), not risk or P&L measures |
+| `900 rows per symbol/interval` applied uniformly across timeframes | 900 15m bars is 9.4 days of data — too short to support any claim |
+| `StandardScaler().fit_transform()` called on a single row at inference | One sample per column has zero variance, so every served feature vector was identically 0.0 |
+| Train/validation split had no embargo, with 60-step windows and 672-bar rolling features | Adjacent folds shared underlying bars; validation partly measured training data |
+| Missing values imputed with the mean of the full frame | Future rows leaked into past ones through the imputation statistic |
+
+### Methodology
+
+- **Fills.** A signal computed from the close of bar *i* is executed at the open
+  of bar *i+1*. No fill can reference a bar at or after its own execution bar.
+- **Exits.** Stop and target are checked against each bar's high/low. When one
+  bar touches both levels, the stop is assumed to have filled first, since OHLC
+  data cannot resolve the ordering.
+- **Costs.** 4bp per side (Binance spot taker) plus 5bp slippage per side,
+  charged on both legs.
+- **Sharpe.** Computed from equity-curve returns sampled at the bar cadence, with
+  the annualisation factor inferred from the observed bar spacing
+  (15m bars annualise by `sqrt(35040)`, daily bars by `sqrt(365)`).
+- **Accuracy.** Reported with a 95% confidence interval, a binomial p-value
+  against the 50% null, and the majority-class baseline. A hit rate without
+  those three numbers is not a result.
+- **Baselines.** Every strategy figure is reported alongside buy-and-hold and a
+  persistence (last-value) forecast over the identical window.
+- **Validation.** Walk-forward with a purge and embargo of at least the longest
+  feature lookback window between train and test folds.
+
+### Sanity check
+
+A null test ships in the repo: random entry signals on a driftless geometric
+random walk, run through the engine with costs enabled. Because there is no
+signal to find by construction, a correct engine must report a Sharpe at or
+below zero. It reports **-5.13** over 75 days of synthetic 15m bars across three
+symbols, and per-trade expectancy implied by the win rate and barrier levels
+matches realised expectancy to within floating-point error — which is the
+property the previous engine violated.
+
+## Research Paper
+
+The evaluation methodology, the defect taxonomy and the leakage case study are
+written up in full as a manuscript in [`paper/`](paper/):
+
+**[`crypto_direction_evaluation.tex`](paper/crypto_direction_evaluation.tex)** ---
+*When the Feature Is the Label: Evaluation Defects and a Reproducible Baseline for
+Daily Cryptocurrency Direction Forecasting.* Elsevier `elsarticle` format; compile
+with pdfLaTeX three times (the bibliography is inline, so BibTeX is not needed).
+
+Every figure in the paper is traceable to [`docs/evaluation_results.json`](docs/evaluation_results.json),
+which is regenerated by `scripts/evaluate_walkforward.py`.
+
+## Repository Map
+
+| Path | What it holds |
+|---|---|
+| [`backend/backtest/engine.py`](backend/backtest/engine.py) | Corrected execution engine: bar-driven loop, per-asset pricing, next-bar fills, intrabar stops |
+| [`backend/backtest/metrics.py`](backend/backtest/metrics.py) | Risk metrics: cadence-aware Sharpe, bootstrap Monte Carlo, drawdown-based Calmar |
+| [`backend/ml/feature_engineer.py`](backend/ml/feature_engineer.py) | Feature pipeline with fit/transform separation and scaler persistence |
+| [`backend/ml/model_trainer.py`](backend/ml/model_trainer.py) | Training pipeline, purge/embargo split, accuracy significance testing |
+| [`scripts/evaluate_walkforward.py`](scripts/evaluate_walkforward.py) | Walk-forward evaluation harness producing every reported number |
+| [`scripts/null_test_backtest.py`](scripts/null_test_backtest.py) | Falsification test: asserts zero edge on a random walk, non-zero exit on failure |
+| [`tests/test_backtest_engine_correctness.py`](tests/test_backtest_engine_correctness.py) | 17 regression tests pinning the execution and metric defects |
+| [`tests/test_feature_pipeline_correctness.py`](tests/test_feature_pipeline_correctness.py) | 9 regression tests pinning the scaler and split defects |
+| [`paper/`](paper/) | Manuscript source |
 
 ## Mathematical Breakdown
 
@@ -234,9 +375,17 @@ $$W_{fixed} + \Delta W = W_{NF4} + (A \times B) \cdot \frac{\alpha}{r}$$
 This concept allows the terminal to adapt massive transformer models to local crypto-sentiment tasks on standard consumer hardware.
 
 ### 6. Quantitative Validation Metrics
-- **Directional Accuracy**: $Acc = \frac{1}{N} \sum \mathbb{1}(\text{sgn}(\Delta \hat{y}) = \text{sgn}(\Delta y))$ (Measures "hit rate").
-- **Sharpe Ratio**: $S = \frac{\mu_{\text{returns}}}{\sigma_{\text{returns}}}$ (Normalizes profit against trading risk).
+
+- **Directional Accuracy**: $Acc = \frac{1}{N} \sum \mathbb{1}(\text{sgn}(\Delta \hat{y}) = \text{sgn}(\Delta y))$, reported with its Wald interval $Acc \pm 1.96\sqrt{Acc(1-Acc)/N}$ and a two-sided test against the coin-flip null $z = (Acc - 0.5)/\sqrt{0.25/N}$. The point estimate alone is not interpretable.
+
+- **Sharpe Ratio**: computed on equity-curve returns $r_t$ sampled at a fixed bar cadence, then annualised by the number of such bars per year:
+$$S = \frac{\overline{r - r_f}}{\sigma_{r - r_f}} \sqrt{P}, \qquad P = \frac{\text{seconds per year}}{\text{seconds per bar}}$$
+  $P$ is derived from the observed bar spacing, not assumed. Per-trade returns are **not** valid input here: trades do not arrive on a fixed clock, so no single $P$ exists for them.
+
+- **Maximum Drawdown**: $MDD = \max_t \left( \frac{\max_{s \le t} V_s - V_t}{\max_{s \le t} V_s} \right)$ over the equity curve $V$, where a short contributes $-q \cdot p_t$ to $V_t$.
+
 - **Confidence Layer**: $\text{Conf} = \left( \frac{1}{M} \sum \max(P_m) \right) \times \text{Multiplier}$ (Measures divergence between independent models).
+
 
 
 ### Model made at Haackathon in NMIMS, Indore
