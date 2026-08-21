@@ -4,6 +4,7 @@ import asyncio
 import importlib
 import json
 import logging
+import math
 import os
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -128,11 +129,14 @@ class ModelTrainer:
         historical_df = self._pd.DataFrame([dict(row._mapping) for row in rows])
         X, y = await self.feature_engineer.prepare_training_data(coin, start_ts, end_ts)
 
-        split_idx = max(1, int(len(X) * 0.8))
-        X_train = X[:split_idx]
-        X_val = X[split_idx:]
-        y_train = y[:split_idx]
-        y_val = y[split_idx:]
+        X_train, X_val, y_train, y_val = self.split_with_embargo(X, y)
+
+        # Fit the scaler on the training fold only, then apply to both. Fitting
+        # on the full set leaks validation-period mean and variance into the
+        # training representation.
+        self.feature_engineer.fit_scaler(X_train)
+        X_train = self.feature_engineer.transform(X_train)
+        X_val = self.feature_engineer.transform(X_val)
 
         return {
             "historical_df": historical_df,
@@ -141,6 +145,45 @@ class ModelTrainer:
             "y_train": y_train,
             "y_val": y_val,
         }
+
+    def split_with_embargo(
+        self,
+        X: Any,
+        y: Any,
+        train_frac: float = 0.8,
+        embargo: int | None = None,
+    ) -> tuple[Any, Any, Any, Any]:
+        """Chronological split with an embargo gap between train and validation.
+
+        Each sample is a ``seq_len``-step window and its label is the *next*
+        bar's direction, so windows near the split overlap in time. Without a
+        gap the last training windows and the first validation windows share
+        rows, and validation accuracy is measured partly on data the model
+        trained on. The embargo defaults to the sequence length plus one bar for
+        the label horizon.
+        """
+        n = len(X)
+        if n == 0:
+            raise ValueError("No samples available to split")
+
+        seq_len = int(X.shape[1]) if getattr(X, "ndim", 0) == 3 else 1
+        if embargo is None:
+            embargo = seq_len + 1
+
+        split_idx = max(1, int(n * train_frac))
+        val_start = min(n, split_idx + embargo)
+
+        if val_start >= n:
+            logger.warning(
+                "Embargo of %d bars leaves no validation samples (n=%d); "
+                "shrinking the training fold instead of dropping the embargo.",
+                embargo,
+                n,
+            )
+            val_start = max(split_idx, n - max(1, n // 10))
+            split_idx = max(1, val_start - embargo)
+
+        return X[:split_idx], X[val_start:], y[:split_idx], y[val_start:]
 
     async def train_with_hyperparameter_tuning(self, model_type: str) -> dict[str, Any]:
         model_type = model_type.lower()
@@ -181,19 +224,58 @@ class ModelTrainer:
         precision, recall, f1, _ = precision_recall_fscore_support(y_val, y_pred_cls, average="weighted", zero_division=0)
         cm = confusion_matrix(y_val, y_pred_cls).tolist()
 
-        direction_accuracy = acc
-        profit_factor = self._estimate_profit_factor(y_pred_cls, y_val)
-        sharpe = self._estimate_prediction_sharpe(y_pred_cls, y_val)
+        n = int(len(y_val))
+        significance = self._accuracy_significance(acc, n)
+        majority = self._majority_class_rate(y_val)
 
         return {
-            "directional_accuracy": direction_accuracy,
+            "directional_accuracy": acc,
+            "n_samples": n,
+            # Accuracy is meaningless without these three. A 52% hit rate is a
+            # claim only if it clears the majority-class baseline and the
+            # binomial null of 50%.
+            "accuracy_ci95": significance["ci95"],
+            "accuracy_p_value_vs_coinflip": significance["p_value"],
+            "majority_class_baseline": majority,
             "precision": float(precision),
             "recall": float(recall),
             "f1": float(f1),
             "confusion_matrix": cm,
-            "profit_factor": profit_factor,
-            "sharpe_ratio": sharpe,
         }
+
+    def _accuracy_significance(self, acc: float, n: int) -> dict[str, Any]:
+        """Wald CI for the hit rate and a two-sided normal test against p=0.5.
+
+        Reported instead of the previous ``sharpe_ratio``/``profit_factor``
+        fields, which mapped +/-1 onto correct/incorrect predictions. Those were
+        deterministic transforms of accuracy (mean = 2*acc-1, PF = acc/(1-acc)),
+        not risk or P&L measures, and reporting them as such overstated the
+        result.
+        """
+        if n <= 0:
+            return {"ci95": [0.0, 0.0], "p_value": 1.0}
+
+        se = math.sqrt(max(acc * (1 - acc), 1e-12) / n)
+        half = 1.959963985 * se
+        se_null = math.sqrt(0.25 / n)
+        z = (acc - 0.5) / se_null if se_null > 0 else 0.0
+        p_value = math.erfc(abs(z) / math.sqrt(2))
+
+        return {
+            "ci95": [float(max(0.0, acc - half)), float(min(1.0, acc + half))],
+            "p_value": float(p_value),
+            "z_stat": float(z),
+        }
+
+    def _majority_class_rate(self, y_val: Any) -> float:
+        values = list(y_val)
+        if not values:
+            return 0.0
+        counts: dict[Any, int] = {}
+        for v in values:
+            key = int(v)
+            counts[key] = counts.get(key, 0) + 1
+        return float(max(counts.values()) / len(values))
 
     async def save_model_artifacts(self, train_result: dict[str, Any], metadata: dict[str, Any]) -> dict[str, Any]:
         model_paths = {entry["name"]: entry.get("path", "") for entry in train_result.get("models", [])}
@@ -202,6 +284,11 @@ class ModelTrainer:
 
         meta_path = model_dir / f"train_metadata_{metadata['coin']}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}.json"
         meta_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+
+        # The scaler is part of the model. Serving without the exact fitted
+        # instance silently changes the input distribution.
+        scaler_path = model_dir / f"scaler_{metadata['coin']}.joblib"
+        self.feature_engineer.save_scaler(scaler_path)
 
         async with db_manager.session_factory() as session:
             for model_name, path in model_paths.items():
@@ -229,6 +316,7 @@ class ModelTrainer:
         return {
             "model_paths": model_paths,
             "metadata_path": str(meta_path),
+            "scaler_path": str(scaler_path) if scaler_path.exists() else "",
         }
 
     async def compare_with_production(self, new_model: dict[str, Any], prod_model: dict[str, Any]) -> dict[str, Any]:
@@ -329,21 +417,3 @@ class ModelTrainer:
                 {"name": model_name},
             )
             await session.commit()
-
-    def _estimate_profit_factor(self, y_pred: Any, y_true: Any) -> float:
-        gains = 0.0
-        losses = 0.0
-        for pred, true in zip(y_pred, y_true):
-            pnl = 1.0 if pred == true else -1.0
-            if pnl > 0:
-                gains += pnl
-            else:
-                losses += abs(pnl)
-        return gains / losses if losses > 0 else gains
-
-    def _estimate_prediction_sharpe(self, y_pred: Any, y_true: Any) -> float:
-        returns = self._np.array([1.0 if p == t else -1.0 for p, t in zip(y_pred, y_true)], dtype=float)
-        std = returns.std()
-        if std == 0:
-            return 0.0
-        return float(returns.mean() / std)
