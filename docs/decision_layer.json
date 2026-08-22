@@ -1,0 +1,80 @@
+{
+  "BTCUSDT": {
+    "symbol": "BTCUSDT",
+    "stages": {
+      "candidates": 2084,
+      "primary": 2,
+      "supporting": 2,
+      "risk": 0
+    },
+    "fired": 0,
+    "fire_rate": 0.0,
+    "support_histogram": [
+      0,
+      0,
+      2,
+      0
+    ],
+    "base_rate_up": 0.505278310940499,
+    "base_mean_fwd_return": 0.0014321077878958288,
+    "confidence_gate": 0.75,
+    "max_proba_observed": 0.7980201032979576,
+    "frac_proba_above_gate": 0.0009596928982725527,
+    "sentiment_gate_evaluable": false,
+    "signal_hit_rate": null,
+    "signal_mean_fwd_return": null,
+    "lift_vs_base_pp": null
+  },
+  "ETHUSDT": {
+    "symbol": "ETHUSDT",
+    "stages": {
+      "candidates": 2084,
+      "primary": 17,
+      "supporting": 6,
+      "risk": 0
+    },
+    "fired": 0,
+    "fire_rate": 0.0,
+    "support_histogram": [
+      2,
+      9,
+      6,
+      0
+    ],
+    "base_rate_up": 0.5201535508637236,
+    "base_mean_fwd_return": 0.0019269664703694114,
+    "confidence_gate": 0.75,
+    "max_proba_observed": 0.9216809434776486,
+    "frac_proba_above_gate": 0.008157389635316698,
+    "sentiment_gate_evaluable": false,
+    "signal_hit_rate": null,
+    "signal_mean_fwd_return": null,
+    "lift_vs_base_pp": null
+  },
+  "DOGEUSDT": {
+    "symbol": "DOGEUSDT",
+    "stages": {
+      "candidates": 1397,
+      "primary": 2,
+      "supporting": 2,
+      "risk": 0
+    },
+    "fired": 0,
+    "fire_rate": 0.0,
+    "support_histogram": [
+      0,
+      0,
+      2,
+      0
+    ],
+    "base_rate_up": 0.4831782390837509,
+    "base_mean_fwd_return": 0.0012280595698270932,
+    "confidence_gate": 0.75,
+    "max_proba_observed": 0.8496302013816857,
+    "frac_proba_above_gate": 0.0014316392269148174,
+    "sentiment_gate_evaluable": false,
+    "signal_hit_rate": null,
+    "signal_mean_fwd_return": null,
+    "lift_vs_base_pp": null
+  }
+}
