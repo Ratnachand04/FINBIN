@@ -89,6 +89,14 @@ class BacktestEngine:
         timeout_hours = int(strategy_config.get("timeout_hours", 24))
         max_concurrent = int(strategy_config.get("max_concurrent_positions", 5))
         allow_short = bool(strategy_config.get("allow_short", True))
+        # Holding period in *bars*, counted from the entry bar. hold_bars=1
+        # closes at the close of the bar the position was opened on, so a
+        # position entered at the open of bar k realises O_k -> C_k. Leaving
+        # this unset falls back to the wall-clock timeout, which on daily bars
+        # cannot close before the following bar and therefore spans two days --
+        # a mismatch against a one-day-ahead label.
+        hold_bars = strategy_config.get("hold_bars")
+        hold_bars = int(hold_bars) if hold_bars is not None else None
 
         bars_by_symbol: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in prices:
@@ -135,39 +143,8 @@ class BacktestEngine:
                 exit_info = self._check_exit_conditions(pos, ts, bar, timeout_hours)
                 if exit_info is None:
                     continue
-
-                qty = pos["quantity"]
-                is_long = pos["side"] == "BUY"
-                exit_price = exit_info["price"] * (1 - slippage if is_long else 1 + slippage)
-                notional_in = pos["entry_price"] * qty
-                notional_out = exit_price * qty
-                # Each leg is charged on its own notional. Splitting the round
-                # trip evenly would make the cash charged diverge from the fee
-                # reported on the trade whenever the price moved.
-                exit_fee = notional_out * fee_rate
-                fees = notional_in * fee_rate + exit_fee
-                gross_pnl = (exit_price - pos["entry_price"]) * qty if is_long else (pos["entry_price"] - exit_price) * qty
-                net_pnl = gross_pnl - fees
-
-                # Long: sell back into cash. Short: buy back, paying out cash.
-                cash += (notional_out - exit_fee) if is_long else -(notional_out + exit_fee)
-
-                trades.append(
-                    {
-                        "symbol": pos["symbol"],
-                        "side": pos["side"],
-                        "entry_time": pos["entry_time"],
-                        "exit_time": ts,
-                        "entry_price": pos["entry_price"],
-                        "exit_price": exit_price,
-                        "quantity": qty,
-                        "fee": fees,
-                        "pnl": net_pnl,
-                        "pnl_pct": net_pnl / notional_in if notional_in > 0 else 0.0,
-                        "duration_seconds": int((ts - pos["entry_time"]).total_seconds()),
-                        "signal_id": pos.get("signal_id"),
-                        "exit_reason": exit_info["reason"],
-                    }
+                cash += self._close_position(
+                    pos, ts, exit_info, trades, fee_rate, slippage
                 )
                 del positions[symbol]
 
@@ -208,12 +185,32 @@ class BacktestEngine:
                         "symbol": symbol,
                         "side": signal_type,
                         "entry_time": ts,
+                        "entry_bar": idx,
                         "entry_price": entry_price,
                         "quantity": quantity,
                         "target": self._level(signal, "take_profit", fill, 1.02 if is_long else 0.98),
                         "stop": self._level(signal, "stop_loss", fill, 0.985 if is_long else 1.015),
                         "signal_id": signal.get("id"),
                     }
+
+            # 3. Bar-counted holding period expires at this bar's close. Run
+            #    after entries so a one-bar hold can open and close on the same
+            #    bar, matching a one-period-ahead label.
+            if hold_bars is not None:
+                for symbol, bar in bars_now.items():
+                    pos = positions.get(symbol)
+                    if pos is None:
+                        continue
+                    if (cursor[symbol] - 1) - pos["entry_bar"] < hold_bars - 1:
+                        continue
+                    close = float(bar.get("close") or 0.0)
+                    if close <= 0:
+                        continue
+                    cash += self._close_position(
+                        pos, ts, {"reason": "hold_expiry", "price": close},
+                        trades, fee_rate, slippage,
+                    )
+                    del positions[symbol]
 
             equity = self._equity(cash, positions, bars_now, bars_by_symbol, cursor)
             equity_curve.append(
@@ -226,6 +223,49 @@ class BacktestEngine:
             )
 
         return trades, equity_curve
+
+    def _close_position(
+        self,
+        pos: dict[str, Any],
+        ts: datetime,
+        exit_info: dict[str, Any],
+        trades: list[dict[str, Any]],
+        fee_rate: float,
+        slippage: float,
+    ) -> float:
+        """Book a closing trade and return the resulting change in cash."""
+        qty = pos["quantity"]
+        is_long = pos["side"] == "BUY"
+        exit_price = exit_info["price"] * (1 - slippage if is_long else 1 + slippage)
+        notional_in = pos["entry_price"] * qty
+        notional_out = exit_price * qty
+        # Each leg is charged on its own notional. Splitting the round trip
+        # evenly would make the cash charged diverge from the fee reported on
+        # the trade whenever the price moved.
+        exit_fee = notional_out * fee_rate
+        fees = notional_in * fee_rate + exit_fee
+        gross_pnl = (exit_price - pos["entry_price"]) * qty if is_long else (pos["entry_price"] - exit_price) * qty
+        net_pnl = gross_pnl - fees
+
+        trades.append(
+            {
+                "symbol": pos["symbol"],
+                "side": pos["side"],
+                "entry_time": pos["entry_time"],
+                "exit_time": ts,
+                "entry_price": pos["entry_price"],
+                "exit_price": exit_price,
+                "quantity": qty,
+                "fee": fees,
+                "pnl": net_pnl,
+                "pnl_pct": net_pnl / notional_in if notional_in > 0 else 0.0,
+                "duration_seconds": int((ts - pos["entry_time"]).total_seconds()),
+                "signal_id": pos.get("signal_id"),
+                "exit_reason": exit_info["reason"],
+            }
+        )
+        # Long: sell back into cash. Short: buy back, paying out cash.
+        return (notional_out - exit_fee) if is_long else -(notional_out + exit_fee)
 
     def _equity(
         self,
