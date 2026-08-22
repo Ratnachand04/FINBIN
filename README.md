@@ -155,88 +155,119 @@ To ensure the large language model (Mistral-7B) runs efficiently on consumer or 
 Reproduce with `python scripts/evaluate_walkforward.py`. Full output in
 [`docs/evaluation_results.json`](docs/evaluation_results.json).
 
-**Headline: the directional signal is statistically significant and economically
-marginal.** It predicts next-day direction at 52.9% against a 50% null
-(p < 0.0001), and it breaks even at 10.7 bps per side against real costs of
-roughly 9 bps. That margin is too thin to trade. Both halves of that sentence
-are the result; reporting only the first would be misleading.
+**Headline: a zero-parameter rule matches the model, and neither is tradable.**
+The machine-learning model predicts next-day direction at 52.95% over 5,562
+out-of-sample predictions (p < 1e-4 vs a coin flip). *Inverse persistence* --
+bet against yesterday's sign, no parameters, no features -- scores 52.88% on the
+same days. Paired tests give differences of -0.29 / +0.53 / -0.07 percentage
+points on BTC / ETH / DOGE, none significant, with the model behind on two of
+three. Thirty-four engineered features recover a documented one-day reversal
+effect and add nothing measurable to it.
 
 ### Setup
 
 | | |
 |---|---|
-| Data | Binance daily OHLCV. BTC/ETH from 2017-10-16, DOGE from its 2019-09-03 listing, all through 2026-03-31 (3,089 / 3,089 / 2,402 usable bars after the 60-day feature warm-up) |
-| Validation | Expanding-window walk-forward: 1,000-day initial train, 250-day test folds, **5-day embargo** between folds. 9 folds for BTC/ETH, 6 for DOGE |
-| Out-of-sample predictions | 5,565 (2,084 BTC / 2,084 ETH / 1,397 DOGE) |
-| Features | 34 causal features: multi-horizon log returns, realised vol, z-scored volume and trade count, taker-buy ratio, average trade size, RSI, MACD histogram, Bollinger position, ATR, day-of-week |
+| Instrument | Binance **spot**, USDT quoted |
+| Data | BTC/ETH from 2017-08-17, DOGE from its 2019 listing, through 2026-04-01 |
+| Out-of-sample | 5,562 predictions, 2020-07-17 to 2026-03-30 (BTC/ETH 2,083 each; DOGE 1,396 from 2022-06-04) |
+| Validation | Expanding-window walk-forward, 1,000-day initial train, 250-day folds, **5-day embargo**; 9 folds BTC/ETH, 6 DOGE |
+| Features | 34 causal single-asset features (returns, vol, bar shape, Binance order-flow fields, RSI/MACD/BB/ATR) |
 | Preprocessing | `StandardScaler` fitted **inside each fold on training rows only** |
-| Costs | 4 bps taker fee + 5 bps slippage, per side |
+| Costs | 4 bps taker + 5 bps slippage, per side |
 
 ### Directional accuracy (out-of-sample)
 
-| Symbol | Model | n | Accuracy | 95% CI | p vs 50% | Gross Sharpe |
+| Asset | Predictor | n | Accuracy | 95% CI (Wilson) | p vs .5 | PT p |
 |---|---|---:|---:|---|---:|---:|
-| BTC | Logistic | 2,084 | 52.74% | [50.6%, 54.9%] | 0.013 | 0.44 |
-| BTC | GBDT | 2,084 | 52.11% | [50.0%, 54.3%] | 0.054 | -0.00 |
-| ETH | Logistic | 2,084 | 53.07% | [50.9%, 55.2%] | 0.005 | 0.41 |
-| ETH | GBDT | 2,084 | 51.34% | [49.2%, 53.5%] | 0.220 | 0.36 |
-| DOGE | Logistic | 1,397 | 53.04% | [50.4%, 55.7%] | 0.023 | 0.61 |
-| DOGE | GBDT | 1,397 | 51.90% | [49.3%, 54.5%] | 0.156 | 0.39 |
-| **Pooled** | **Logistic** | **5,565** | **52.94%** | **[51.6%, 54.3%]** | **<0.0001** (z=4.38) | **0.60** |
-| Pooled | GBDT | 5,565 | 51.77% | [50.5%, 53.1%] | 0.008 (z=2.64) | — |
+| BTC | Logistic | 2,083 | 52.71% | [50.6, 54.8] | 0.013 | 0.015 |
+| BTC | **Inverse persistence** | 2,083 | **53.00%** | [50.9, 55.1] | 0.006 | — |
+| ETH | Logistic | 2,083 | 53.10% | [50.9, 55.2] | 0.005 | 0.008 |
+| ETH | Inverse persistence | 2,083 | 52.57% | [50.4, 54.7] | 0.019 | — |
+| DOGE | Logistic | 1,396 | 53.08% | [50.5, 55.7] | 0.021 | 0.016 |
+| DOGE | **Inverse persistence** | 1,396 | **53.15%** | [50.5, 55.7] | 0.019 | — |
+| **Pooled** | **Logistic** | **5,562** | **52.95%** | [51.6, 54.3] | <1e-4 | — |
+| **Pooled** | **Inverse persistence** | **5,562** | **52.88%** | [51.6, 54.2] | <1e-4 | — |
+| Pooled | Majority class | 5,562 | 50.49% | [49.2, 51.8] | 0.469 | — |
 
-Baselines over the same windows:
+Paired (model minus inverse persistence, same days): BTC -0.29pp (t=-0.24),
+ETH +0.53pp (t=+0.45), DOGE -0.07pp (t=-0.05). None significant.
 
-| Baseline | BTC | ETH | DOGE |
-|---|---:|---:|---:|
-| Persistence (tomorrow repeats today) | 46.98% | 47.46% | 46.89% |
-| Majority class | 50.53% | 49.62% | 51.68% |
-| Buy-and-hold annualised Sharpe | 0.89 | 0.89 | 0.49 |
+The model is also **worse on the days that matter**: return-weighted hit rate is
+51.68 / 51.57 / 52.33% versus unweighted accuracy of 52.71 / 53.10 / 53.08%.
+Information coefficient is +0.016 / +0.017 / +0.030.
 
-The regularised linear model beats the gradient-boosted trees on every symbol —
-consistent with a weak, close-to-linear signal and a low signal-to-noise ratio,
-where the flexible model spends its capacity on noise.
+Per-fold accuracy ranges from 0.422 to 0.616, and the most recent fold is below
+chance on all three assets. The pooled number averages a very unstable series.
 
-### Cost sensitivity
+### Book statistics and cost sensitivity
 
-Equal-weight daily long/short book on the logistic signal. Average daily
-turnover 0.774.
+| Weighting | mu (%/yr) | sigma (%/yr) | SR gross | SR net | Turnover |
+|---|---:|---:|---:|---:|---:|
+| Equal | +6.61 | 58.38 | +0.544 | +0.113 | 0.765 |
+| Inverse-vol | +4.25 | 55.14 | +0.527 | +0.077 | 0.755 |
 
-| Cost per side (bps) | 0 | 2 | 5 | **9** | 15 | 20 |
-|---|---:|---:|---:|---:|---:|---:|
-| Annualised Sharpe | 0.60 | 0.49 | 0.32 | **0.10** | -0.24 | -0.52 |
+| Cost per side (bps) | 0 | 3 | 5 | 7 | **9** | 12 | 15 | 20 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Annualised Sharpe | 0.544 | 0.400 | 0.305 | 0.209 | **0.113** | -0.030 | -0.174 | -0.413 |
 
-**Breakeven: 10.74 bps per side.** Actual assumed cost is 9 bps, so the strategy
-sits just inside breakeven — within the error bar of zero.
+Turnover 0.765/day = **6.89 bps/day** at 9 bps/side. Breakeven is **11.4 bps per
+side, 95% CI [0.0, 26.9]** -- the interval contains the assumed cost, so
+tradability is not established either way. Gross Sharpe 0.544 has a
+stationary-bootstrap 95% CI of **[-0.17, +1.28], which contains zero**.
+
+Confidence gating makes it worse, monotonically: net Sharpe falls from +0.113
+(no gate) to -0.309 at |p-0.5| >= 0.08. The model's confidence is
+anti-informative.
+
+### What actually consumes the edge
+
+| Step | Configuration | Sharpe | Delta |
+|---|---|---:|---:|
+| 1 | Label window C_t -> C_t+1, no cost | +0.544 | — |
+| 2 | + transaction costs (9 bps/side) | +0.113 | **-0.431** |
+| 3 | + 1-bar entry lag, 1-day hold | +0.114 | +0.001 |
+| 4 | + 2-day hold (holding-period fault) | -0.030 | -0.144 |
+
+**The entry lag is free.** Crypto trades 24/7, so there is no overnight gap:
+close-to-open dispersion is 5.8 / 7.5 / 16.5 bps against intraday dispersion of
+357 / 459 / 1014 bps -- a ratio of 1.6% on all three assets. Costs dominate.
 
 ### End-to-end backtest
 
-Running the same signals through the corrected engine, which imposes a realistic
-one-bar implementation lag (signal at close of day *t*, entry at open of *t+1*,
-exit at close of *t+2*):
+| Holding rule | Trades | Win rate | Net/trade | Gross/trade | Sharpe |
+|---|---:|---:|---:|---:|---:|
+| 1-bar (corrected) | 5,562 | 49.30% | -0.081% | +0.099% | -0.467 |
+| 2-bar (previous) | 5,562 | 50.02% | -0.094% | +0.086% | -0.344 |
 
-| Metric | Value |
-|---|---:|
-| Trades | 5,562 |
-| Win rate | 50.02% |
-| Total return | -70.45% |
-| Max drawdown | 72.73% |
-| **Sharpe (net)** | **-0.346** |
-| Profit factor | 0.920 |
+Mean trade is **gross profitable**; the 18 bps round trip is what makes it lose.
 
-The gap between +0.10 (cost model, no lag) and -0.35 (engine, with lag) is the
-cost of implementation delay: the edge lives in the close-to-close window the
-label describes, and a one-bar delay spends most of it. That gap is a finding,
-not a discrepancy.
+Against passive exposure: correlation +0.224, beta +0.215, passive basket Sharpe
++0.833, and **appraisal ratio -0.076** -- the correct statistic for whether an
+uncorrelated sleeve adds anything. It does not.
+
+### Verification
+
+- **Mutation score 8/8** (`python scripts/mutation_matrix.py`): every
+  reintroducible fault is caught by the suite. Output in
+  [`docs/mutation_matrix.json`](docs/mutation_matrix.json).
+- **Randomised null test** (`python scripts/null_test_backtest.py`): 60 seeds,
+  mean Sharpe -3.53 (t = -7.51), cash conserved to 1.2e-11. Note that **13.3% of
+  correct-engine seeds produce a positive Sharpe**, so a single-path assertion
+  would flake roughly one run in eight -- which is why it runs over a
+  distribution.
 
 ### Honest conclusions
 
-1. There is weak but real short-horizon directional structure in daily crypto
-   returns, detectable at p < 0.0001 over 5,565 out-of-sample predictions.
-2. It does not survive transaction costs at daily frequency.
-3. It does not beat buy-and-hold on a risk-adjusted basis (0.60 gross vs 0.89).
-4. Capturing it would require either lower costs (maker rebates, sub-1bp
-   execution) or a shorter horizon where the signal has not yet decayed.
+1. Daily crypto returns show one-day reversal, detectable at p < 1e-4.
+2. A one-line rule captures it. The ML pipeline adds nothing measurable.
+3. It is not tradable on this feature set: gross Sharpe CI contains zero and the
+   appraisal ratio against passive exposure is negative.
+4. Costs, not timing, are the binding constraint.
+5. This is a single-asset technical feature set. Funding rates, open interest,
+   basis, liquidations, order-book imbalance and cross-asset lead-lag are all
+   absent, so this is not a negative result about crypto forecasting generally.
+
 
 ### Excluded: the simulated sentiment feature
 
@@ -299,15 +330,36 @@ and [`tests/test_feature_pipeline_correctness.py`](tests/test_feature_pipeline_c
 - **Validation.** Walk-forward with a purge and embargo of at least the longest
   feature lookback window between train and test folds.
 
+### Corrections made in the current revision
+
+An earlier revision of this README reported 52.94% accuracy as the finding and
+concluded the signal was "statistically real but economically marginal". That
+conclusion did not survive review. The following were corrected:
+
+| Error | Correction |
+|---|---|
+| **Inverse persistence was never reported** | It scores 52.88% pooled, matching the model. This inverts the headline. |
+| Engine held 2 bars against a 1-bar label | Added explicit `hold_bars`; the fault cost 0.144 Sharpe |
+| Gap attributed to "forfeited overnight gap" | Crypto is 24/7; the lag costs +0.001. Costs consume 0.431. |
+| Daily cost stated as 14 bps | 0.765 turnover x 9 bps = **6.89 bps/day** |
+| Breakeven quoted as 10.74 bps | 11.4 bps with 95% CI **[0.0, 26.9]** |
+| Cost curve truncated to shortest series | Date-aligned panel; 2,083 days instead of 1,397 |
+| Single-path null test proposed as a standard | 13.3% of correct-engine seeds give positive Sharpe; now runs 60 seeds |
+| Buy-and-hold compared on raw Sharpe | Appraisal ratio (-0.076) is the correct statistic |
+| Wald intervals, test only vs 0.5 | Wilson intervals, paired tests, Pesaran-Timmermann |
+| No uncertainty on any Sharpe | Stationary-bootstrap CI: gross 0.544, **[-0.17, +1.28]** |
+
 ### Sanity check
 
-A null test ships in the repo: random entry signals on a driftless geometric
-random walk, run through the engine with costs enabled. Because there is no
-signal to find by construction, a correct engine must report a Sharpe at or
-below zero. It reports **-5.13** over 75 days of synthetic 15m bars across three
-symbols, and per-trade expectancy implied by the win rate and barrier levels
-matches realised expectancy to within floating-point error — which is the
-property the previous engine violated.
+Two verification artifacts ship in the repo:
+
+- `python scripts/mutation_matrix.py` reintroduces each fault and confirms the
+  suite turns red. **Mutation score 8/8.** A test count measures effort; a
+  mutation score measures coverage.
+- `python scripts/null_test_backtest.py` runs random signals on a driftless
+  random walk over 60 seeds. Mean Sharpe -3.53 (t = -7.51), cash conserved to
+  1.2e-11. It reports that **13.3% of seeds give a positive Sharpe**, which is
+  why the assertion is distributional rather than single-path.
 
 ## Research Paper
 
@@ -315,7 +367,7 @@ The evaluation methodology, the defect taxonomy and the leakage case study are
 written up in full as a manuscript in [`paper/`](paper/):
 
 **[`crypto_direction_evaluation.tex`](paper/crypto_direction_evaluation.tex)** ---
-*When the Feature Is the Label: Evaluation Defects and a Reproducible Baseline for
+*Calibrate the Instrument, Then Check the Baseline: An Audited Re-Evaluation of
 Daily Cryptocurrency Direction Forecasting.* Elsevier `elsarticle` format; compile
 with pdfLaTeX three times (the bibliography is inline, so BibTeX is not needed).
 
@@ -331,9 +383,11 @@ which is regenerated by `scripts/evaluate_walkforward.py`.
 | [`backend/ml/feature_engineer.py`](backend/ml/feature_engineer.py) | Feature pipeline with fit/transform separation and scaler persistence |
 | [`backend/ml/model_trainer.py`](backend/ml/model_trainer.py) | Training pipeline, purge/embargo split, accuracy significance testing |
 | [`scripts/evaluate_walkforward.py`](scripts/evaluate_walkforward.py) | Walk-forward evaluation harness producing every reported number |
-| [`scripts/null_test_backtest.py`](scripts/null_test_backtest.py) | Falsification test: asserts zero edge on a random walk, non-zero exit on failure |
-| [`tests/test_backtest_engine_correctness.py`](tests/test_backtest_engine_correctness.py) | 17 regression tests pinning the execution and metric defects |
-| [`tests/test_feature_pipeline_correctness.py`](tests/test_feature_pipeline_correctness.py) | 9 regression tests pinning the scaler and split defects |
+| [`scripts/null_test_backtest.py`](scripts/null_test_backtest.py) | Randomised falsification test over 60 seeds; non-zero exit on failure |
+| [`scripts/mutation_matrix.py`](scripts/mutation_matrix.py) | Mutation testing: reintroduces each fault, reports the kill score |
+| [`scripts/mutation_plugin.py`](scripts/mutation_plugin.py) | Pytest plugin that reintroduces one fault, selected by env var |
+| [`tests/test_backtest_engine_correctness.py`](tests/test_backtest_engine_correctness.py) | 20 regression tests: execution, metrics, holding period |
+| [`tests/test_feature_pipeline_correctness.py`](tests/test_feature_pipeline_correctness.py) | 9 regression tests pinning the scaler and split faults |
 | [`paper/`](paper/) | Manuscript source |
 
 ## Mathematical Breakdown
