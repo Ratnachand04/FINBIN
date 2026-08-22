@@ -1,0 +1,1126 @@
+%==============================================================================
+%  BINFIN -- system architecture paper
+%  Elsevier (elsarticle) manuscript.  Compile with pdfLaTeX:
+%      pdflatex -> pdflatex -> pdflatex      (bibliography is inline)
+%==============================================================================
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usetikzlibrary{positioning,arrows.meta,calc,fit,backgrounds,shapes.geometric,shapes.misc}
+
+%---- colours and node styles -------------------------------------------------
+\definecolor{cIngest}{HTML}{455A64}\definecolor{cStore}{HTML}{1565C0}
+\definecolor{cText}{HTML}{6A1B9A}\definecolor{cPrice}{HTML}{E65100}
+\definecolor{cSig}{HTML}{00838F}\definecolor{cServe}{HTML}{2E7D32}
+\definecolor{cTest}{HTML}{C62828}\definecolor{cOps}{HTML}{AD1457}
+\tikzset{
+  base/.style={rounded corners=2pt,draw,align=center,font=\small,minimum height=8mm,inner sep=4pt,line width=0.5pt},
+  inode/.style={base,fill=cIngest!12,draw=cIngest}, snode/.style={base,fill=cStore!12,draw=cStore},
+  tnode/.style={base,fill=cText!12,draw=cText},     pnode/.style={base,fill=cPrice!14,draw=cPrice},
+  gnode/.style={base,fill=cSig!14,draw=cSig},       vnode/.style={base,fill=cServe!12,draw=cServe},
+  rnode/.style={base,fill=cTest!12,draw=cTest},     onode/.style={base,fill=cOps!12,draw=cOps},
+  group/.style={rounded corners=4pt,draw,dashed,line width=0.6pt,inner sep=6pt},
+  arr/.style={-{Latex[length=2.2mm]},line width=0.7pt},
+  darr/.style={-{Latex[length=2.2mm]},line width=0.7pt,dashed},
+  lbl/.style={font=\scriptsize\itshape,fill=white,inner sep=1pt}}
+
+\journal{Expert Systems with Applications}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{BINFIN: A Self-Hosted, Reproducible Architecture for\\
+       Multi-Modal Cryptocurrency Signal Generation\\
+       on Commodity Hardware}
+
+\author[1]{Author One\corref{cor1}}
+\ead{author1@institution.edu}
+\author[1]{Author Two}
+\author[2]{Author Three}
+
+\cortext[cor1]{Corresponding author}
+
+\affiliation[1]{organization={Department of Computer Science},
+               addressline={University Name},
+               city={City},
+               postcode={000000},
+               country={Country}}
+
+\affiliation[2]{organization={Department of Finance},
+               addressline={Institution Name},
+               city={City},
+               country={Country}}
+
+\begin{abstract}
+We present BINFIN, an end-to-end system that ingests cryptocurrency price,
+news, social and on-chain data, analyses it with a locally hosted quantised
+large language model alongside a domain-specific transformer, forecasts
+short-horizon price direction with a model ensemble, and emits explainable
+trading signals -- entirely on a single commodity workstation with no
+dependence on commercial model APIs. The system comprises $17{,}200$ lines of
+Python across $169$ modules, $45$ HTTP and WebSocket endpoints, and eight
+containerised services deployed by a single command. Three aspects of the design
+are, we believe, of general interest beyond this application. First, a
+\emph{hybrid split runtime} pins 4-bit NF4-quantised Mistral-7B inference to the
+GPU while routing retrieval and parsing to CPU, and detects CUDA availability at
+startup to fall back to CPU-only LoRA training when VRAM is unavailable, so the
+same deployment runs on hardware ranging from an 8\,GB consumer GPU to a
+CPU-only host. Second, a \emph{causality-by-construction} feature and execution
+pipeline makes look-ahead structurally difficult rather than merely discouraged:
+fills resolve only against bars at or before the signal, the feature scaler is
+fitted on training folds and persisted as a model artefact, and train/test splits
+carry an embargo sized to the longest feature window. Third, and most unusual for
+a system of this class, BINFIN ships a \emph{verification harness} -- $29$
+regression tests, a mutation-testing rig that reintroduces known faults and
+confirms detection at a score of $8/8$, and a randomised null test asserting that
+the backtester reports no edge on structureless data. We report both a systems
+evaluation and, using that harness, an honest predictive evaluation. The latter
+is negative: over $5{,}562$ out-of-sample daily predictions the ensemble attains
+$52.95\%$ directional accuracy, statistically distinguishable from a coin flip
+($p < 10^{-4}$) but not from inverse persistence at $52.88\%$, and its gross
+annualised Sharpe of $0.544$ carries a bootstrap interval containing zero. We
+argue that a platform able to establish that result reliably is more useful than
+one that reports a large number it cannot defend, and we discuss what the
+architecture would need in order to test richer hypotheses.
+\end{abstract}
+
+\begin{highlights}
+\item End-to-end self-hosted crypto intelligence stack: ingestion, LLM sentiment, forecasting, signals, backtesting, serving, in eight containers.
+\item Hybrid split runtime pins quantised Mistral-7B to GPU and falls back to CPU-only LoRA when CUDA is absent.
+\item Causality enforced structurally: no-look-ahead fills, fold-local scaler fitting, embargoed splits.
+\item Ships a verification harness: 29 regression tests, mutation score 8/8, and a randomised backtester null test.
+\item Honest evaluation: 52.95\% directional accuracy does not separate from a zero-parameter baseline.
+\end{highlights}
+
+\begin{keyword}
+Trading systems \sep Self-hosted LLM \sep Quantised inference \sep QLoRA
+\sep Cryptocurrency \sep System architecture \sep Reproducibility
+\sep Mutation testing
+\end{keyword}
+
+\end{frontmatter}
+
+%==============================================================================
+\section{Introduction}
+\label{sec:intro}
+%==============================================================================
+
+Applied cryptocurrency research sits awkwardly between two kinds of
+infrastructure. Institutional platforms are capable but proprietary, expensive
+and unavailable for reproduction. Public research code is generally a single
+notebook: a model, a train/test split and a printed accuracy, with no ingestion,
+no serving, no execution simulation and no way to run it continuously. Between
+these lies a gap that matters for anyone who wants to test a market hypothesis
+end to end on their own hardware, on their own data, without sending that data to
+a third party.
+
+BINFIN was built to occupy that gap. It is a complete, self-hosted system: it
+collects live price, news, social and on-chain data; scores unstructured text
+with a locally hosted quantised large language model; forecasts short-horizon
+direction with an ensemble of statistical and neural models; composes those
+outputs into explainable buy/sell/hold signals; simulates their execution with a
+cost- and latency-aware backtester; and serves the result over HTTP and
+WebSockets to a live dashboard. It runs on one machine and requires no commercial
+model API.
+
+\subsection{Design goals}
+
+Four constraints shaped the architecture, and each has visible consequences in
+the design.
+
+\paragraph{G1: hardware portability.} The system must run on a consumer GPU with
+8\,GB of VRAM and must degrade to CPU-only rather than fail. This motivates 4-bit
+NF4 quantisation of the language model, the split runtime of
+Section~\ref{ssec:runtime}, and a startup capability probe that selects a
+training path accordingly.
+
+\paragraph{G2: data locality.} No market or user data may leave the host. This
+rules out hosted LLM APIs and motivates the Ollama-based inference container and
+the local FinBERT fallback.
+
+\paragraph{G3: causality by construction.} Look-ahead bias should be structurally
+difficult, not merely discouraged by convention. This motivates the bar-driven
+execution loop, the fold-local scaler fitting, and the embargoed split of
+Section~\ref{sec:causality}.
+
+\paragraph{G4: verifiable claims.} Any number the system reports must be
+defensible. This motivates the verification harness of
+Section~\ref{sec:verification}, which we consider the least standard and most
+transferable part of the work.
+
+\subsection{Contributions}
+
+\begin{enumerate}
+    \item \textbf{A complete, deployable architecture} for multi-modal
+    cryptocurrency signal generation on a single host, described in enough detail
+    to reimplement (Section~\ref{sec:arch}): eight services, $45$ endpoints,
+    $17{,}200$ lines of Python.
+
+    \item \textbf{A hybrid split runtime} (Section~\ref{ssec:runtime}) that
+    partitions a 7B-parameter language model workload between GPU and CPU by
+    function rather than by layer, with automatic capability detection and a
+    CPU-only LoRA training path.
+
+    \item \textbf{A causality-by-construction pipeline}
+    (Section~\ref{sec:causality}) covering feature computation, scaler
+    lifecycle, split construction and execution semantics.
+
+    \item \textbf{A verification harness} (Section~\ref{sec:verification})
+    comprising regression tests, mutation testing and a randomised null test for
+    the backtester, which we propose as a baseline standard for systems of this
+    class.
+
+    \item \textbf{An honest end-to-end evaluation} (Section~\ref{sec:eval}),
+    including a negative predictive result that the harness makes trustworthy,
+    and an analysis of which architectural choices the result implicates.
+\end{enumerate}
+
+\subsection{A note on what the evaluation shows}
+
+We report in Section~\ref{ssec:predictive} that the system's forecasting layer,
+as configured, does not outperform a zero-parameter baseline. We state this
+plainly in the abstract and here rather than deferring it, because it shapes how
+the rest should be read. The contribution claimed is the architecture and its
+verification, not a profitable strategy. A platform whose measurements can be
+trusted is a prerequisite for the second, and Section~\ref{ssec:caught}
+enumerates several substantial errors the harness caught in the system's own
+earlier revisions -- errors that, uncaught, would have produced a large and
+entirely spurious reported Sharpe ratio.
+
+%==============================================================================
+\section{Related Work}
+\label{sec:related}
+%==============================================================================
+
+\subsection{Cryptocurrency forecasting systems}
+
+Most published cryptocurrency prediction work evaluates a model in isolation.
+\citet{sezer2020financial} survey deep learning for financial time series and
+observe wide inconsistency in evaluation protocol across the field.
+\citet{fischer2018deep} and \citet{krauss2017deep} report on LSTM networks and
+tree ensembles for equity direction with careful statistics but no deployed
+system. \citet{mcnally2018predicting} apply recurrent networks to Bitcoin. Our
+emphasis differs: the model families we use are deliberately standard, and the
+contribution is the surrounding system and its verifiability.
+
+\subsection{Financial text and domain language models}
+
+\citet{tetlock2007giving} established that media sentiment carries information
+about returns, and \citet{loughran2011liability} showed that general-purpose
+lexicons misread financial language. FinBERT \citep{yang2020finbert}, built on
+BERT \citep{devlin2019bert}, is the standard domain encoder and is the fallback
+path in our sentiment subsystem. \citet{wu2023bloomberggpt} demonstrate the
+capability of large proprietary financial models, which is precisely the
+capability our design goal G2 forgoes in exchange for locality.
+
+\subsection{Efficient adaptation and quantised inference}
+
+LoRA \citep{hu2022lora} adapts large models through low-rank updates without
+touching base weights, and QLoRA \citep{dettmers2023qlora} adds NF4
+double-quantised backpropagation, making 7B-parameter fine-tuning feasible on a
+single consumer GPU. These are the enabling technologies for G1, and our
+contribution here is architectural rather than algorithmic: we show how to
+partition such a workload in a running multi-service system with automatic
+capability-based fallback.
+
+\subsection{Correctness in financial machine learning}
+
+\citet{lopezdeprado2018advances} formalises purging and embargoing and argues
+that standard cross-validation is invalid for financial series.
+\citet{bailey2014deflated} and \citet{harvey2016cross} address selection bias in
+reported performance. \citet{arnott2019backtesting} propose a backtesting
+protocol for machine learning. These works address statistical validity given a
+correct engine. We complement them at the implementation layer, applying
+mutation testing \citep{jia2011analysis} -- routine in software engineering,
+rare in this domain -- to establish that a test suite actually detects the
+faults it targets.
+
+%==============================================================================
+\section{System Architecture}
+\label{sec:arch}
+%==============================================================================
+
+Figure~\ref{fig:arch} shows the system in layers. Data flows upward from
+external sources through ingestion, storage, analysis and decision layers to the
+serving surface, with observability and verification as cross-cutting concerns.
+
+\begin{figure}[t]\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=6mm and 8mm]
+% ingestion
+\node[inode] (bin)  {Binance\\ REST + WS};
+\node[inode, right=of bin]  (news) {NewsAPI\\ + 3 RSS};
+\node[inode, right=of news] (rdt)  {Reddit\\ (PRAW)};
+\node[inode, right=of rdt]  (eth)  {Etherscan\\ on-chain};
+% collectors
+\node[inode, below=9mm of news, minimum width=34mm] (coll)
+  {\textbf{Collector Layer}\\ rate limiting, retry,\\ WS$\to$HTTP fallback};
+\node[inode, right=8mm of coll, minimum width=30mm] (celery)
+  {\textbf{Celery Workers}\\ ingestion, signals,\\ backtest, fine-tune};
+% storage
+\node[snode, below=9mm of coll, minimum width=42mm] (pg)
+  {\textbf{PostgreSQL + TimescaleDB}\\ hypertables (6h / 1d chunks),\\ retention policies, 14 tables};
+\node[snode, right=8mm of pg, minimum width=26mm] (redis)
+  {\textbf{Redis}\\ feature cache,\\ Celery broker};
+% analysis
+\node[tnode, below=9mm of pg, xshift=-32mm, minimum width=34mm] (sent)
+  {\textbf{Sentiment Subsystem}\\ Ollama Mistral-7B (NF4)\\ $\to$ FinBERT fallback};
+\node[pnode, right=6mm of sent, minimum width=34mm] (fc)
+  {\textbf{Forecast Subsystem}\\ Prophet $|$ LSTM $|$ XGBoost\\ weighted ensemble};
+\node[pnode, right=6mm of fc, minimum width=30mm] (feat)
+  {\textbf{Feature Pipeline}\\ causal indicators,\\ fold-local scaler};
+% decision
+\node[gnode, below=9mm of fc, minimum width=38mm] (sig)
+  {\textbf{Signal Generator}\\ 3 primary $\wedge$ $\ge$2 supporting\\ $\wedge$ 0 risk filters};
+\node[gnode, right=6mm of sig, minimum width=30mm] (bt)
+  {\textbf{Backtest Engine}\\ next-bar fills,\\ intrabar exits};
+% serving
+\node[vnode, below=9mm of sig, minimum width=40mm] (api)
+  {\textbf{FastAPI}\\ 45 endpoints, JWT auth,\\ 3 WebSocket channels};
+\node[vnode, right=6mm of api, minimum width=26mm] (ui)
+  {\textbf{Dashboard}\\ charts, signals,\\ live feed};
+% cross-cutting
+\node[onode, left=8mm of pg, minimum width=24mm] (obs)
+  {\textbf{Prometheus}\\ \textbf{+ Grafana}};
+\node[rnode, left=8mm of sig, minimum width=24mm] (ver)
+  {\textbf{Verification}\\ 29 tests, mutation\\ rig, null test};
+\draw[arr] (bin)--(coll); \draw[arr] (news)--(coll); \draw[arr] (rdt)--(coll); \draw[arr] (eth)--(coll);
+\draw[arr] (coll)--(pg); \draw[arr] (celery)--(pg); \draw[arr] (pg)--(redis);
+\draw[arr] (pg)--(sent); \draw[arr] (pg)--(fc); \draw[arr] (pg)--(feat);
+\draw[arr] (sent)--(sig); \draw[arr] (fc)--(sig); \draw[arr] (feat)--(fc);
+\draw[arr] (sig)--(bt); \draw[arr] (sig)--(api); \draw[arr] (bt)--(api); \draw[arr] (api)--(ui);
+\draw[darr, draw=cOps] (obs)--(pg); \draw[darr, draw=cTest] (ver)--(sig); \draw[darr, draw=cTest] (ver)--(bt);
+\end{tikzpicture}}
+\caption{BINFIN layered architecture. Solid arrows are data flow; dashed arrows
+are cross-cutting concerns. All components run as containers on a single host.}
+\label{fig:arch}
+\end{figure}
+
+Table~\ref{tab:components} summarises the implementation.
+
+\begin{table}[t]\centering\small
+\caption{System components. Line counts exclude generated files, caches and
+vendored dependencies.}
+\label{tab:components}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Layer & Principal modules & Python LOC \\
+\midrule
+Ingestion    & \texttt{collectors/}, \texttt{data\_ingestion/} & $\sim$1{,}900 \\
+Storage      & \texttt{database.py}, schema, migrations        & $\sim$800 \\
+Sentiment    & \texttt{ml/sentiment\_analyzer.py}, \texttt{api/rag.py} & $\sim$700 \\
+Forecasting  & \texttt{ml/price\_predictor.py}, \texttt{ml/feature\_engineer.py}, \texttt{ml/model\_trainer.py} & $\sim$1{,}900 \\
+Decision     & \texttt{signal/generator.py}, \texttt{backtest/} & $\sim$1{,}600 \\
+Serving      & \texttt{api/} (45 endpoints), \texttt{main.py}   & $\sim$3{,}200 \\
+Workers      & \texttt{workers/} (Celery + asyncio)             & $\sim$1{,}100 \\
+Adaptation   & \texttt{llm\_trainer/}, \texttt{local\_trainer/} & $\sim$900 \\
+Verification & \texttt{tests/}, \texttt{scripts/}               & $\sim$2{,}600 \\
+Frontend     & HTML/CSS/JS dashboard                            & $\sim$1{,}600 \\
+\midrule
+\textbf{Total} & $169$ Python modules & $\mathbf{17{,}200}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ingestion layer}
+\label{ssec:ingest}
+
+Four collectors run as supervised asyncio tasks under a Celery-backed worker
+supervisor. Each implements rate limiting, bounded retry with exponential
+backoff, and graceful degradation.
+
+\begin{itemize}
+\item \textbf{Price} (\texttt{price\_collector.py}) consumes the Binance
+WebSocket stream for live ticks and REST klines for historical backfill. When
+the socket drops, it fails over to an HTTP polling path rather than stalling the
+pipeline -- a distinction that matters because a silently stalled price feed
+produces stale features rather than an error.
+\item \textbf{News} (\texttt{news\_collector.py}) polls NewsAPI plus three RSS
+feeds (CoinTelegraph, CoinDesk, The Block), deduplicating by URL and title hash.
+\item \textbf{Social} (\texttt{reddit\_collector.py}) uses PRAW against
+cryptocurrency subreddits with its own token-bucket limiter and signal handlers
+for clean shutdown.
+\item \textbf{On-chain} (\texttt{data\_ingestion/}) crawls Etherscan with
+adaptive block-range sizing to stay inside per-day call quotas, flagging
+transfers above a value threshold as whale activity.
+\end{itemize}
+
+\subsection{Storage layer}
+
+Persistence is PostgreSQL with the TimescaleDB extension. Five high-volume
+tables are converted to hypertables with chunk intervals matched to write rate --
+six hours for \texttt{price\_data}, one day for \texttt{sentiment\_scores},
+\texttt{news\_data}, \texttt{reddit\_data} and \texttt{onchain\_transactions} --
+with background retention policies. Fourteen tables in total cover market data,
+derived sentiment, signals, predictions, backtest runs and trades, users and
+per-user encrypted API keys.
+
+Redis serves two roles: Celery broker, and a short-TTL cache for computed feature
+vectors and predictions, keyed by symbol and timestamp.
+
+\subsection{Sentiment subsystem}
+\label{ssec:sentiment}
+
+The sentiment path (Figure~\ref{fig:sentiment}) is dual, by design, because a
+locally hosted generative model is powerful but fallible in output format and
+availability.
+
+\begin{figure}[t]\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[node distance=7mm and 12mm]
+\node[inode] (txt) {headline /\\ post text};
+\node[tnode, right=of txt] (clean) {clean +\\ few-shot prompt};
+\node[tnode, right=of clean] (oll) {\textbf{Ollama}\\ Mistral-7B-instruct\\ \texttt{q4\_K\_M} (NF4)\\ \scriptsize GPU-pinned};
+\node[tnode, below=12mm of oll] (fb) {\textbf{FinBERT}\\ \texttt{ProsusAI/finbert}\\ \scriptsize CPU};
+\node[gnode, right=of oll] (parse) {JSON parse\\ + normalise};
+\node[gnode, right=of parse] (agg) {aggregate:\\ 24h / 7d MA,\\ velocity, volatility};
+\node[snode, below=12mm of agg] (db) {\texttt{sentiment\_scores}\\ hypertable};
+\draw[arr] (txt)--(clean); \draw[arr] (clean)--(oll); \draw[arr] (oll)--(parse);
+\draw[arr] (parse)--(agg); \draw[arr] (agg)--(db);
+\draw[darr, draw=cTest] (oll.south) -- node[lbl,right,pos=0.4]{timeout / parse failure} (fb.north);
+\draw[arr] (fb.east) -| (parse.south);
+\end{tikzpicture}}
+\caption{Dual-path sentiment scoring. The quantised generative model is primary;
+FinBERT is a deterministic fallback on timeout or malformed output.}
+\label{fig:sentiment}
+\end{figure}
+
+The primary path sends a few-shot prompt to a Mistral-7B-instruct model
+quantised to \texttt{q4\_K\_M}, served by Ollama in its own container. The prompt
+constrains output to a JSON object carrying a sentiment label, a confidence and a
+short reasoning string; the reasoning is retained and surfaced in the dashboard,
+which is what makes signals explainable to the user rather than opaque. When the
+model times out or emits unparseable output, the request falls through to
+FinBERT running locally on CPU, which is deterministic and fast but produces no
+rationale.
+
+Per-symbol scores are aggregated into 24-hour and 7-day moving averages, a
+velocity term (current minus 24-hour mean) and a dispersion term, and written to
+a hypertable for downstream consumption.
+
+\subsection{Forecasting subsystem}
+\label{ssec:forecast}
+
+Three model families are trained per asset and combined
+(Figure~\ref{fig:forecast}):
+
+\begin{itemize}
+\item \textbf{Prophet} for additive trend and seasonality decomposition, with
+exogenous regressors for sentiment and whale activity.
+\item \textbf{LSTM} (Keras), a stacked recurrent classifier over $60$-step
+windows of the feature matrix, with early stopping on validation loss.
+\item \textbf{XGBoost} over the flattened window, retaining feature importances
+for explanation.
+\end{itemize}
+
+Component probabilities are combined by a fixed weighting,
+\begin{equation}
+P_{\text{ens}}(c) = 0.30\,P_{\text{prophet}}(c) + 0.40\,P_{\text{lstm}}(c) + 0.30\,P_{\text{xgb}}(c),
+\label{eq:ensemble}
+\end{equation}
+and an ensemble confidence is derived from the dispersion of component
+predictions. We record explicitly that these weights are hand-set rather than
+fitted; Section~\ref{sec:limitations} treats this as a limitation.
+
+\begin{figure}[t]\centering
+\resizebox{0.9\textwidth}{!}{%
+\begin{tikzpicture}[node distance=6mm and 11mm]
+\node[snode] (win) {feature window\\ $X \in \mathbb{R}^{60\times F}$\\ \scriptsize causal, fold-scaled};
+\node[pnode, above right=6mm and 14mm of win] (pro) {\textbf{Prophet}\\ trend + seasonality\\ + regressors};
+\node[pnode, right=14mm of win] (lstm) {\textbf{LSTM}\\ stacked, early stop};
+\node[pnode, below right=6mm and 14mm of win] (xgb) {\textbf{XGBoost}\\ + feature importance};
+\node[gnode, right=14mm of lstm] (ens) {\textbf{Weighted ensemble}\\ $0.30/0.40/0.30$\\ \scriptsize (fixed, not fitted)};
+\node[gnode, right=of ens] (out) {$P(\uparrow), P(-), P(\downarrow)$\\ + confidence};
+\draw[arr] (win)--(pro); \draw[arr] (win)--(lstm); \draw[arr] (win)--(xgb);
+\draw[arr] (pro.east) -| (ens.north); \draw[arr] (lstm)--(ens); \draw[arr] (xgb.east) -| (ens.south);
+\draw[arr] (ens)--(out);
+\end{tikzpicture}}
+\caption{Forecasting ensemble. Weights are fixed a priori, which
+Section~\ref{sec:limitations} identifies as a design weakness.}
+\label{fig:forecast}
+\end{figure}
+
+\subsection{Signal generation}
+\label{ssec:signal}
+
+The decision layer is deliberately rule-composed rather than learned, so that
+every emitted signal carries a human-readable justification. A BUY requires all
+three primary conditions, at least two of five supporting conditions, and zero of
+four risk filters:
+\begin{equation}
+\textsc{buy} \iff
+\underbrace{|\mathcal{P}| = 3}_{\text{primary}} \;\wedge\;
+\underbrace{|\mathcal{S}| \ge 2}_{\text{supporting}} \;\wedge\;
+\underbrace{|\mathcal{R}| = 0}_{\text{risk}} ,
+\label{eq:signal}
+\end{equation}
+with the sets as given in Table~\ref{tab:signal}. SELL is the mirror. Anything
+else is HOLD. A cooldown and duplicate check suppresses repeated signals on the
+same symbol within a window.
+
+\begin{table}[t]\centering\small
+\caption{Signal conditions for BUY. All primary conditions are required; the
+conjunction is deliberately conservative, which is why signal counts are low.}
+\label{tab:signal}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Set & Condition & Threshold \\
+\midrule
+\multirow{3}{*}{Primary $\mathcal{P}$}
+ & 24h aggregate sentiment      & $> 0.70$ \\
+ & Ensemble direction label     & $=$ UP \\
+ & Ensemble confidence          & $> 0.75$ \\
+\midrule
+\multirow{5}{*}{Supporting $\mathcal{S}$}
+ & Net exchange flow            & $< 0$ (accumulation) \\
+ & RSI(14)                      & $< 40$ \\
+ & 24h volume ratio             & $> 1.0$ \\
+ & Sentiment velocity           & $> 0$ \\
+ & News sentiment delta         & $> 0$ \\
+\midrule
+\multirow{4}{*}{Risk $\mathcal{R}$}
+ & 1h drawdown                  & $< -10\%$ \\
+ & ATR ratio                    & $> 2.0$ \\
+ & Negative exchange news flag  & set \\
+ & Regulatory FUD flag          & set \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Price targets and stops are placed from ATR and scaled by a user-supplied risk
+appetite, and a reward-to-risk ratio is reported alongside each signal.
+
+\subsection{Execution simulation}
+\label{ssec:backtest}
+
+The backtester is bar-driven rather than signal-driven. It iterates the union of
+bar timestamps; at each timestamp it resolves exits for open positions using
+\emph{that position's own} asset bar, then opens positions scheduled for that
+bar, then closes positions whose bar-counted holding period has expired.
+
+Three semantics are worth stating because they are the usual sources of
+overstated backtest performance:
+\begin{enumerate}
+\item A signal computed from the close of bar $i$ is scheduled for bar $i+1$ and
+filled at its open, so no fill can reference information at or after its own
+execution bar.
+\item Stops and targets are evaluated against each bar's high and low, not the
+close; when a single bar touches both levels the stop is assumed to fill, the
+pessimistic convention.
+\item Equity carries shorts as a liability,
+$V_t = \text{cash}_t + \sum_{\text{long}} q_j p_t^{(j)} - \sum_{\text{short}} q_j p_t^{(j)}$,
+and each leg is charged fees on its own notional.
+\end{enumerate}
+
+\subsection{Hybrid split runtime}
+\label{ssec:runtime}
+
+The most hardware-specific part of the design is how a 7B-parameter model is made
+to coexist with the rest of the stack on one machine
+(Figure~\ref{fig:runtime}). The partition is by \emph{function}, not by layer.
+
+\begin{figure}[t]\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[node distance=6mm and 10mm]
+\node[inode] (probe) {startup probe\\ \texttt{/api/v1/model/runtime}\\ \scriptsize torch.cuda.is\_available()};
+\node[tnode, above right=4mm and 16mm of probe] (gpu) {\textbf{GPU path}\\ Ollama container\\ NF4 generation};
+\node[pnode, below right=4mm and 16mm of probe] (cpu) {\textbf{CPU path}\\ Ollama CPU threads\\ + FinBERT};
+\node[gnode, right=16mm of gpu] (qlora) {\textbf{QLoRA}\\ $r{=}64$, $\alpha{=}16$\\ NF4 double-quant};
+\node[gnode, right=16mm of cpu] (lora) {\textbf{CPU LoRA}\\ $r{=}16$, $\alpha{=}32$\\ fp32, no quant};
+\node[snode, below=8mm of probe, xshift=-2mm] (rag) {RAG retrieval + parsing\\ \scriptsize pinned CPU (\texttt{RAG\_CONTEXT\_CPU\_ONLY})};
+\draw[arr] (probe.east) -- node[lbl,above,pos=0.35]{CUDA} (gpu.west);
+\draw[arr] (probe.east) -- node[lbl,below,pos=0.35]{no CUDA} (cpu.west);
+\draw[arr] (gpu)--(qlora); \draw[arr] (cpu)--(lora);
+\draw[darr, draw=cStore] (rag.east) -| (gpu.south);
+\end{tikzpicture}}
+\caption{Capability-based runtime selection. Generation is GPU-pinned when CUDA
+is present; retrieval and parsing are always CPU-resident to preserve VRAM. The
+adapter rank differs between paths because CPU training is memory-bound
+differently from quantised GPU training.}
+\label{fig:runtime}
+\end{figure}
+
+Token generation, the VRAM-hungry and latency-critical operation, runs in the
+GPU-enabled Ollama container. Retrieval-augmented context assembly -- embedding
+lookup, database routing, prompt construction -- is pinned to CPU by
+configuration (\texttt{RAG\_CONTEXT\_CPU\_ONLY}), because it is memory-bandwidth
+rather than compute bound and would otherwise consume VRAM that the model needs.
+
+At startup the backend probes CUDA availability and reports a runtime plan over
+an endpoint. If CUDA is absent or VRAM is insufficient, inference falls back to
+CPU threads and the fine-tuning path switches from QLoRA to CPU LoRA. The two
+adapter configurations differ deliberately, as shown in Table~\ref{tab:qlora}:
+NF4 quantisation frees enough memory on GPU to support a substantially higher
+adapter rank than the CPU path can hold in fp32.
+
+\begin{table}[t]\centering\small
+\caption{Adapter configurations for the two training paths. Both target the same
+seven projection modules.}
+\label{tab:qlora}
+\begin{tabular}{@{}lll@{}}
+\toprule
+& GPU (QLoRA) & CPU (LoRA) \\
+\midrule
+Base weights      & NF4, double-quantised & fp32 \\
+Adapter rank $r$  & $64$ & $16$ \\
+$\alpha$          & $16$ & $32$ \\
+Dropout           & $0.05$ & $0.05$ \\
+Target modules    & \multicolumn{2}{l}{\texttt{q,k,v,o\_proj}, \texttt{gate,up,down\_proj}} \\
+Packaging         & \multicolumn{2}{l}{Modelfile $\to$ Ollama tag} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Trained adapters are packaged into an Ollama Modelfile and registered as a local
+model tag, so the serving path consumes a fine-tuned model through the same
+interface as the base model.
+
+\subsection{Serving, workers and observability}
+
+The API is FastAPI with $45$ endpoints spanning market data, sentiment,
+predictions, signals, backtests, model operations, authentication and
+per-user API key management, plus three WebSocket channels
+(\texttt{/ws/live-data}, \texttt{/ws/market}, \texttt{/ws/notifications}) that
+push tick updates and signal notifications to the dashboard.
+
+Long-running work is offloaded to Celery: ingestion supervision, scheduled signal
+generation, backtest execution, and fine-tuning jobs with a 24-hour task limit
+and cancellation support. Prometheus counters instrument ingestion restarts and
+per-task errors, scraped into Grafana dashboards provisioned as code.
+
+The whole stack -- TimescaleDB, Redis, Ollama, backend, frontend, Prometheus,
+Grafana, LLM trainer -- is eight Compose services brought up by one command, with
+a GPU overlay file for CUDA-enabled hosts.
+
+%==============================================================================
+\section{Causality by Construction}
+\label{sec:causality}
+%==============================================================================
+
+Design goal G3 asks that look-ahead be structurally difficult. Four mechanisms
+implement it.
+
+\paragraph{Causal features.} Every feature is a function of bars indexed $\le t$.
+Rolling statistics use trailing windows only; window normalisation is computed
+per lookback window rather than globally, so no statistic is informed by data
+after the observation it describes.
+
+\paragraph{Scaler lifecycle.} The feature scaler is fitted on training rows only,
+persisted alongside the model artefacts, and loaded at inference where it is
+applied through \texttt{transform} rather than \texttt{fit\_transform}. This
+separation is enforced by the API surface: the serving path has no method that
+fits. If no fitted scaler is present the system logs a warning and returns
+unscaled features rather than silently producing a degenerate vector.
+
+\paragraph{Embargoed splits.} Because training samples are $60$-step windows with
+next-bar labels, and some features use windows up to $672$ bars, adjacent samples
+overlap in time. Splits therefore discard a gap
+\begin{equation}
+\mathcal{T}_{\text{train}} = [0, k), \quad
+\mathcal{T}_{\text{test}} = [k + e, n), \quad e \ge L_{\text{seq}} + h,
+\label{eq:embargo}
+\end{equation}
+following \citet{lopezdeprado2018advances}.
+
+\paragraph{Execution semantics.} As described in Section~\ref{ssec:backtest},
+bar lookup is constrained to $\{i : t_i \le t_{\text{signal}}\}$ by binary
+search, making it structurally impossible for a fill to resolve against a future
+bar.
+
+%==============================================================================
+\section{Verification Harness}
+\label{sec:verification}
+%==============================================================================
+
+Design goal G4 asks that reported numbers be defensible. Systems of this class
+almost never ship the means to check that. BINFIN ships three.
+
+\subsection{Regression suite}
+
+Twenty-nine tests use hand-built fixtures with analytically known answers rather
+than database data, so they run without infrastructure. They cover no-look-ahead
+fills, per-asset position pricing, short accounting, intrabar exit resolution,
+holding-period semantics, Sharpe annualisation against its closed form, bootstrap
+non-degeneracy, scaler behaviour and split disjointness.
+
+The strongest is a closed-loop accounting invariant: with all positions flat at
+the end of a run,
+\begin{equation}
+V_T - V_0 = \sum_{i=1}^{N} \mathrm{PnL}_i
+\label{eq:reconcile}
+\end{equation}
+must hold exactly. Any fault that creates or destroys cash violates it, and it
+cannot be satisfied by accident.
+
+\subsection{Mutation testing}
+\label{ssec:mutation}
+
+A test count measures effort, not coverage. To establish that the suite detects
+what it targets, a pytest plugin reintroduces one known fault before collection,
+selected by environment variable, and a driver runs the suite once per fault.
+
+\begin{table}[t]\centering\small
+\caption{Mutation results against a green baseline of $29$ tests. Every
+reintroducible fault is detected.}
+\label{tab:mutation}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Reintroduced fault & Detected by & Red \\
+\midrule
+Look-ahead bar lookup        & \texttt{price\_lookup\_never\_selects\_future\_bar} & 1 \\
+Inverted short mark-to-market& \texttt{short\_equity\_falls\_when\_price\_rises}   & 1 \\
+Evenly split round-trip fee  & \texttt{equity\_curve\_reconciles\_with\_trade\_pnl}& 1 \\
+Per-trade Sharpe annualisation& \texttt{annualisation\_matches\_closed\_form} (+1) & 2 \\
+Permutation-invariant bootstrap& \texttt{bootstrap\_is\_not\_degenerate}          & 1 \\
+Scaler refit at transform    & \texttt{single\_row\_transform\_not\_all\_zeros} (+1)& 2 \\
+Split without embargo        & \texttt{gap\_between\_folds} (+1)                   & 2 \\
+Close-only exit checks       & \texttt{stop\_fills\_at\_stop\_level} (+1)          & 2 \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{Mutation score}} & $\mathbf{8/8}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Five further faults are covered by dedicated tests but are not separately
+expressible as isolated mutations without rewriting the simulation loop; we
+exclude them from the score rather than counting them for free.
+
+\subsection{Randomised null test}
+\label{ssec:null}
+
+Random entry signals on a driftless geometric random walk contain no structure by
+construction, so a correct engine charging positive costs must lose at a rate set
+by turnover and cost alone.
+
+The assertion must be distributional. A $75$-day fixture has
+$\mathrm{SE}(S) \approx 2.2$, so asserting $S \le 0$ on a single path fails on a
+correct engine a substantial fraction of the time -- measured here, $13.3\%$ of
+seeds produce a positive Sharpe, with a range of $-10.45$ to $+7.33$. Running
+$60$ independent seeds gives $\bar{S} = -3.534$, $\mathrm{se} = 0.470$,
+$t = -7.51$, alongside cash conservation to $1.2 \times 10^{-11}$ on runs ending
+flat and a fee-rate check against the modelled two-sided fee.
+
+\paragraph{Coverage, stated honestly.} This exercises the \emph{engine} with
+exogenous signals. It is blind to feature leakage, split leakage and imputation
+leakage, which live upstream. It is one necessary check among several, not a
+sufficient one.
+
+%==============================================================================
+\section{Evaluation}
+\label{sec:eval}
+%==============================================================================
+
+\subsection{Systems evaluation}
+
+The stack deploys from a clean checkout with one command on a host with Docker
+and, optionally, a CUDA runtime. Table~\ref{tab:deploy} summarises the deployed
+topology. Hardware floor is $16$\,GB system RAM; an $8$\,GB consumer GPU enables
+the QLoRA path, and its absence degrades to CPU LoRA rather than failing.
+
+\begin{table}[t]\centering\small
+\caption{Deployed service topology.}
+\label{tab:deploy}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Service & Image & Role \\
+\midrule
+\texttt{postgres}   & \texttt{timescale/timescaledb:pg14} & hypertable storage \\
+\texttt{redis}      & \texttt{redis:7-alpine}             & cache, Celery broker \\
+\texttt{ollama}     & \texttt{ollama/ollama}              & quantised LLM inference \\
+\texttt{backend}    & local build                          & FastAPI, 45 endpoints \\
+\texttt{frontend}   & local build                          & dashboard (port 8501) \\
+\texttt{prometheus} & \texttt{prom/prometheus}             & metrics \\
+\texttt{grafana}    & \texttt{grafana/grafana}             & dashboards \\
+\texttt{llm-trainer}& local build                          & QLoRA / LoRA jobs \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Predictive evaluation}
+\label{ssec:predictive}
+
+We evaluate the forecasting layer on Binance spot daily bars for BTCUSDT,
+ETHUSDT and DOGEUSDT, using expanding-window walk-forward validation with a
+$5$-day embargo, a $1{,}000$-day initial training block and $250$-day test folds,
+with the scaler fitted inside each fold. Out-of-sample coverage is $5{,}562$
+predictions spanning 2020-07-17 to 2026-03-30.
+
+\begin{table}[t]\centering\small
+\caption{Out-of-sample directional accuracy with Wilson intervals. The
+inverse-persistence row is a zero-parameter rule that bets against the previous
+day's direction.}
+\label{tab:acc}
+\begin{tabular}{@{}llrrcr@{}}
+\toprule
+Asset & Predictor & $n$ & Accuracy & 95\% CI & $p$ vs $.5$ \\
+\midrule
+\multirow{3}{*}{BTC}
+ & Ensemble (logistic head)     & $2{,}083$ & $52.71\%$ & $[50.6, 54.8]$ & $0.013$ \\
+ & \textbf{Inverse persistence} & $2{,}083$ & $\mathbf{53.00\%}$ & $[50.9, 55.1]$ & $0.006$ \\
+ & Majority class               & $2{,}083$ & $50.55\%$ & $[48.4, 52.7]$ & $0.614$ \\
+\midrule
+\multirow{3}{*}{ETH}
+ & Ensemble (logistic head)     & $2{,}083$ & $53.10\%$ & $[50.9, 55.2]$ & $0.005$ \\
+ & Inverse persistence          & $2{,}083$ & $52.57\%$ & $[50.4, 54.7]$ & $0.019$ \\
+ & Majority class               & $2{,}083$ & $49.59\%$ & $[47.4, 51.8]$ & $0.710$ \\
+\midrule
+\multirow{3}{*}{DOGE}
+ & Ensemble (logistic head)     & $1{,}396$ & $53.08\%$ & $[50.5, 55.7]$ & $0.021$ \\
+ & \textbf{Inverse persistence} & $1{,}396$ & $\mathbf{53.15\%}$ & $[50.5, 55.7]$ & $0.019$ \\
+ & Majority class               & $1{,}396$ & $51.72\%$ & $[49.1, 54.3]$ & $0.199$ \\
+\midrule
+\multirow{2}{*}{\textbf{Pooled}}
+ & \textbf{Ensemble}            & $5{,}562$ & $\mathbf{52.95\%}$ & $[51.6, 54.3]$ & $<10^{-4}$ \\
+ & \textbf{Inverse persistence} & $5{,}562$ & $\mathbf{52.88\%}$ & $[51.6, 54.2]$ & $<10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Read against the coin flip, the system's forecasting layer works: $52.95\%$ at
+$p < 10^{-4}$, with Pesaran--Timmermann $p$-values of $0.015$, $0.008$ and
+$0.016$ confirming genuine directional dependence.
+
+Read against inverse persistence, it does not. Paired comparisons on identical
+days give differences of $-0.29$, $+0.53$ and $-0.07$ percentage points on BTC,
+ETH and DOGE, with $|t| \le 0.45$ throughout. The system loses to a one-line rule
+on two of three assets. What it has learned is the well-documented one-day
+reversal effect, and the feature engineering, ensemble and training machinery add
+nothing measurable on top of it.
+
+Two further diagnostics sharpen this. The return-weighted hit rate is
+\emph{below} the unweighted accuracy on every asset ($51.68$, $51.57$, $52.33$
+against $52.71$, $53.10$, $53.08$), so the signal is concentrated in small moves.
+And gating on model confidence degrades performance monotonically, from a net
+Sharpe of $+0.113$ ungated to $-0.309$ at $|p - 0.5| \ge 0.08$ -- the ensemble
+confidence of Section~\ref{ssec:forecast} is not merely uninformative but mildly
+anti-informative.
+
+\subsection{Economic evaluation}
+
+\begin{table}[t]\centering\small
+\caption{Book statistics, equal-weight daily long/short, with costs of 4\,bps
+taker plus 5\,bps slippage per side.}
+\label{tab:book}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Weighting & $\mu$ (\%/yr) & $\sigma$ (\%/yr) & SR gross & SR net & Turnover \\
+\midrule
+Equal        & $+6.61$ & $58.38$ & $+0.544$ & $+0.113$ & $0.765$ \\
+Inverse-vol  & $+4.25$ & $55.14$ & $+0.527$ & $+0.077$ & $0.755$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The gross annualised Sharpe of $0.544$ carries a stationary-bootstrap
+\citep{politis1994stationary} $95\%$ interval of $[-0.172, +1.285]$, which
+contains zero. Breakeven transaction cost is $11.4$ bps per side with an interval
+of $[0, 26.9]$, which contains the assumed cost of $9$. Against a passive
+equal-weight basket the strategy has correlation $+0.224$, beta $+0.215$ and an
+appraisal ratio of $-0.076$.
+
+A decomposition isolating one change at a time attributes the gap between the
+frictionless and executed series to transaction costs ($-0.431$ Sharpe) and a
+holding-period effect ($-0.144$); the one-bar entry lag costs $+0.001$, because
+cryptocurrency trades continuously and the close-to-open dispersion is $1.6\%$ of
+intraday dispersion.
+
+\subsection{What the harness caught}
+\label{ssec:caught}
+
+The verification layer is the component we would most defend, because it changed
+the system's own reported numbers by more than their magnitude. Before the
+harness existed, this system reported an aggregate annualised Sharpe of $4.54$
+with a per-series maximum of $23.65$. Those figures were artefacts of twelve
+code-level faults, including:
+
+\begin{itemize}
+\item exits priced from the wrong asset's bar in multi-asset runs;
+\item a bar lookup selecting the nearest bar by absolute time distance, which
+could resolve into the future;
+\item Sharpe computed by annualising per-trade returns with a fixed
+$\sqrt{252}$, the single largest contributor to the $23.65$;
+\item shorts marked to market with the wrong sign, so a short gained equity as
+price rose;
+\item a Monte Carlo routine that shuffled a P\&L vector and summed it, which is
+permutation-invariant and therefore constant across all simulations;
+\item a feature scaler fitted on a single row at inference, which returns
+identically zero, so every served prediction ran on a zero vector.
+\end{itemize}
+
+Several survived long review because they \emph{compensate}: the inverted short
+accounting corrupted the equity curve, but Sharpe was computed from the trade
+record and never touched it. This is the argument for testing the instrument
+directly rather than inspecting outputs for plausibility, and it is why we regard
+the harness as part of the architecture rather than an accessory to it.
+
+%==============================================================================
+\section{Discussion}
+\label{sec:discussion}
+%==============================================================================
+
+\subsection{What the negative result implicates, and what it does not}
+
+The result in Section~\ref{ssec:predictive} is a statement about a specific
+configuration: thirty-four single-asset technical features, a fixed-weight
+ensemble, a daily horizon and retail taker costs. It is not a statement about the
+architecture. The ingestion, storage, serving and verification layers are
+agnostic to what is predicted; the finding indicts the feature set and the
+decision layer, both of which are replaceable within the same system.
+
+Concretely, three design choices are implicated. The ensemble weights of
+\eqref{eq:ensemble} are fixed rather than fitted. The feature set omits every
+crypto-specific microstructure signal -- perpetual funding, open interest, basis,
+liquidation cascades, order-book imbalance, exchange netflows, cross-asset
+lead--lag. And the training objective is log-loss on direction, when the binding
+constraint turns out to be transaction cost, which belongs in the loss.
+
+\subsection{The value of a system that can produce a negative result}
+
+Most systems in this class cannot establish a negative result, because their
+measurement layer would not survive the attempt. We think that is the more
+important observation. The same harness that produced $52.95\%$ would have
+produced $4.54$ Sharpe eighteen months earlier and been believed. The difference
+is not the model; it is that the instrument is now calibrated, and the
+calibration is shipped so that a reader can re-run it.
+
+\subsection{Explainability as an architectural property}
+
+Two decisions make signals inspectable rather than opaque. The generative
+sentiment path returns a reasoning string that is stored and surfaced alongside
+the score. And the decision layer is rule-composed
+(Equation~\ref{eq:signal}), so every signal carries the specific conditions that
+fired. This costs predictive flexibility -- a learned decision layer would
+plausibly do better -- and it is a deliberate trade for a system intended to be
+audited by its operator.
+
+%==============================================================================
+\section{Limitations}
+\label{sec:limitations}
+%==============================================================================
+
+\paragraph{Fixed ensemble weights.} Equation~\eqref{eq:ensemble} uses hand-set
+weights. They were never fitted, and no ablation establishes that three model
+families outperform one.
+
+\paragraph{Feature scope.} Single-asset OHLCV and derived technicals only. The
+negative predictive result should be read as scoped to this feature set.
+
+\paragraph{Synthetic sentiment in the training corpus.} The historical sentiment
+series shipped for offline experimentation is generated from same-day returns
+rather than real text, and correlates $0.916$ with the contemporaneous return and
+$-0.018$ with the next day's. It is excluded from all reported results, and no
+claim in this paper concerns sentiment-driven prediction. Validating the live
+sentiment path against real labelled financial text remains outstanding.
+
+\paragraph{No latency or throughput benchmarks.} We report the deployed topology
+and resource floor but not measured end-to-end inference latency, ingestion
+throughput or GPU memory profiles under load. For a systems paper this is a
+genuine gap and is the first item of further work.
+
+\paragraph{Cost model.} A flat $4$\,bps taker plus $5$\,bps slippage per side is
+likely conservative for BTC and ETH at daily horizon, where passive execution is
+feasible. A defensible passive assumption would move the point estimate above
+breakeven, though not outside the confidence interval.
+
+\paragraph{Instrument idealisation.} We model Binance spot but evaluate a
+long/short book, which requires margin. Funding, borrow availability and
+liquidation are not modelled.
+
+\paragraph{Mutation coverage.} Eight of thirteen expressible faults are covered
+by the mutation rig; five are covered only by direct tests.
+
+\paragraph{Single-node.} No horizontal scaling, no multi-tenant isolation, no
+capacity analysis, and no live or paper-trading validation.
+
+%==============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+%==============================================================================
+
+We described BINFIN, a self-hosted system that ingests multi-modal
+cryptocurrency data, analyses text with a locally hosted 4-bit quantised
+Mistral-7B alongside FinBERT, forecasts direction with a model ensemble, composes
+explainable signals, simulates their execution, and serves the result --
+$17{,}200$ lines of Python, $45$ endpoints, eight containers, one command to
+deploy, on hardware as modest as a $16$\,GB workstation with no discrete GPU.
+
+Three elements are transferable beyond this application: a hybrid split runtime
+that partitions a large-model workload by function and degrades by capability
+rather than failing; a causality-by-construction pipeline that makes look-ahead
+structurally difficult across features, scaler lifecycle, splits and execution;
+and a verification harness -- regression tests, a mutation score of $8/8$, and a
+randomised null test -- that we propose as a baseline standard for systems of
+this class.
+
+Evaluated with that harness, the forecasting layer attains $52.95\%$ directional
+accuracy over $5{,}562$ out-of-sample predictions, which is distinguishable from
+a coin flip but not from a zero-parameter baseline, and its gross Sharpe interval
+contains zero. We report this rather than the $4.54$ Sharpe the same system
+produced before the harness existed. The architecture is what we offer; the
+negative result is what it lets us establish honestly, and we regard the second
+as evidence for the first.
+
+%==============================================================================
+\section*{Data and code availability}
+%==============================================================================
+
+The system, verification harness, evaluation scripts and machine-readable results
+accompany this manuscript. The predictive evaluation reproduces end to end from
+the released daily OHLCV data with a single command; the mutation rig and null
+test each run in under a minute. Repository URL, release tag and data vintage
+hash are to be inserted on acceptance.
+
+%==============================================================================
+\appendix
+%==============================================================================
+
+\section{Selected API surface}
+\label{app:api}
+
+\begin{table}[H]\centering\small
+\caption{Representative endpoints from the $45$ exposed. Prefix
+\texttt{/api/v1} omitted.}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Group & Path & Purpose \\
+\midrule
+Market      & \texttt{/coins/\{symbol\}/price-history}      & OHLCV series \\
+Market      & \texttt{/coins/\{symbol\}/technical-indicators}& derived indicators \\
+Sentiment   & \texttt{/sentiment/\{symbol\}/sentiment-history}& scored text series \\
+Sentiment   & \texttt{/sentiment/aggregate}                  & windowed aggregates \\
+Prediction  & \texttt{/predictions/latest}                   & ensemble output \\
+Signals     & \texttt{/signals/active}                       & open signals \\
+Signals     & \texttt{/signals/\{id\}/execute}               & mark executed \\
+Backtest    & \texttt{/backtest/run}                         & launch run \\
+Backtest    & \texttt{/backtest/runs/recent-summary}         & run history \\
+Model ops   & \texttt{/model/runtime}                        & CUDA plan probe \\
+Model ops   & \texttt{/model/finetune}                       & launch QLoRA job \\
+LLM         & \texttt{/llm/generate}                         & RAG-backed generation \\
+Stream      & \texttt{/ws/live-data}                         & tick push \\
+Stream      & \texttt{/ws/notifications}                     & signal push \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Storage schema summary}
+\label{app:schema}
+
+Fourteen tables. Five are TimescaleDB hypertables:
+\texttt{price\_data} (6-hour chunks), and \texttt{sentiment\_scores},
+\texttt{news\_data}, \texttt{reddit\_data}, \texttt{onchain\_transactions}
+(1-day chunks), each with a background retention policy. Remaining relations
+cover \texttt{trading\_signals}, \texttt{predictions}, \texttt{backtest\_runs},
+\texttt{backtest\_trades}, \texttt{model\_metadata}, \texttt{users} and
+\texttt{user\_api\_keys}.
+
+%==============================================================================
+\begin{thebibliography}{99}
+%==============================================================================
+
+\bibitem[Arnott et~al.(2019)]{arnott2019backtesting}
+Arnott, R., Harvey, C.~R., Markowitz, H., 2019.
+A backtesting protocol in the era of machine learning.
+Journal of Financial Data Science 1 (1), 64--74.
+
+\bibitem[Bailey and L\'opez de Prado(2014)]{bailey2014deflated}
+Bailey, D.~H., L\'opez de Prado, M., 2014.
+The deflated Sharpe ratio.
+Journal of Portfolio Management 40 (5), 94--107.
+
+\bibitem[Dettmers et~al.(2023)]{dettmers2023qlora}
+Dettmers, T., Pagnoni, A., Holtzman, A., Zettlemoyer, L., 2023.
+QLoRA: efficient finetuning of quantized LLMs.
+In: Advances in Neural Information Processing Systems 36.
+
+\bibitem[Devlin et~al.(2019)]{devlin2019bert}
+Devlin, J., Chang, M.-W., Lee, K., Toutanova, K., 2019.
+BERT: pre-training of deep bidirectional transformers for language understanding.
+In: Proceedings of NAACL-HLT, pp. 4171--4186.
+
+\bibitem[Fischer and Krauss(2018)]{fischer2018deep}
+Fischer, T., Krauss, C., 2018.
+Deep learning with long short-term memory networks for financial market
+predictions.
+European Journal of Operational Research 270 (2), 654--669.
+
+\bibitem[Harvey et~al.(2016)]{harvey2016cross}
+Harvey, C.~R., Liu, Y., Zhu, H., 2016.
+$\dots$ and the cross-section of expected returns.
+Review of Financial Studies 29 (1), 5--68.
+
+\bibitem[Hu et~al.(2022)]{hu2022lora}
+Hu, E.~J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L.,
+Chen, W., 2022.
+LoRA: low-rank adaptation of large language models.
+In: International Conference on Learning Representations.
+
+\bibitem[Jia and Harman(2011)]{jia2011analysis}
+Jia, Y., Harman, M., 2011.
+An analysis and survey of the development of mutation testing.
+IEEE Transactions on Software Engineering 37 (5), 649--678.
+
+\bibitem[Krauss et~al.(2017)]{krauss2017deep}
+Krauss, C., Do, X.~A., Huck, N., 2017.
+Deep neural networks, gradient-boosted trees, random forests: statistical
+arbitrage on the S\&P 500.
+European Journal of Operational Research 259 (2), 689--702.
+
+\bibitem[L\'opez de Prado(2018)]{lopezdeprado2018advances}
+L\'opez de Prado, M., 2018.
+Advances in Financial Machine Learning.
+Wiley, Hoboken, NJ.
+
+\bibitem[Loughran and McDonald(2011)]{loughran2011liability}
+Loughran, T., McDonald, B., 2011.
+When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks.
+Journal of Finance 66 (1), 35--65.
+
+\bibitem[McNally et~al.(2018)]{mcnally2018predicting}
+McNally, S., Roche, J., Caton, S., 2018.
+Predicting the price of Bitcoin using machine learning.
+In: 26th Euromicro International Conference on Parallel, Distributed and
+Network-based Processing, pp. 339--343.
+
+\bibitem[Politis and Romano(1994)]{politis1994stationary}
+Politis, D.~N., Romano, J.~P., 1994.
+The stationary bootstrap.
+Journal of the American Statistical Association 89 (428), 1303--1313.
+
+\bibitem[Sezer et~al.(2020)]{sezer2020financial}
+Sezer, O.~B., Gudelek, M.~U., Ozbayoglu, A.~M., 2020.
+Financial time series forecasting with deep learning: a systematic literature
+review, 2005--2019.
+Applied Soft Computing 90, 106181.
+
+\bibitem[Tetlock(2007)]{tetlock2007giving}
+Tetlock, P.~C., 2007.
+Giving content to investor sentiment: the role of media in the stock market.
+Journal of Finance 62 (3), 1139--1168.
+
+\bibitem[Wu et~al.(2023)]{wu2023bloomberggpt}
+Wu, S., Irsoy, O., Lu, S., Dabravolski, V., Dredze, M., Gehrmann, S., Kambadur,
+P., Rosenberg, D., Mann, G., 2023.
+BloombergGPT: a large language model for finance.
+arXiv preprint arXiv:2303.17564.
+
+\bibitem[Yang et~al.(2020)]{yang2020finbert}
+Yang, Y., Uy, M. C.~S., Huang, A., 2020.
+FinBERT: a pretrained language model for financial communications.
+arXiv preprint arXiv:2006.08097.
+
+\end{thebibliography}
+
+\end{document}
