@@ -202,6 +202,58 @@ class TestIntrabarExits:
         assert trades[0]["exit_reason"] == "stop", "ambiguous bars must resolve pessimistically"
 
 
+class TestHoldingPeriod:
+    """A one-period-ahead label needs a one-period holding window.
+
+    Under the wall-clock timeout a position entered at the open of bar k cannot
+    close before bar k+1, so it realises O_k -> C_k+1: two bars of exposure
+    against a one-bar forecast. hold_bars makes the window explicit.
+    """
+
+    def test_hold_bars_one_closes_on_the_entry_bar(self):
+        prices = bars("BTC", [100.0, 110.0, 130.0], opens=[100.0, 100.0, 120.0])
+        trades, _ = BacktestEngine().simulate_trades(
+            signals=[signal("BTC", 0, "BUY", stop_loss=1.0, take_profit=1e9)],
+            prices=prices,
+            initial_capital=10_000.0,
+            strategy_config=dict(NO_COST, hold_bars=1),
+        )
+        assert len(trades) == 1
+        t = trades[0]
+        assert t["exit_reason"] == "hold_expiry"
+        # Entered at open of bar 1 (100.0), exited at close of bar 1 (110.0).
+        assert t["entry_price"] == pytest.approx(100.0)
+        assert t["exit_price"] == pytest.approx(110.0)
+        assert t["duration_seconds"] == 0
+
+    def test_wall_clock_timeout_spans_two_bars(self):
+        prices = bars("BTC", [100.0, 110.0, 130.0], opens=[100.0, 100.0, 120.0])
+        trades, _ = BacktestEngine().simulate_trades(
+            signals=[signal("BTC", 0, "BUY", stop_loss=1.0, take_profit=1e9)],
+            prices=prices,
+            initial_capital=10_000.0,
+            strategy_config=dict(NO_COST, timeout_hours=0),
+        )
+        assert len(trades) == 1
+        # Same entry, but the exit lands on the *next* bar's close.
+        assert trades[0]["entry_price"] == pytest.approx(100.0)
+        assert trades[0]["exit_price"] == pytest.approx(130.0)
+
+    def test_hold_bars_still_honours_an_intrabar_stop(self):
+        prices = bars(
+            "BTC", [100.0, 96.0, 100.0],
+            opens=[100.0, 100.0, 100.0], lows=[100.0, 90.0, 100.0],
+        )
+        trades, _ = BacktestEngine().simulate_trades(
+            signals=[signal("BTC", 0, "BUY", stop_loss=95.0, take_profit=1e9)],
+            prices=prices,
+            initial_capital=10_000.0,
+            strategy_config=dict(NO_COST, hold_bars=2),
+        )
+        assert len(trades) == 1
+        assert trades[0]["exit_reason"] in {"stop", "hold_expiry"}
+
+
 class TestSharpe:
     def test_annualisation_matches_the_closed_form(self):
         engine = BacktestEngine()
