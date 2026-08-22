@@ -1,5 +1,5 @@
 %==============================================================================
-%  When the Feature Is the Label
+%  Calibrate the Instrument, Then Check the Baseline
 %  Elsevier (elsarticle) manuscript.  Compile with pdfLaTeX:
 %      pdflatex -> pdflatex -> pdflatex      (bibliography is inline)
 %==============================================================================
@@ -42,8 +42,8 @@
 
 \begin{frontmatter}
 
-\title{When the Feature Is the Label: Evaluation Defects and a\\
-       Reproducible Baseline for Daily Cryptocurrency\\
+\title{Calibrate the Instrument, Then Check the Baseline:\\
+       An Audited Re-Evaluation of Daily Cryptocurrency\\
        Direction Forecasting}
 
 \author[1]{Author One\corref{cor1}}
@@ -65,48 +65,51 @@
                country={Country}}
 
 \begin{abstract}
-A large share of the performance reported by applied machine-learning trading
-systems is produced by the evaluation code rather than by any predictive signal.
-We make that claim concrete and measurable. Beginning from a complete
-cryptocurrency trading pipeline that reported an aggregate annualised Sharpe ratio
-of $4.54$ and a per-series maximum of $23.65$, we audit its measurement stack and
-isolate twelve distinct defects. Each independently inflates or corrupts reported
-performance, and each is reproduced, corrected and pinned by a regression test.
-The defects span the whole stack: look-ahead in the fill path, cross-asset
-contamination of position pricing, annualisation of per-trade returns by a fixed
-factor, sign-inverted mark-to-market for short positions, a Monte Carlo routine
-that was permutation-invariant and therefore constant, and a feature scaler fitted
-on a single row at inference time so that every served feature vector was
-identically zero. We give particular attention to one defect we believe is
-under-reported: a sentiment feature that was in fact a scaled copy of the
-contemporaneous label, correlating $0.916$ with the same day return and $-0.018$
-with the next day return. We then re-run the study honestly. On $5{,}565$
-out-of-sample daily predictions for BTC, ETH and DOGE under expanding-window
-walk-forward validation with a purge-and-embargo gap and per-fold scaler fitting,
-a regularised linear model attains $52.94\%$ next-day directional accuracy
-(95\% CI $[51.63, 54.25]$, $p < 10^{-4}$ against the coin-flip null), beating
-persistence ($47.0\%$) and majority-class ($50.5\%$) baselines. The signal is
-therefore statistically real. It is also economically marginal: gross annualised
-Sharpe is $0.60$, it breaks even at $10.74$ basis points per side against
-realistic costs of roughly $9$, and it does not beat buy-and-hold on a
-risk-adjusted basis. We argue that the second half of that sentence is the result,
-not a caveat, and we propose a falsification protocol -- a null test asserting
-that random signals on a driftless random walk must produce non-positive Sharpe
-and exactly reconciling profit and loss -- as a minimum publication requirement
-for backtested claims.
+We report a two-stage failure that we believe is common in applied trading
+research, and we quantify both stages on a single system. In the first stage the
+measurement apparatus is wrong. Auditing a complete cryptocurrency trading
+pipeline that reported an aggregate annualised Sharpe ratio of $4.54$ and a
+per-series maximum of $23.65$, we isolate twelve code-level faults arising from
+five root causes, spanning execution, metric computation and the feature
+pipeline. Among them is a feature named for sentiment that is in fact a scaled,
+noised copy of the contemporaneous label, correlating $0.916$ with the same day
+return and $-0.018$ with the next day. Every fault is reproduced, corrected, and
+pinned by a regression test; a mutation study reintroducing each fault kills
+$8/8$ of the mutants it can express. In the second stage, which survives the
+first, the model is compared against the wrong baseline. Re-running the study
+under a corrected harness with expanding-window walk-forward validation, a
+purge-and-embargo gap and per-fold scaler fitting, a regularised linear model
+attains $52.95\%$ next-day directional accuracy over $5{,}562$ out-of-sample
+predictions ($p < 10^{-4}$ against the coin flip). The same data yields
+$52.88\%$ from inverse persistence -- a zero-parameter rule that bets against
+yesterday's sign. Paired tests on identical days give differences of
+$-0.29$, $+0.53$ and $-0.07$ percentage points on BTC, ETH and DOGE, none
+remotely significant, with the model losing on two of three assets. Thirty-four
+engineered features, per-fold scaling and walk-forward machinery recover a
+well-documented one-day reversal effect and nothing beyond it. The effect is
+also not tradable: gross annualised Sharpe is $0.544$ with a stationary-bootstrap
+$95\%$ interval of $[-0.17, +1.28]$ that contains zero, and the appraisal ratio
+against a passive basket is $-0.076$. A decomposition attributes the
+frictionless-to-executed gap to transaction costs ($-0.43$ Sharpe) and a
+holding-period mismatch ($-0.14$), and shows the entry lag costs essentially
+nothing, contradicting a common intuition imported from equities into a market
+that trades continuously. We propose mutation scoring and a randomised null test
+as minimum verification for backtested claims, and show that the single-path
+version of that null test which we previously advocated is itself uncalibrated,
+producing a positive Sharpe on $13.3\%$ of correct-engine draws.
 \end{abstract}
 
 \begin{highlights}
-\item Twelve reproducible evaluation defects that inflated a reported Sharpe ratio from below zero to 23.65.
+\item Twelve code-level evaluation faults from five root causes, each killed by a regression test (mutation score 8/8).
 \item A sentiment feature shown to be a scaled copy of the contemporaneous label ($\rho = 0.916$ same-day, $-0.018$ next-day).
-\item An honest walk-forward baseline: 52.94\% directional accuracy over 5,565 out-of-sample predictions, $p < 10^{-4}$.
-\item Breakeven transaction cost of 10.74 bps per side quantifies the gap between statistical and economic significance.
-\item A null-test falsification protocol and 26 regression tests released as an executable evaluation harness.
+\item Inverse persistence, a zero-parameter rule, matches the machine-learning model: paired differences of $-0.29$ to $+0.53$ pp, none significant.
+\item Gross Sharpe $0.544$ with bootstrap CI $[-0.17, +1.28]$; breakeven cost CI spans the assumed cost, so tradability is not established.
+\item Attribution shows costs dominate; the one-bar entry lag costs $\approx 0$ because crypto has no overnight gap.
 \end{highlights}
 
 \begin{keyword}
-Backtest overfitting \sep Data leakage \sep Cryptocurrency \sep Directional forecasting
-\sep Walk-forward validation \sep Reproducibility \sep Transaction costs
+Backtest overfitting \sep Data leakage \sep Mutation testing \sep Cryptocurrency
+\sep Directional forecasting \sep Walk-forward validation \sep Baselines
 \sep Negative results
 \end{keyword}
 
@@ -117,216 +120,192 @@ Backtest overfitting \sep Data leakage \sep Cryptocurrency \sep Directional fore
 \label{sec:intro}
 %==============================================================================
 
-There is a recurring pattern in applied financial machine learning. A pipeline is
-assembled, a model is trained, a backtest is run, and a number emerges that would
-represent one of the most profitable strategies in the history of markets. The
-number is then reported. It is rarely the case that anyone set out to deceive;
-much more often the number is an artefact of the measurement apparatus, and the
-apparatus was never itself tested.
+Consider two ways a trading result can be wrong. In the first, the code that
+computes performance does not compute what it claims to; the reported number is
+an artefact of the instrument. In the second, the code is correct but the
+comparison is uninformative, because the proposed method is measured against a
+null so weak that beating it establishes nothing. The first failure is a bug.
+The second is a research-design error, and it is the harder of the two to see,
+because everything reported is technically true.
 
-This paper takes that observation out of the realm of commentary and into the
-realm of evidence. We began with a working, fully implemented cryptocurrency
-trading system: multi-source ingestion, a feature pipeline, several model
-families, a signal generator, a backtest engine and a reporting layer. Its
-published evaluation claimed an aggregate annualised Sharpe ratio of $4.54$ across
-BTC, ETH and DOGE, with individual series reaching $23.65$. It simultaneously
-reported a $30.23\%$ win rate against a nominal $+2\%$ target and $-1.5\%$ stop.
+This paper documents both, on the same system, in sequence. We began with a
+working cryptocurrency trading pipeline whose published evaluation claimed an
+aggregate annualised Sharpe ratio of $4.54$ across BTC, ETH and DOGE, with
+individual series reaching $23.65$, alongside a $30.23\%$ win rate against a
+nominal $+2\%$ target and $-1.5\%$ stop.
 
-Those two claims cannot both hold. Under the stated exit rules the expectancy per
-trade is
+\subsection{A first indication}
+
+Under the stated barrier levels, a strategy exiting only at its target or stop
+would have expectancy
 \begin{equation}
-0.3023 \times 2\% \;-\; 0.6977 \times 1.5\% \;=\; -0.44\%,
+0.3023 \times 2\% \;-\; 0.6977 \times 1.5\% \;=\; -0.44\%
 \label{eq:contradiction}
 \end{equation}
-before costs. A strategy with negative expectancy does not produce a Sharpe ratio
-of $4.54$. The inconsistency was visible from the reported table alone, without
-access to the code. We take this as the founding observation of the paper:
-\emph{reported performance metrics are themselves measurements, and like any
-measurement they require an instrument that has been calibrated.}
+per trade before costs, which is inconsistent with a Sharpe ratio of $4.54$.
 
-\subsection{What we did}
+This calculation is suggestive rather than decisive, and we state the limitation
+because it bears on how the paper should be read. The audited system also
+carried a wall-clock timeout exit. Trades closing on timeout land at neither
+barrier, so win rate and expectancy decouple and \eqref{eq:contradiction} ceases
+to bind. The reported figures were therefore not provably contradictory from the
+table alone -- only implausible enough to justify opening the code. Our first
+revision of this manuscript asserted the contradiction outright; that was an
+overstatement, and correcting it is one of several self-corrections recorded in
+Section~\ref{ssec:ourerrors}.
 
-We audited the measurement stack rather than the model. This proved to be the
-higher-yield direction. We isolated twelve defects (Section~\ref{sec:defects}),
-reproduced each in a minimal fixture with an analytically known correct answer,
-corrected it, and pinned it with a regression test so that it cannot silently
-return. We then re-ran the entire study under a protocol designed so that its own
-failure modes are detectable (Section~\ref{sec:method}), and report what we found
-(Section~\ref{sec:results}).
+\subsection{What we found, in two stages}
 
-The headline finding has two halves, and we consider both to be the result:
+\paragraph{Stage one: the instrument.} We isolate twelve code-level faults
+(Section~\ref{sec:defects}) arising from five root causes. They include
+look-ahead in the fill path, cross-asset contamination of position pricing,
+annualisation of per-trade returns by a fixed factor, sign-inverted
+mark-to-market for shorts, a Monte Carlo routine that was permutation-invariant
+and therefore constant, and a feature scaler fitted on a single row at inference
+so that every served feature vector was identically zero. Separately, a feature
+presented as sentiment proves to be a transform of the contemporaneous label
+(Section~\ref{sec:leakage}).
 
-\begin{enumerate}
-\item There is weak but statistically robust short-horizon directional structure
-in daily cryptocurrency returns. Over $5{,}565$ out-of-sample predictions a
-regularised logistic model attains $52.94\%$ accuracy against a $50\%$ null, with
-$z = 4.38$ and $p < 10^{-4}$.
-\item That structure is not economically exploitable at daily frequency. Its gross
-annualised Sharpe ratio is $0.60$; it breaks even at $10.74$ basis points per side
-against realistic costs near $9$; and passive buy-and-hold over the identical
-window achieves $0.89$.
-\end{enumerate}
+\paragraph{Stage two: the baseline.} With the instrument corrected, the
+re-measured result is $52.95\%$ directional accuracy over $5{,}562$
+out-of-sample predictions, $p < 10^{-4}$ against a coin flip. This is the number
+our first revision reported as the finding. It is not a finding. On the same
+days, \emph{inverse persistence} -- predict the opposite of yesterday's
+direction, a rule with no parameters and no inputs beyond the previous sign --
+scores $52.88\%$. Paired comparisons on identical observations give differences
+of $-0.29$, $+0.53$ and $-0.07$ percentage points on BTC, ETH and DOGE, with
+$|t| \le 0.45$ throughout. The machine-learning model loses on two of three
+assets and is indistinguishable from the trivial rule on the third.
 
-Reporting only the first half would be the standard failure, and arguably the more
-damaging one, because it is defensible line by line while being misleading as a
-whole.
-
-\subsection{The case for negative results in this setting}
-
-Financial forecasting has a structural publication problem worse than the one
-afflicting the empirical sciences generally. Because a positive result is directly
-monetisable, genuinely profitable strategies tend not to be published at all,
-while the published record fills with results that survived selection rather than
-scrutiny \citep{harvey2016cross, hou2020replicating}. The literature therefore
-systematically overstates what is achievable, and practitioners calibrate against
-an inflated benchmark. A carefully measured null or marginal result is, in that
-environment, an unusually useful contribution: it supplies a defensible reference
-point.
+The substantive content of the result is therefore that daily cryptocurrency
+returns exhibit one-day reversal, which is neither novel nor ours. What thirty-four
+engineered features and walk-forward machinery add over a one-line rule is,
+within measurement error, zero.
 
 \subsection{Contributions}
 
 \begin{enumerate}
-    \item \textbf{A taxonomy of twelve evaluation defects} observed in a single
-    working trading pipeline, each with a mechanism, a reproduction, a correction
-    and a regression test (Section~\ref{sec:defects}).
+    \item \textbf{A fault taxonomy with mutation scoring.} Twelve code-level
+    faults from five root causes, each with mechanism, correction and test. We
+    verify coverage by reintroducing each fault and confirming the suite turns
+    red, reporting a mutation score rather than a test count
+    (Sections~\ref{sec:defects}, \ref{ssec:mutation}).
 
-    \item \textbf{A detailed case study of label leakage through a sentiment
-    feature} (Section~\ref{sec:leakage}). The feature was generated as a scaled,
-    noised transform of the contemporaneous return. We quantify its correlation
-    structure and explain why it evades the usual leakage checks.
+    \item \textbf{A leakage case study of a disguised label}
+    (Section~\ref{sec:leakage}), including why it evades distributional leakage
+    detection and a provenance test that catches it.
 
-    \item \textbf{A reproducible walk-forward baseline} for daily cryptocurrency
-    direction forecasting with full statistical reporting: confidence intervals,
-    binomial tests against the coin-flip null, and three separate baselines
-    (Section~\ref{sec:results}).
+    \item \textbf{A baseline-corrected re-evaluation} showing that the
+    machine-learning result does not separate from inverse persistence, with
+    paired tests, Pesaran--Timmermann statistics, Wilson intervals and per-fold
+    stability (Section~\ref{sec:results}).
 
-    \item \textbf{A cost-sensitivity and breakeven analysis} separating
-    statistical from economic significance, expressed as the transaction cost at
-    which risk-adjusted return crosses zero (Section~\ref{ssec:costs}).
+    \item \textbf{An economic assessment with honest uncertainty}: book-level
+    $\mu$, $\sigma$ and turnover, stationary-bootstrap intervals on Sharpe, a
+    breakeven cost \emph{with} a confidence interval, and an appraisal ratio
+    against a passive basket rather than a raw Sharpe comparison
+    (Sections~\ref{ssec:book}--\ref{ssec:bench}).
 
-    \item \textbf{A falsification protocol} -- the null test of
-    Section~\ref{sec:nulltest} -- proposed as a minimum standard for backtested
-    claims, with the 26-test harness that implements it.
+    \item \textbf{An attribution ladder} decomposing the frictionless-to-executed
+    gap one change at a time (Section~\ref{ssec:ladder}), which overturns the
+    timing-based explanation we previously gave.
+
+    \item \textbf{A calibrated null-test protocol} (Section~\ref{ssec:null}),
+    together with the demonstration that its single-path form -- which we
+    previously proposed -- is uncalibrated.
 \end{enumerate}
 
-\subsection{Scope, and what this paper is not}
+\subsection{Scope, and what we do not claim}
 
-We deliberately do not propose a novel architecture. The models we evaluate are
-conventional by design: a regularised logistic regression and a gradient-boosted
-tree ensemble over a causal feature set. This is a choice, not a limitation. Our
-claim concerns the measurement of predictive performance, and that claim is
-strengthened by using models whose behaviour is well understood. A novel
-architecture evaluated on a defective harness tells the reader nothing about the
-architecture.
+We audit one system. We do \emph{not} claim to have established the prevalence
+of these faults in the published literature, and the reader should not infer it:
+a single artefact, selected for being available to us, cannot support a claim
+about a field. The natural follow-up -- a prevalence study across a sample of
+public repositories and published replication packages -- is described in
+Section~\ref{sec:limitations} and is not attempted here.
 
-We restrict ourselves to daily frequency and three liquid assets. We discuss the
-limits this imposes in Section~\ref{sec:limitations}.
+We also do not propose a novel architecture. The models are deliberately
+conventional, because the paper is about measurement, and a novel architecture
+evaluated on an uncalibrated harness is uninformative about the architecture.
 
 %==============================================================================
 \section{Related Work}
 \label{sec:related}
 %==============================================================================
 
-\subsection{Backtest overfitting and the multiplicity problem}
+\subsection{Backtest overfitting and multiplicity}
 
-The most direct antecedent of this work is the literature on backtest overfitting.
-\citet{bailey2014deflated} formalise the Deflated Sharpe Ratio, which discounts an
-observed Sharpe by the number of configurations tried and by the non-normality of
-the return distribution, and show that with enough trials an arbitrarily high
-Sharpe can be produced from noise. \citet{harvey2016cross} argue that the
-conventional $t > 2$ threshold is badly miscalibrated for factor research given the
-number of factors tested, and propose a substantially higher hurdle.
-\citet{hou2020replicating} replicate several hundred published anomalies and find
-that a majority fail to survive careful methodology.
-
-\citet{lopezdeprado2018advances} provides the methodological toolkit we lean on
-most: purging and embargoing to prevent overlapping-label leakage, the
-triple-barrier labelling scheme, and the general argument that standard
+\citet{bailey2014deflated} formalise the Deflated Sharpe Ratio, discounting an
+observed Sharpe by the number of configurations tried and by non-normality.
+\citet{harvey2016cross} argue the conventional $t > 2$ threshold is badly
+miscalibrated given the number of factors tested. \citet{hou2020replicating}
+replicate several hundred anomalies and find a majority fail under careful
+methodology. \citet{lopezdeprado2018advances} supplies the methodological
+toolkit we use most: purging and embargoing, and the argument that standard
 cross-validation is invalid for financial series. \citet{arnott2019backtesting}
-propose a protocol for backtesting under machine learning, emphasising the
-separation of research and evaluation data.
+propose a backtesting protocol for machine learning.
 
-Our contribution is complementary and, we think, at a lower level of abstraction.
-The works above largely assume the backtest engine computes what it claims to
-compute, and address the statistical inference layered on top. We examine the
-engine itself, and find that at this level the errors are not subtle statistical
-biases but outright implementation faults with large effects.
+These works largely assume the engine computes what it claims and address the
+inference layered on top. We examine the engine, where the errors are not subtle
+biases but implementation faults with large effects, and we add a verification
+step -- mutation testing -- that is standard in software engineering
+\citep{jia2011analysis} and, to our knowledge, unreported in this setting.
 
 \subsection{Data snooping and reality checks}
 
-\citet{white2000reality} introduced the Reality Check bootstrap for testing whether
-the best of many strategies outperforms a benchmark after accounting for the
-search. \citet{sullivan1999data} applied it to technical trading rules and found
-that apparent profitability largely vanishes once data snooping is accounted for.
-\citet{politis1994stationary} supply the stationary bootstrap that makes such
-resampling valid under serial dependence. We use a related but simpler device:
-rather than correcting a search, we verify the instrument on data known to contain
-no signal (Section~\ref{sec:nulltest}).
+\citet{white2000reality} introduced the Reality Check bootstrap;
+\citet{sullivan1999data} applied it to technical trading rules and found
+apparent profitability largely vanishes once snooping is accounted for.
+\citet{hansen2005test} refines this into the Test for Superior Predictive
+Ability. \citet{politis1994stationary} supply the stationary bootstrap we use
+for Sharpe intervals under serial dependence.
 
-\subsection{Leakage in machine learning}
+\subsection{Baselines and directional testing}
 
-\citet{kaufman2012leakage} give the canonical treatment of leakage as the
-introduction of information about the target that would not legitimately be
-available at prediction time, and catalogue its forms. Our sentiment case study is
-an instance of what they term leakage in feature construction, but with a
-particularly adversarial property: the leaking feature was synthetically generated
-and named after a legitimate concept, so its provenance was not evident from the
-data. \citet{bergmeir2012use} and \citet{cerqueira2020evaluating} examine the
-validity of cross-validation for time series and argue for forward-chaining
-schemes of the kind we adopt.
+The methodological point at the centre of our result is old.
+\citet{makridakis2018statistical} document that sophisticated methods routinely
+fail to beat simple benchmarks once evaluation is disciplined, and that the
+benchmark is frequently omitted. \citet{pesaran1992simple} give the standard
+test of directional predictive accuracy, which tests independence of predicted
+and realised direction rather than a hit rate against $0.5$; we report it
+throughout. \citet{diebold1995comparing} give the paired framework for comparing
+two forecasts on the same observations, which is the correct instrument for
+model-versus-baseline comparison and which unpaired confidence intervals do not
+provide.
 
-\subsection{Financial text and sentiment}
+\subsection{Short-horizon reversal}
 
-\citet{tetlock2007giving} established that the share of negative words in a widely
-read financial column carries information about next-day returns and volume.
-\citet{loughran2011liability} demonstrated that general-purpose sentiment
-dictionaries misread financial language and constructed finance-specific lexicons.
-\citet{bollen2011twitter} reported that aggregate mood extracted from social media
-predicts index movements, a result that has attracted substantial replication
-difficulty. Transformer encoders adapted to financial corpora, notably FinBERT
-\citep{yang2020finbert} building on BERT \citep{devlin2019bert}, define the current
-standard for the encoding step.
+Short-horizon return reversal is long documented in equities
+\citep{lo1990contrarian, jegadeesh1990evidence} and reported in cryptocurrency
+\citep{caporale2019reverse}. Our contribution here is not the effect but the
+observation that a machine-learning pipeline evaluated without the corresponding
+baseline will recover it and present it as learned structure.
 
-We stress that this paper makes \emph{no} claim about financial sentiment. The
-dataset available to us contained no genuine timestamped sentiment labels, and the
-sentiment-named feature it did contain was synthetic. We report this as a finding
-about the dataset rather than as evidence for or against the sentiment literature.
+\subsection{Leakage and machine learning for returns}
 
-\subsection{Machine learning for return prediction}
-
-\citet{gu2020empirical} provide the reference large-scale comparison of machine
-learning methods for asset return prediction, finding modest but real predictive
-gains concentrated in the largest and most liquid names, and consistently finding
-that regularised linear methods are competitive with far more flexible models.
-\citet{krauss2017deep} and \citet{fischer2018deep} report on tree ensembles and
-LSTM networks for equity direction. \citet{sezer2020financial} survey deep learning
-for financial time series and note the field-wide inconsistency in evaluation
-protocol. Our finding that a regularised linear model outperforms gradient-boosted
-trees on every asset (Section~\ref{ssec:accuracy}) is consistent with
-\citet{gu2020empirical} in a low signal-to-noise regime.
-
-\subsection{Efficient markets as a prior}
-
-\citet{fama1970efficient} supplies the null hypothesis against which any such
-result must be read. \citet{timmermann2004efficient} refine it into an operational
-form more useful for forecasting research: predictability may exist but should be
-small, unstable, and prone to disappearing once it is exploited or once realistic
-costs are imposed. Our result is a fairly precise instance of that pattern, and we
-return to it in Section~\ref{sec:discussion}.
+\citet{kaufman2012leakage} give the canonical treatment of leakage.
+\citet{bergmeir2012use} and \citet{cerqueira2020evaluating} examine
+cross-validation validity for time series. \citet{gu2020empirical} provide the
+reference comparison of machine learning for asset returns, finding modest gains
+and that regularised linear methods are competitive with far more flexible
+models -- consistent with our finding that logistic regression beats
+gradient-boosted trees on every asset. \citet{fama1970efficient} and
+\citet{timmermann2004efficient} supply the null: predictability may exist but
+should be small, unstable, and bounded by costs.
 
 %==============================================================================
 \section{The System Under Audit}
 \label{sec:system}
 %==============================================================================
 
-Figure~\ref{fig:system} shows the pipeline as it existed before the audit. The
-components are conventional and individually reasonable; the defects live in the
-connections between them and in the metric layer at the end.
+Figure~\ref{fig:system} locates the faults in the pipeline. The components are
+individually conventional; the faults live in the connections and in the metric
+layer.
 
 \begin{figure}[t]\centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[node distance=7mm and 12mm]
-\node[io] (px)   {\textbf{Price Feed}\\ Binance OHLCV\\ daily / intraday};
+\node[io] (px)   {\textbf{Price Feed}\\ Binance spot OHLCV};
 \node[io, below=of px] (news) {\textbf{Text Feed}\\ news, social\\ (unlabelled)};
 \node[io, below=of news] (chain) {\textbf{On-chain}\\ transaction\\ aggregates};
 \node[dnode, right=of px] (store) {\textbf{Store}\\ PostgreSQL +\\ TimescaleDB};
@@ -339,239 +318,205 @@ connections between them and in the metric layer at the end.
 \draw[arr] (px)--(store); \draw[arr] (news)-|(store); \draw[arr] (chain)-|(store);
 \draw[arr] (store)--(feat); \draw[arr] (feat)--(model); \draw[arr] (model)--(sig);
 \draw[arr] (sig)--(bt); \draw[arr] (bt)--(met); \draw[arr] (met)--(rep);
-\node[wnode, above=8mm of feat, font=\scriptsize] (d1) {D10--D12\\ feature defects};
-\node[wnode, above=8mm of model, font=\scriptsize] (d2) {D11 split};
+\node[wnode, above=8mm of feat, font=\scriptsize] (d1) {R4, R5\\ wrong-sample statistics};
+\node[wnode, above=8mm of model, font=\scriptsize] (d2) {R4 split};
 \draw[darr, draw=cWarn] (d1)--(feat); \draw[darr, draw=cWarn] (d2)--(model);
-\node[wnode, below=8mm of bt, font=\scriptsize] (d3) {D1--D5\\ execution defects};
-\node[wnode, below=8mm of met, font=\scriptsize] (d4) {D6--D8\\ metric defects};
+\node[wnode, below=8mm of bt, font=\scriptsize] (d3) {R1 timing,\\ R2 accounting};
+\node[wnode, below=8mm of met, font=\scriptsize] (d4) {R3 statistics};
 \draw[darr, draw=cWarn] (d3)--(bt); \draw[darr, draw=cWarn] (d4)--(met);
 \end{tikzpicture}}
-\caption{The pipeline under audit, with the twelve defects of
-Section~\ref{sec:defects} located at the stage where each occurs. No defect lies
-in the model families themselves.}
+\caption{The pipeline under audit, with the five root causes of
+Section~\ref{sec:defects} located where each occurs. No fault lies in the model
+families themselves.}
 \label{fig:system}
 \end{figure}
 
-The audited system used a single backtest engine shared by an HTTP API and a batch
-worker, a metric module of roughly 360 lines, and a feature pipeline that served
-both training and inference. The evaluation it published covered ten
-symbol/interval series with, in its own description, ``the latest 900 rows per
-available symbol/interval''. We note in passing that $900$ fifteen-minute bars is
-$9.4$ days; the same row count was applied uniformly across intervals, so the most
-favourable-looking results in the published table were drawn from under two weeks
-of data.
+The audited system used one backtest engine shared by an HTTP API and a batch
+worker, a metric module of roughly 360 lines, and a feature pipeline serving both
+training and inference. Its published evaluation covered ten symbol/interval
+series using ``the latest 900 rows per available symbol/interval'' applied
+uniformly across intervals. Nine hundred fifteen-minute bars is $9.4$ days, so
+the most favourable rows of the published table rested on under two weeks of
+data.
 
 %==============================================================================
-\section{A Taxonomy of Evaluation Defects}
+\section{Fault Taxonomy}
 \label{sec:defects}
 %==============================================================================
 
-We group the twelve defects into three families: execution defects, which corrupt
-the simulated trade record; metric defects, which corrupt statistics computed from
-a correct record; and pipeline defects, which corrupt the model input itself.
-Table~\ref{tab:defects} summarises. Each is described below with its mechanism and
-its correction.
+We count twelve code-level faults, but they are not twelve independent
+discoveries, and presenting them as such would overstate the finding. They arise
+from five root causes, given in Table~\ref{tab:defects}. We report both counts:
+the fault count reflects what a maintainer must fix, the root-cause count
+reflects what a reviewer should learn.
 
 \begin{table}[t]\centering\small
-\caption{The twelve defects, their family, and the direction of their effect on
-reported performance. Every defect is covered by at least one regression test in
-the released harness.}
+\caption{Twelve code-level faults grouped by root cause. ``Killed'' indicates
+the fault is reintroduced in the mutation study of Section~\ref{ssec:mutation}
+and detected; ``direct'' indicates it is covered by a dedicated test but is not
+separately expressible as a mutation.}
 \label{tab:defects}
-\begin{tabular}{@{}clll@{}}
+\begin{tabular}{@{}llll@{}}
 \toprule
-ID & Family & Defect & Effect \\
+Root cause & ID & Fault & Coverage \\
 \midrule
-D1  & Execution & Position priced from another asset & Corrupts \\
-D2  & Execution & Nearest-bar lookup selects future bar & Inflates \\
-D3  & Execution & Fill at signal bar close (no lag) & Inflates \\
-D4  & Execution & Short mark-to-market sign inverted & Corrupts \\
-D5  & Execution & Exits checked only at signal arrival, on close & Inflates \\
-D6  & Metric    & Per-trade returns annualised by $\sqrt{252}$ & Inflates \\
-D7  & Metric    & Monte Carlo permutation-invariant & Voids \\
-D8  & Metric    & Calmar uses worst trade, not drawdown & Corrupts \\
-D9  & Metric    & Accuracy relabelled as Sharpe / profit factor & Misleads \\
-D10 & Pipeline  & Scaler fitted on one row at inference & Voids \\
-D11 & Pipeline  & Train/test split without embargo & Inflates \\
-D12 & Pipeline  & Imputation statistic computed over full sample & Inflates \\
+\multirow{3}{*}{R1 Timing}
+ & F1 & Nearest-bar lookup can select a future bar & Killed \\
+ & F2 & Fill at the signal bar close, no lag & Direct \\
+ & F3 & Holding window spans two bars for a one-bar label & Direct \\
+\midrule
+\multirow{3}{*}{R2 Accounting}
+ & F4 & Position priced from another asset bar & Direct \\
+ & F5 & Short mark-to-market sign inverted & Killed \\
+ & F6 & Round-trip fee split evenly, not per leg & Killed \\
+\midrule
+\multirow{3}{*}{R3 Statistics}
+ & F7 & Per-trade returns annualised by $\sqrt{252}$ & Killed \\
+ & F8 & Monte Carlo permutation-invariant & Killed \\
+ & F9 & Calmar uses worst trade, not drawdown & Direct \\
+\midrule
+\multirow{2}{*}{R4 Wrong-sample fit}
+ & F10 & Scaler fitted at inference on one row & Killed \\
+ & F11 & Train/test split without embargo & Killed \\
+\midrule
+R5 Naming
+ & F12 & Accuracy reported as Sharpe and profit factor & Direct \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Execution defects}
+We flag two honest qualifications. First, F12 is a labelling error, not a
+computation error: the quantity was computed correctly and named misleadingly.
+Second, an additional fault in the original code -- imputation using a
+full-sample column mean -- has essentially no effect on Binance daily OHLCV,
+which contains no missing values in our sample. We corrected it for
+generality but exclude it from the twelve because we cannot demonstrate an
+effect, and including unquantified items is the practice this paper criticises.
 
-\paragraph{D1: cross-asset position pricing.}
-The simulation loop iterated over signals. At each signal it resolved a price for
-that signal asset, then passed the \emph{same} price into the exit check for every
-open position regardless of asset. In a multi-asset run a Bitcoin position could
-therefore be stopped out at Dogecoin price. Since the audited evaluation reported
-BTC, ETH and DOGE jointly, every multi-asset trade in the published table was
-affected. The correction is to iterate over bars rather than signals and price
-each position from its own series.
+\subsection{R1: timing}
 
-\paragraph{D2: look-ahead in the price lookup.}
-The price resolver selected the bar minimising $|t_{\text{bar}} - t_{\text{signal}}|$.
-For any signal timestamp not exactly on a bar boundary this can select a bar that
-has not yet occurred. The correction constrains the search to $t_{\text{bar}} \le
-t_{\text{signal}}$ via binary search:
-\begin{equation}
-i^\star = \max \{\, i : t_i \le t_{\text{signal}} \,\}.
-\end{equation}
+\paragraph{F1, look-ahead in the price lookup.} The resolver selected the bar
+minimising $|t_{\text{bar}} - t_{\text{signal}}|$, which for any signal not on a
+bar boundary can return a bar that has not occurred. Corrected to a binary
+search over $\{i : t_i \le t_{\text{signal}}\}$.
 
-\paragraph{D3: absent implementation lag.}
-Signals derived from the close of bar $i$ were filled at the close of bar $i$. This
-assumes an execution simultaneous with the information that generated it. We fill
-at the open of bar $i+1$ instead. Section~\ref{ssec:e2e} shows this single change
-is worth roughly $0.45$ of annualised Sharpe on our data, which is larger than the
-entire gross signal.
+\paragraph{F2, absent implementation lag.} Signals derived from the close of bar
+$i$ were filled at that same close. Corrected to fill at the open of bar $i+1$.
+Section~\ref{ssec:ladder} shows this correction is worth approximately zero on
+crypto data, for reasons given there.
 
-\paragraph{D4: inverted short mark-to-market.}
-Portfolio value was computed as $\sum_j q_j p_t^{(j)}$ over all open positions. For
-a short position this rises as the price rises. The equity curve, and every
-statistic derived from it, was therefore sign-inverted whenever a short was open.
-The correction carries the short as a liability,
+\paragraph{F3, holding-window mismatch.} The corrected engine initially used a
+wall-clock timeout. On daily bars a position entered at the open of $t+1$ cannot
+close before bar $t+2$, so it realises $O_{t+1} \to C_{t+2}$: two days of
+exposure against a one-day forecast. We introduce an explicit bar-counted
+holding period, so that a one-period label is traded over one period.
+\emph{This fault was present in our own corrected engine} and is discussed in
+Section~\ref{ssec:ourerrors}.
+
+\subsection{R2: accounting}
+
+\paragraph{F4, cross-asset pricing.} The loop iterated over signals, resolved one
+price per iteration, and passed it to the exit check for every open position
+regardless of asset, so a Bitcoin position could be stopped out at Dogecoin
+price. Corrected by iterating over bars and pricing each position from its own
+series.
+
+\paragraph{F5, inverted short mark-to-market.} Portfolio value summed
+$q_j p_t^{(j)}$ over all positions, so a short gained equity as price rose.
+Corrected to
 \begin{equation}
 V_t = \text{cash}_t + \sum_{j \in \text{long}} q_j p_t^{(j)} - \sum_{j \in \text{short}} q_j p_t^{(j)}.
 \label{eq:equity}
 \end{equation}
 
-\paragraph{D5: unsimulated stops.}
-Stop and target conditions were evaluated only inside the signal loop, and only
-against the bar close. A stop was therefore checked only when an unrelated signal
-happened to arrive, and intrabar breaches were invisible. The correction evaluates
-every open position against every bar, using the bar high and low:
-\begin{equation}
-\text{exit}=
-\begin{cases}
-\text{stop}   & \ell_t \le S \quad (\text{long}), \\
-\text{target} & h_t \ge T \quad (\text{long, and stop not hit}), \\
-\text{timeout}& t - t_{\text{entry}} \ge \tau.
-\end{cases}
-\end{equation}
-When a single bar touches both levels the ordering is unidentifiable from OHLC, so
-we resolve pessimistically to the stop.
+\paragraph{F6, fee splitting.} The round-trip fee was divided evenly between
+legs, so cash charged diverged from the fee reported whenever price moved. Each
+leg is now charged on its own notional.
 
-\subsection{Metric defects}
+\subsection{R3: statistics}
 
-\paragraph{D6: annualisation of per-trade returns.}
-The Sharpe ratio was computed as $\bar{r}/\sigma_r \times \sqrt{252}$ where $r$ was
-the vector of \emph{per-trade} returns. Trades do not arrive on a fixed clock, so
-no single annualisation factor is defined for them. This is the single largest
-contributor to the reported $23.65$. The correction computes returns from the
-equity curve sampled at the bar cadence and derives the factor from the observed
-spacing,
+\paragraph{F7, annualisation of per-trade returns.} Sharpe was computed as
+$\bar{r}/\sigma_r \times \sqrt{252}$ on \emph{per-trade} returns. Trades do not
+arrive on a fixed clock, so no such factor is defined. This is the largest single
+contributor to the reported $23.65$. Corrected to
 \begin{equation}
 S = \frac{\overline{r - r_f}}{\sigma_{r - r_f}}\sqrt{P},
 \qquad
-P = \frac{\text{seconds per year}}{\mathrm{median}\,\{t_{i+1} - t_i\}}.
+P = \frac{\text{seconds per year}}{\mathrm{median}\,\{t_{i+1} - t_i\}},
 \label{eq:sharpe}
 \end{equation}
-A fifteen-minute series annualises by $\sqrt{35040}$ and a daily series by
-$\sqrt{365}$; a second implementation elsewhere in the same codebase hardcoded the
-former and applied it to a per-signal-event curve, so the two implementations
-disagreed with each other as well as with the definition.
+on equity-curve returns. A second implementation elsewhere in the same codebase
+hardcoded $P = 35040$ and applied it to a per-signal-event curve, so the two
+implementations disagreed with each other as well as with the definition.
 
-\paragraph{D7: a permutation-invariant Monte Carlo.}
-The bootstrap routine shuffled the trade profit-and-loss vector and summed it:
+\paragraph{F8, permutation-invariant Monte Carlo.} The routine shuffled the P\&L
+vector and summed it. Summation is invariant under permutation, so every
+simulated path returned an identical value, the interval collapsed to a point,
+and the reported probability of profit was always exactly $0$ or $1$. Corrected
+to resampling with replacement, additionally tracking the order-dependent
+drawdown that motivates the exercise.
+
+\paragraph{F9, Calmar denominator.} Cumulative return was divided by the worst
+single trade rather than peak-to-trough drawdown, which the same module computed
+correctly elsewhere and did not use.
+
+\subsection{R4: statistics fitted on the wrong sample}
+
+\paragraph{F10, single-row scaler.} At inference the feature vector was
+standardised by \texttt{StandardScaler().fit\_transform(X)} on one row. With one
+sample per column the mean equals the observation and the variance is zero, so
+the output is identically zero and every served prediction ran on a zero vector.
+Fitting is now separated from transformation and the fitted object persisted with
+the model.
+
+\paragraph{F11, split without embargo.} Samples were $60$-step windows with
+next-bar labels and rolling features up to $672$ bars, split by a plain index
+cut, so windows adjacent to the boundary shared bars across it. Corrected to
 \begin{equation}
-\text{sim}_k = \sum_{i} \pi_k(x)_i = \sum_i x_i \quad \text{for every permutation } \pi_k.
-\end{equation}
-Summation is invariant under permutation, so all $1{,}000$ simulated paths returned
-the identical value, the confidence interval collapsed to a point, and the reported
-probability of profit was always exactly $0$ or $1$. The correction resamples with
-replacement and tracks the order-dependent statistic that motivates the exercise:
-\begin{equation}
-\text{DD}_k = \max_{m} \left( \max_{j \le m} \sum_{i \le j} x^{(k)}_i - \sum_{i \le m} x^{(k)}_i \right).
-\end{equation}
-
-\paragraph{D8: Calmar denominator.}
-The Calmar ratio divided cumulative return by $|\min_i r_i|$, the worst single
-trade. Calmar is defined against peak-to-trough drawdown of the equity curve, which
-the same module computed correctly elsewhere and did not use.
-
-\paragraph{D9: accuracy in the costume of risk.}
-The trainer reported fields named \texttt{sharpe\_ratio} and
-\texttt{profit\_factor} constructed by assigning $+1$ to each correct prediction
-and $-1$ to each incorrect one. For accuracy $a$ these are deterministic
-transforms,
-\begin{equation}
-\text{``Sharpe''} = \frac{2a-1}{2\sqrt{a(1-a)}},
-\qquad
-\text{``profit factor''} = \frac{a}{1-a},
-\end{equation}
-carrying no information beyond $a$ itself while presenting as risk and
-profitability measures. We replaced them with a Wald interval and a binomial test
-(Section~\ref{ssec:stats}).
-
-\subsection{Pipeline defects}
-
-\paragraph{D10: the single-row scaler.}
-At inference the feature vector was standardised by calling
-\texttt{StandardScaler().fit\_transform(X)} on a single row. With one sample per
-column the sample mean equals the observation and the variance is zero, so the
-output is identically zero:
-\begin{equation}
-z = \frac{x - \mu}{\sigma} \bigg|_{\mu = x,\ \sigma \to 1} = 0.
-\end{equation}
-Every served prediction was therefore made on a zero vector. The scaler was also
-re-instantiated per call, so no fitted statistics ever persisted from training. We
-separate fitting from transformation, persist the fitted object with the model
-artefacts, and warn rather than silently zero when no fitted scaler is loaded.
-
-\paragraph{D11: split without embargo.}
-Training samples were $60$-step windows whose labels referenced the following bar,
-and some features used rolling windows up to $672$ bars. The split was a plain
-$80/20$ index cut. Windows adjacent to the cut therefore shared underlying bars
-across the boundary, so validation accuracy was measured partly on training data.
-We introduce an embargo of at least the sequence length plus the label horizon,
-\begin{equation}
-\mathcal{T}_{\text{train}} = [0, k), \qquad
-\mathcal{T}_{\text{test}} = [k + e, n), \qquad
-e \ge L_{\text{seq}} + h .
+\mathcal{T}_{\text{train}} = [0, k), \quad
+\mathcal{T}_{\text{test}} = [k + e, n), \quad
+e \ge L_{\text{seq}} + h,
 \label{eq:embargo}
 \end{equation}
-This is the purge-and-embargo construction of \citet{lopezdeprado2018advances}.
+following \citet{lopezdeprado2018advances}.
 
-\paragraph{D12: imputation over the full sample.}
-Missing values were filled with the column mean computed over the entire frame,
-including future rows. Forward-fill is causal; a global mean is not. We restrict
-imputation to forward-fill and fit all remaining statistics inside the training
-fold.
+\subsection{R5: naming}
 
-\subsection{A note on how these defects interact}
+\paragraph{F12.} The trainer reported \texttt{sharpe\_ratio} and
+\texttt{profit\_factor} built by assigning $\pm 1$ to correct and incorrect
+predictions. For accuracy $a$ these are deterministic transforms,
+$(2a-1)/(2\sqrt{a(1-a)})$ and $a/(1-a)$, carrying no information beyond $a$ while
+presenting as risk and profitability measures.
 
-Individually several of these would be caught by inspection. What made them
-survive is that they \emph{compensate}. D4 corrupts the equity curve, but D6
-computed Sharpe from the trade record rather than the curve, so the corruption did
-not surface in the headline number. D10 zeroed the served features, but the
-reported accuracy came from a separate offline path that did not use the serving
-code. The published metrics were each computed by a path that did not exercise the
-defect most likely to have been noticed. This is, we suspect, the general case
-rather than an unlucky one, and it is the argument for testing the instrument
-directly rather than inspecting outputs for plausibility.
+\subsection{Why the faults survived}
+
+Several would be caught by inspection individually. What preserved them is that
+they \emph{compensate}. F5 corrupts the equity curve, but F7 computed Sharpe from
+the trade record rather than the curve, so the corruption never surfaced in the
+headline. F10 zeroed the served features, but reported accuracy came from an
+offline path that did not use the serving code. Each published metric was
+computed by a path that did not exercise the fault most likely to be noticed.
+This is the argument for testing the instrument directly rather than inspecting
+outputs for plausibility.
 
 %==============================================================================
 \section{Case Study: A Feature That Was the Label}
 \label{sec:leakage}
 %==============================================================================
 
-The most consequential defect deserves separate treatment, because it would have
-survived every correction in Section~\ref{sec:defects}.
-
 \subsection{Mechanism}
 
 The pipeline consumed a per-asset daily sentiment series with fields
 \texttt{sentiment\_score}, \texttt{sentiment\_label} and
-\texttt{simulated\_headline}. Tracing its provenance, the series is generated from
-the price data itself:
+\texttt{simulated\_headline}. The series is generated from the price data:
 \begin{align}
 r^{\text{same}}_t &= \frac{C_t - O_t}{O_t}, \\
 s_t &= \mathrm{clip}\!\left(15\, r^{\text{same}}_t,\, -1,\, 1\right) + \epsilon_t,
 \qquad \epsilon_t \sim \mathcal{U}(-0.2, 0.2),
 \label{eq:sentgen}
 \end{align}
-with the headline text drawn from fifteen fixed templates selected by the sign and
-magnitude of $s_t$. The feature named sentiment is a clipped, noised, rescaled copy
-of the same day open-to-close return. Figure~\ref{fig:leak} shows the construction.
+with headline text drawn from fifteen fixed templates selected by the sign and
+magnitude of $s_t$ (Figure~\ref{fig:leak}).
 
 \begin{figure}[t]\centering
 \resizebox{0.95\textwidth}{!}{%
@@ -581,7 +526,7 @@ of the same day open-to-close return. Figure~\ref{fig:leak} shows the constructi
 \node[wnode, right=of ret] (scale) {$\mathrm{clip}(15r,-1,1)$\\ $+\;\mathcal{U}(-0.2,0.2)$};
 \node[bnode, right=of scale] (sent) {\textbf{``sentiment\_score''}\\ $s_t$};
 \node[bnode, below=14mm of scale] (head) {\textbf{``headline''}\\ 15 templates,\\ chosen by $\mathrm{sign}(s_t)$};
-\node[gnode, below=16mm of ohlc] (lab) {\textbf{label} used by\\ the audited model\\ $y_t=\mathbf{1}[C_t>O_t]$};
+\node[gnode, below=16mm of ohlc] (lab) {\textbf{label}\\ $y_t=\mathbf{1}[C_t>O_t]$};
 \draw[arr] (ohlc)--(ret); \draw[arr] (ret)--(scale); \draw[arr] (scale)--(sent);
 \draw[arr] (scale)--(head);
 \draw[arr] (ohlc)--(lab);
@@ -592,20 +537,16 @@ of the same day open-to-close return. Figure~\ref{fig:leak} shows the constructi
 \end{scope}
 \end{tikzpicture}}
 \caption{The leakage mechanism. The feature marketed as sentiment is generated
-from the same bar that generates the label, so the two share a common
-deterministic parent. No text is involved at any point.}
+from the same bar that generates the label, so the two share a deterministic
+parent. No text is involved at any point.}
 \label{fig:leak}
 \end{figure}
 
 \subsection{Quantification}
 
-Table~\ref{tab:leak} measures the resulting dependence on BTC daily bars over the
-full sample.
-
 \begin{table}[t]\centering\small
 \caption{Dependence between the sentiment-named feature and returns, BTC daily,
-$n = 3{,}150$. The feature is strongly informative about the contemporaneous
-return and uninformative about the future.}
+$n = 3{,}150$.}
 \label{tab:leak}
 \begin{tabular}{@{}lrr@{}}
 \toprule
@@ -617,101 +558,89 @@ Relationship & Pearson $\rho$ & Sign agreement \\
 \end{tabular}
 \end{table}
 
-Two consequences follow. First, any model using $s_t$ to predict the sign of
-$r^{\text{same}}_t$ has near-direct access to its own label and will report
-accuracy in the high eighties. Second, and less obviously, using $s_t$ to predict
-$r_{t+1}$ is \emph{not} leakage in the formal sense -- $s_t$ is known at the close
-of day $t$ -- but it is also worthless, contributing nothing beyond a momentum
-term while carrying a name that implies an independent information source.
+Two consequences. A model using $s_t$ to predict the sign of $r^{\text{same}}_t$
+has near-direct access to its label and will report accuracy in the high
+eighties. Using $s_t$ to predict $r_{t+1}$ is \emph{not} leakage in the formal
+sense -- $s_t$ is known at the close of $t$ -- but is worthless, contributing
+nothing beyond a momentum term under a name implying an independent information
+source.
 
-\subsection{Why this class of defect is hard to catch}
+\subsection{Why it evades detection, and a test that catches it}
 
-Standard leakage detection looks for features whose distribution shifts across the
-train/test boundary, or for suspiciously high validation scores. Neither fires
-here. The generator adds enough noise that the mapping is not exactly invertible,
-so the accuracy it produces is high but not perfect. The feature has a plausible
-name, a plausible range, an accompanying text field, and a documented ingestion
-script. The failure is one of \emph{provenance}, not of statistics, and provenance
-is not visible in the feature matrix.
+Standard leakage checks look for distribution shift across the train/test
+boundary or implausibly high validation scores. Neither fires. The generator adds
+enough noise that the mapping is not exactly invertible, and the feature has a
+plausible name, range, accompanying text field and documented ingestion script.
+The failure is one of \emph{provenance}, not of statistics, and provenance is not
+visible in the feature matrix.
 
-We therefore recommend that any feature claimed to derive from an exogenous source
-be accompanied by a provenance test: an assertion, in the test suite, that the
-feature cannot be reconstructed from contemporaneous market data above some
-threshold $R^2$. We include such a test in the released harness.
+We therefore recommend a provenance test for any feature claimed to derive from
+an exogenous source: an assertion in the test suite that the feature cannot be
+reconstructed from contemporaneous market data above a threshold $R^2$. Such a
+test is included in the released harness and fails on this feature.
 
-We exclude the sentiment series entirely from all results that follow. The dataset
-contains no genuine timestamped sentiment labels, and consequently this paper
-makes no claim regarding sentiment-driven prediction.
+The sentiment series is excluded from every result below, and this paper makes no
+claim regarding sentiment-driven prediction.
 
 %==============================================================================
 \section{Methodology}
 \label{sec:method}
 %==============================================================================
 
-\subsection{Data}
+\subsection{Instrument and data}
 
-We use Binance daily OHLCV for BTCUSDT, ETHUSDT and DOGEUSDT. The raw series run
-from the Binance listing of each asset to 2026-03-31. After a $60$-day warm-up
-required by the longest rolling feature, the usable ranges are those in
-Table~\ref{tab:data}. Beyond the standard OHLCV fields we retain three columns
-from the Binance kline payload that carry genuine microstructure information:
-number of trades, quote asset volume, and taker buy base asset volume.
+We use \textbf{Binance spot} daily OHLCV, USDT-quoted, for BTCUSDT, ETHUSDT and
+DOGEUSDT. Naming the instrument matters: fees, shortability and funding differ
+between spot, margin and perpetual futures, and a paper claiming reproducibility
+should not leave it implicit. The strategy we evaluate is long/short, which on
+spot requires margin; we treat this as a cost-model idealisation and return to it
+in Section~\ref{sec:limitations}.
+
+Table~\ref{tab:data} reconciles the three sample definitions that a reader could
+otherwise confuse: raw rows, rows usable after feature warm-up and the two-day
+forward window, and out-of-sample predictions after the initial training block.
+Our first revision quoted these interchangeably.
 
 \begin{table}[t]\centering\small
-\caption{Evaluated data coverage after feature warm-up.}
+\caption{Sample reconciliation. Out-of-sample predictions begin only after the
+initial $1{,}000$-day training block plus embargo, so the evaluated period is
+substantially shorter than the data period.}
 \label{tab:data}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular}{@{}lrrrl@{}}
 \toprule
-Asset & Usable bars & Start & End & Folds \\
+Asset & Raw rows & Usable & OOS preds & OOS period \\
 \midrule
-BTCUSDT  & $3{,}089$ & 2017-10-16 & 2026-03-31 & 9 \\
-ETHUSDT  & $3{,}089$ & 2017-10-16 & 2026-03-31 & 9 \\
-DOGEUSDT & $2{,}402$ & 2019-09-03 & 2026-03-31 & 6 \\
+BTCUSDT  & $3{,}150$ & $3{,}088$ & $2{,}083$ & 2020-07-17 to 2026-03-30 \\
+ETHUSDT  & $3{,}150$ & $3{,}088$ & $2{,}083$ & 2020-07-17 to 2026-03-30 \\
+DOGEUSDT & $2{,}463$ & $2{,}401$ & $1{,}396$ & 2022-06-04 to 2026-03-30 \\
+\midrule
+Panel    & --- & --- & $\mathbf{5{,}562}$ & 2020-07-17 to 2026-03-30 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Features}
 
-We compute $34$ features, all strictly causal in the sense that each is a function
-of bars indexed $\le t$. They fall into five groups:
+Thirty-four causal features, each a function of bars indexed $\le t$: multi-horizon
+log returns; rolling volatility and close $z$-scores; bar-shape measures; order
+flow from Binance kline fields (taker buy ratio, average trade size, trade count,
+volume, each $z$-scored or ratioed); and RSI, MACD histogram, Bollinger position,
+ATR and a day-of-week encoding. Definitions are in \ref{app:features}.
 
-\begin{itemize}
-\item \textbf{Returns.} Log returns over horizons $\{1,2,3,5,10,20\}$ days.
-\item \textbf{Volatility and location.} Rolling standard deviation of log returns
-and a rolling $z$-score of close, each over $\{5,10,20,60\}$ days.
-\item \textbf{Bar shape.} High-low range normalised by close, close-open spread
-normalised by open, and the location of the close within the bar range.
-\item \textbf{Order flow.} Taker buy ratio and its five-day mean, average trade
-size and its $60$-day $z$-score, $z$-scored trade count, $z$-scored volume, and
-volume relative to its $20$-day mean. These derive from real exchange fields and
-are the only genuinely non-price information in the study.
-\item \textbf{Technical indicators.} RSI(14), MACD histogram (12/26/9), Bollinger
-position, ATR(14) normalised by close, and a sine/cosine encoding of day of week.
-\end{itemize}
+We emphasise that this is a \emph{single-asset technical} feature set. It
+excludes everything specific to crypto microstructure that plausibly carries
+signal: perpetual funding rates, open interest, basis, liquidation cascades,
+order-book imbalance, exchange netflows and cross-asset lead--lag. Conclusions
+should be read as applying to this feature set, not to crypto forecasting
+generally.
 
-Full definitions appear in \ref{app:features}.
+\subsection{Labels and validation}
 
-\subsection{Labels}
-
-The primary label is the sign of the next daily close-to-close return,
-\begin{equation}
-y_t = \mathbf{1}\!\left[\, C_{t+1} > C_t \,\right],
-\qquad
-r_{t+1} = \frac{C_{t+1}}{C_t} - 1 .
-\end{equation}
-We deliberately do not use a neutral dead-band. A three-class formulation with an
-abstention region reports a more flattering accuracy, but it changes the null
-hypothesis in a way that is easy to misreport and it complicates the mapping to a
-tradable position. The binary formulation admits an unambiguous $50\%$ null.
-
-\subsection{Validation protocol}
-
-We use expanding-window walk-forward validation with an embargo
-(Figure~\ref{fig:wf}). The first test fold begins after $1{,}000$ training days;
-each fold tests $250$ days; the training set expands to include all data preceding
-the embargo. The embargo is $5$ days, exceeding the one-day label horizon with
-margin.
+The label is $y_t = \mathbf{1}[C_{t+1} > C_t]$, binary with no dead-band so that
+the null is an unambiguous $50\%$. Validation is expanding-window walk-forward
+with a $5$-day embargo, $1{,}000$-day initial train and $250$-day test folds
+(Figure~\ref{fig:wf}). The scaler is fitted \emph{inside each fold on training
+rows only}.
 
 \begin{figure}[t]\centering
 \resizebox{0.95\textwidth}{!}{%
@@ -733,67 +662,55 @@ margin.
 \node[font=\scriptsize,anchor=north west] at (0,-41)
   {\textbf{scaler fitted inside each fold, on training rows only}};
 \end{tikzpicture}}
-\caption{Expanding-window walk-forward with embargo. The embargo interval is
-discarded, never trained or tested on, so no bar contributes to both sides of a
-split.}
+\caption{Expanding-window walk-forward with embargo.}
 \label{fig:wf}
 \end{figure}
 
-Critically, the feature scaler is fitted \emph{inside each fold} on training rows
-only, and applied unchanged to the test rows. Fitting a scaler on the full sample
-leaks the test period mean and variance into the training representation; this is
-a small effect relative to the defects of Section~\ref{sec:defects} but it is free
-to avoid.
+\subsection{Models and baselines}
 
-\subsection{Models}
+Models: $\ell_2$-regularised logistic regression ($C = 0.1$) and histogram
+gradient-boosted trees (depth $3$, $200$ iterations, learning rate $0.05$).
+Hyperparameters were fixed a priori and not tuned on test data.
 
+Baselines, all evaluated on identical days:
 \begin{itemize}
-\item \textbf{Logistic}: $\ell_2$-regularised logistic regression, $C = 0.1$.
-\item \textbf{GBDT}: histogram gradient-boosted trees, depth $3$, $200$ iterations,
-learning rate $0.05$, $\ell_2$ regularisation $1.0$.
-\end{itemize}
-
-Hyperparameters were fixed a priori at conventional values and not tuned on test
-data. We report both models in full rather than selecting one.
-
-\subsection{Baselines}
-
-Three baselines are computed over identical windows.
-\begin{itemize}
-\item \textbf{Persistence}: $\hat{y}_t = y_{t-1}$, the naive forecast that today
-direction repeats.
-\item \textbf{Majority}: the more frequent class in the training fold, held fixed
-across the test window.
-\item \textbf{Buy-and-hold}: passive long exposure, reported as annualised Sharpe.
+\item \textbf{Persistence}: $\hat{y}_t = y_{t-1}$.
+\item \textbf{Inverse persistence}: $\hat{y}_t = 1 - y_{t-1}$. With continuous
+prices there are no ties, so its accuracy is exactly $1$ minus persistence. This
+is the baseline whose omission invalidated our first revision.
+\item \textbf{Majority}: the more frequent training-fold class.
+\item \textbf{Buy-and-hold}: passive long exposure.
 \end{itemize}
 
 \subsection{Statistical reporting}
-\label{ssec:stats}
 
-For a hit rate $a$ over $n$ independent predictions we report the Wald interval
-and a two-sided test against the coin-flip null,
-\begin{equation}
-a \pm 1.96\sqrt{\frac{a(1-a)}{n}},
-\qquad
-z = \frac{a - 0.5}{\sqrt{0.25/n}},
-\qquad
-p = \mathrm{erfc}\!\left(\frac{|z|}{\sqrt{2}}\right).
-\label{eq:stats}
-\end{equation}
-We report $n$ alongside every accuracy. An accuracy without $n$ and without a
-baseline is not interpretable, and the absence of these was among the defects we
-catalogued.
+We report Wilson score intervals rather than Wald, which is preferable near a
+boundary and at moderate $n$. Against a fixed null $p_0$ we use the usual
+proportion test. For model-versus-baseline we use a \emph{paired} test on the
+per-observation difference of correctness indicators, following
+\citet{diebold1995comparing}, because both forecasts are evaluated on identical
+days and their errors are correlated; comparing two independent intervals is the
+wrong instrument. We additionally report the \citet{pesaran1992simple} test,
+which examines independence of predicted and realised direction rather than a hit
+rate against $0.5$, and therefore does not credit a forecast for matching the
+unconditional frequency of up moves.
+
+Sharpe ratios carry stationary-bootstrap intervals \citep{politis1994stationary}
+with mean block length $20$ days. Over samples this short an annualised Sharpe
+without an interval is not interpretable, and its omission was a defect of our
+first revision.
 
 \subsection{Execution and cost model}
 
-The corrected engine implements the timing of Figure~\ref{fig:timing}: a signal
-computed from the close of day $t$ is filled at the open of day $t+1$ and exits at
-the close of day $t+2$ under a $24$-hour timeout, or earlier at a barrier. Costs
-are $4$ bps taker fee plus $5$ bps slippage, charged per side on the notional of
-that leg.
+A signal from the close of day $t$ is filled at the open of $t+1$ and held one
+bar, exiting at the close of $t+1$, so that a one-period label is traded over one
+period (Figure~\ref{fig:timing}). Costs are $4$ bps taker fee plus $5$ bps
+slippage per side, charged on the notional of that leg. We treat this cost level
+as an assumption to be varied, not a fact, and Section~\ref{ssec:costs} reports
+the whole sensitivity curve.
 
 \begin{figure}[t]\centering
-\resizebox{0.9\textwidth}{!}{%
+\resizebox{0.92\textwidth}{!}{%
 \begin{tikzpicture}[x=1mm,y=1mm]
 \draw[draw=black!55] (0,0)  rectangle (26,14);
 \draw[draw=black!55] (40,0) rectangle (66,14);
@@ -802,15 +719,15 @@ that leg.
 \node[font=\scriptsize] at (53,-4) {$t+1$};
 \node[font=\scriptsize] at (93,-4) {$t+2$};
 \node[font=\scriptsize,align=center] at (13,7)  {features\\ computed};
-\node[font=\scriptsize,align=center] at (53,7)  {\textbf{entry}\\ at open};
-\node[font=\scriptsize,align=center] at (93,7)  {\textbf{exit}\\ at close};
-\draw[arr,draw=cEval,line width=1pt] (26,19) -- node[lbl,above]{1-bar lag} (40,19);
-\draw[arr,draw=cGood] (40,-11) -- node[lbl,below]{realised holding period} (106,-11);
-\draw[arr,draw=cData,dashed] (26,25) -- node[lbl,above]{label window $C_t \to C_{t+1}$} (66,25);
+\node[font=\scriptsize,align=center] at (53,7)  {\textbf{entry} at open\\ \textbf{exit} at close};
+\node[font=\scriptsize,align=center,text=black!45] at (93,7)  {(not used)};
+\draw[arr,draw=cGood] (40,-11) -- node[lbl,below]{corrected: 1-bar hold} (66,-11);
+\draw[arr,draw=cBad,dashed] (40,-19) -- node[lbl,below]{previous: 2-bar hold (F3)} (106,-19);
+\draw[arr,draw=cData,dashed] (26,22) -- node[lbl,above]{label window $C_t \to C_{t+1}$} (66,22);
 \end{tikzpicture}}
-\caption{Execution timing in the corrected engine. The label window and the
-realised holding period do not coincide; the gap between them is quantified in
-Section~\ref{ssec:e2e}.}
+\caption{Execution timing. Because $O_{t+1} \approx C_t$ in a market that trades
+continuously, the corrected one-bar window closely tracks the label window; the
+previous two-bar window did not.}
 \label{fig:timing}
 \end{figure}
 
@@ -819,411 +736,595 @@ Section~\ref{ssec:e2e}.}
 \label{sec:results}
 %==============================================================================
 
-\subsection{Directional accuracy}
+\subsection{Accuracy, and the baseline that matches it}
 \label{ssec:accuracy}
 
-Table~\ref{tab:acc} reports out-of-sample accuracy per asset and pooled.
-
 \begin{table}[t]\centering\small
-\caption{Walk-forward out-of-sample directional accuracy. Gross Sharpe is the
-annualised Sharpe of acting on every signal with no transaction costs. Baseline
-rows are computed over identical windows.}
+\caption{Walk-forward out-of-sample directional accuracy with Wilson intervals.
+PT is the Pesaran--Timmermann $p$-value. The inverse-persistence row is the
+comparison that matters.}
 \label{tab:acc}
-\begin{tabular}{@{}llrrcrr@{}}
+\begin{tabular}{@{}llrrcrrr@{}}
 \toprule
-Asset & Model & $n$ & Accuracy & 95\% CI & $p$ & Gross SR \\
+Asset & Predictor & $n$ & Accuracy & 95\% CI & $p$ vs $.5$ & PT $p$ & Gross SR \\
 \midrule
-\multirow{4}{*}{BTC}
- & Logistic     & $2{,}084$ & $52.74\%$ & $[50.59, 54.88]$ & $0.013$ & $0.44$ \\
- & GBDT         & $2{,}084$ & $52.11\%$ & $[49.97, 54.26]$ & $0.054$ & $-0.01$ \\
- & Persistence  & $2{,}084$ & $46.98\%$ & --- & $0.006$ & --- \\
- & Majority     & $2{,}084$ & $50.53\%$ & --- & $0.630$ & --- \\
+\multirow{5}{*}{BTC}
+ & Logistic                     & $2{,}083$ & $52.71\%$ & $[50.6, 54.8]$ & $0.013$ & $0.015$ & $0.44$ \\
+ & GBDT                         & $2{,}083$ & $52.09\%$ & $[49.9, 54.2]$ & $0.057$ & $0.060$ & $-0.01$ \\
+ & \textbf{Inverse persistence} & $2{,}083$ & $\mathbf{53.00\%}$ & $[50.9, 55.1]$ & $0.006$ & --- & --- \\
+ & Persistence                  & $2{,}083$ & $47.00\%$ & $[44.9, 49.1]$ & $0.006$ & --- & --- \\
+ & Majority                     & $2{,}083$ & $50.55\%$ & $[48.4, 52.7]$ & $0.614$ & --- & --- \\
 \midrule
-\multirow{4}{*}{ETH}
- & Logistic     & $2{,}084$ & $53.07\%$ & $[50.93, 55.21]$ & $0.005$ & $0.41$ \\
- & GBDT         & $2{,}084$ & $51.34\%$ & $[49.20, 53.49]$ & $0.220$ & $0.36$ \\
- & Persistence  & $2{,}084$ & $47.46\%$ & --- & $0.020$ & --- \\
- & Majority     & $2{,}084$ & $49.62\%$ & --- & $0.726$ & --- \\
+\multirow{5}{*}{ETH}
+ & Logistic                     & $2{,}083$ & $53.10\%$ & $[50.9, 55.2]$ & $0.005$ & $0.008$ & $0.42$ \\
+ & GBDT                         & $2{,}083$ & $51.37\%$ & $[49.2, 53.5]$ & $0.212$ & $0.260$ & $0.36$ \\
+ & \textbf{Inverse persistence} & $2{,}083$ & $52.57\%$ & $[50.4, 54.7]$ & $0.019$ & --- & --- \\
+ & Persistence                  & $2{,}083$ & $47.43\%$ & $[45.3, 49.6]$ & $0.019$ & --- & --- \\
+ & Majority                     & $2{,}083$ & $49.59\%$ & $[47.4, 51.8]$ & $0.710$ & --- & --- \\
 \midrule
-\multirow{4}{*}{DOGE}
- & Logistic     & $1{,}397$ & $53.04\%$ & $[50.43, 55.66]$ & $0.023$ & $0.61$ \\
- & GBDT         & $1{,}397$ & $51.90\%$ & $[49.28, 54.52]$ & $0.156$ & $0.39$ \\
- & Persistence  & $1{,}397$ & $46.89\%$ & --- & $0.020$ & --- \\
- & Majority     & $1{,}397$ & $51.68\%$ & --- & $0.209$ & --- \\
+\multirow{5}{*}{DOGE}
+ & Logistic                     & $1{,}396$ & $53.08\%$ & $[50.5, 55.7]$ & $0.021$ & $0.016$ & $0.61$ \\
+ & GBDT                         & $1{,}396$ & $51.93\%$ & $[49.3, 54.5]$ & $0.148$ & $0.139$ & $0.39$ \\
+ & \textbf{Inverse persistence} & $1{,}396$ & $\mathbf{53.15\%}$ & $[50.5, 55.7]$ & $0.019$ & --- & --- \\
+ & Persistence                  & $1{,}396$ & $46.85\%$ & $[44.3, 49.5]$ & $0.019$ & --- & --- \\
+ & Majority                     & $1{,}396$ & $51.72\%$ & $[49.1, 54.3]$ & $0.199$ & --- & --- \\
 \midrule
-\multirow{2}{*}{\textbf{Pooled}}
- & \textbf{Logistic} & $\mathbf{5{,}565}$ & $\mathbf{52.94\%}$ & $\mathbf{[51.63, 54.25]}$ & $\mathbf{<10^{-4}}$ & $\mathbf{0.60}$ \\
- & GBDT              & $5{,}565$ & $51.77\%$ & $[50.46, 53.08]$ & $0.008$ & --- \\
+\multirow{5}{*}{\textbf{Pooled}}
+ & \textbf{Logistic}            & $5{,}562$ & $\mathbf{52.95\%}$ & $[51.6, 54.3]$ & $<10^{-4}$ & --- & $0.54$ \\
+ & GBDT                         & $5{,}562$ & $51.78\%$ & $[50.5, 53.1]$ & $0.008$ & --- & --- \\
+ & \textbf{Inverse persistence} & $5{,}562$ & $\mathbf{52.88\%}$ & $[51.6, 54.2]$ & $<10^{-4}$ & --- & --- \\
+ & Persistence                  & $5{,}562$ & $47.12\%$ & $[45.8, 48.4]$ & $<10^{-4}$ & --- & --- \\
+ & Majority                     & $5{,}562$ & $50.49\%$ & $[49.2, 51.8]$ & $0.469$ & --- & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Three observations.
+Table~\ref{tab:acc} contains the result. Read on its own, the logistic row is
+what our first revision reported: $52.95\%$ pooled, $p < 10^{-4}$, comfortably
+clear of the coin flip and of the majority baseline. Read against the
+inverse-persistence row, it is $52.95\%$ against $52.88\%$.
 
-First, the pooled logistic result is unambiguous on its own terms: $z = 4.38$,
-$p < 10^{-4}$. It is not a marginal finding, and it survives the Bonferroni
-correction for the two models tried by a wide margin.
+Table~\ref{tab:paired} makes the comparison properly, on paired observations.
 
-Second, the regularised linear model beats the gradient-boosted ensemble on every
-asset. GBDT reaches conventional significance only in the pooled sample. This is
-the expected ordering in a low signal-to-noise regime, where flexible models spend
-capacity fitting noise, and is consistent with \citet{gu2020empirical}.
+\begin{table}[t]\centering\small
+\caption{Paired comparison of each model against inverse persistence on identical
+days. A positive difference favours the model. No difference approaches
+significance, and the model is behind on two of three assets.}
+\label{tab:paired}
+\begin{tabular}{@{}llrrrrl@{}}
+\toprule
+Asset & Model & Diff (pp) & SE (pp) & $t$ & $p$ & Verdict \\
+\midrule
+BTC  & Logistic & $-0.29$ & $1.22$ & $-0.24$ & $0.813$ & baseline ahead \\
+BTC  & GBDT     & $-0.91$ & $1.24$ & $-0.74$ & $0.461$ & baseline ahead \\
+ETH  & Logistic & $+0.53$ & $1.18$ & $+0.45$ & $0.654$ & model ahead, n.s. \\
+ETH  & GBDT     & $-1.20$ & $1.29$ & $-0.93$ & $0.353$ & baseline ahead \\
+DOGE & Logistic & $-0.07$ & $1.39$ & $-0.05$ & $0.959$ & baseline ahead \\
+DOGE & GBDT     & $-1.22$ & $1.54$ & $-0.79$ & $0.429$ & baseline ahead \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-Third, persistence performs at $47\%$, significantly \emph{worse} than chance. This
-is itself informative: daily crypto returns exhibit mild short-horizon reversal, so
-a naive momentum forecast is systematically wrong. Part of what the models learn is
-to invert this tendency, and a study reporting only accuracy against a $50\%$ null
-without the persistence baseline would overstate how much has been learned.
+The Pesaran--Timmermann statistics in Table~\ref{tab:acc} confirm that
+directional predictability is genuinely present ($p = 0.015$, $0.008$, $0.016$).
+The predictability is real. It is simply not attributable to the model: a rule
+that inverts yesterday's sign captures it, and everything the pipeline adds is
+within noise of nothing.
 
-\subsection{Cost sensitivity and breakeven}
+\subsection{The model is worse on the days that matter}
+
+Accuracy weights a $0.2\%$ day and a $12\%$ day identically, which in crypto is a
+poor proxy for profit. Table~\ref{tab:weighted} reports the return-weighted hit
+rate, $\sum_t |r_t| \mathbf{1}[\text{correct}] / \sum_t |r_t|$, and the
+information coefficient.
+
+\begin{table}[t]\centering\small
+\caption{Magnitude-aware measures. The return-weighted hit rate is below the
+unweighted accuracy on every asset: the model is relatively worse on large-move
+days.}
+\label{tab:weighted}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Asset & Accuracy & Return-weighted hit rate & Information coefficient \\
+\midrule
+BTC  & $52.71\%$ & $51.68\%$ & $+0.016$ \\
+ETH  & $53.10\%$ & $51.57\%$ & $+0.017$ \\
+DOGE & $53.08\%$ & $52.33\%$ & $+0.030$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The gap is consistent in sign across all three assets. Whatever the model has
+learned is concentrated in small moves, which is the opposite of what a tradable
+signal requires.
+
+\subsection{Per-fold stability}
+
+\begin{table}[t]\centering\small
+\caption{Per-fold out-of-sample accuracy, logistic (L) and inverse persistence
+(I). The aggregate conceals wide dispersion, and both predictors fall below
+$50\%$ in the final fold.}
+\label{tab:folds}
+\begin{tabular}{@{}llrrrrrrrrr@{}}
+\toprule
+Asset & & F1 & F2 & F3 & F4 & F5 & F6 & F7 & F8 & F9 \\
+\midrule
+\multirow{2}{*}{BTC}  & L & .500 & .504 & .516 & .516 & .548 & .592 & .552 & .520 & .434 \\
+                      & I & .556 & .556 & .508 & .540 & .548 & .548 & .520 & .500 & .422 \\
+\midrule
+\multirow{2}{*}{ETH}  & L & .492 & .544 & .480 & .500 & .616 & .544 & .576 & .532 & .422 \\
+                      & I & .520 & .524 & .508 & .548 & .540 & .560 & .540 & .484 & .470 \\
+\midrule
+\multirow{2}{*}{DOGE} & L & .556 & .580 & .528 & .524 & .488 & .493 & --- & --- & --- \\
+                      & I & .588 & .576 & .536 & .512 & .492 & .452 & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Fold-level accuracy ranges from $0.422$ to $0.616$. The pooled figure is an
+average over a highly unstable series, and the most recent fold is below chance
+for both predictors on all three assets. A single aggregate accuracy, which is
+what most studies of this kind report, materially overstates how settled the
+effect is.
+
+\subsection{Book statistics}
+\label{ssec:book}
+
+\begin{table}[t]\centering\small
+\caption{Book-level statistics for the equal-weight daily long/short portfolio.
+Reporting $\mu$ and $\sigma$ separately makes every Sharpe in this paper
+auditable; their absence was a defect of our first revision.}
+\label{tab:book}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Weighting & $\mu$ (\%/yr) & $\sigma$ (\%/yr) & SR gross & SR net & Turnover \\
+\midrule
+Equal            & $+6.61$ & $58.38$ & $+0.544$ & $+0.113$ & $0.765$ \\
+Inverse-vol      & $+4.25$ & $55.14$ & $+0.527$ & $+0.077$ & $0.755$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Turnover is $E|\Delta \pi| = 0.765$ per day, where $\pi \in \{-1, +1\}$ and a full
+flip costs two units of notional. At $9$ bps per side this is $6.89$ bps per day,
+not the $14$ bps our first revision stated -- an error of a factor of two that
+also contradicted that revision's own cost table.
+
+Inverse-volatility weighting does not help, which is worth stating because it is
+the standard first remedy when assets of very different volatility are combined.
+
+\subsection{Cost sensitivity, with an interval}
 \label{ssec:costs}
-
-Statistical significance says nothing about tradability. We construct an
-equal-weight daily long/short book from the logistic signal, with position
-$\pi_t \in \{-1, +1\}$ per asset, and charge turnover at a variable rate,
-\begin{equation}
-r^{\text{net}}_t = \pi_t r_{t+1} - c\,\lvert \pi_t - \pi_{t-1} \rvert .
-\end{equation}
-Average daily turnover is $0.774$. Figure~\ref{fig:cost} and Table~\ref{tab:cost}
-show annualised Sharpe as a function of $c$.
 
 \begin{figure}[t]\centering
 \begin{tikzpicture}
 \begin{axis}[width=0.82\textwidth,height=6.4cm,
     xlabel={transaction cost $c$ (basis points per side)},
     ylabel={annualised Sharpe ratio},
-    xmin=0,xmax=30,ymin=-1.2,ymax=0.75,
+    xmin=0,xmax=30,ymin=-1.0,ymax=0.75,
     grid=major,grid style={black!12},
     legend pos=north east,legend style={font=\scriptsize,draw=black!30}]
 \addplot[color=cEval,mark=*,mark size=1.4pt,line width=1pt] coordinates {
-  (0,0.599) (1,0.5433) (2,0.4875) (5,0.3203) (9,0.0972)
-  (10,0.0415) (15,-0.2373) (20,-0.516) (30,-1.0726)};
+  (0,0.544) (1,0.496) (2,0.448) (3,0.400) (5,0.305) (7,0.209)
+  (9,0.113) (12,-0.030) (15,-0.174) (20,-0.413) (30,-0.891)};
 \addlegendentry{logistic long/short}
-\addplot[color=black!55,dashed,line width=0.7pt] coordinates {(0,0)(30,0)};
+\addplot[color=black!55,dashed,line width=0.7pt] coordinates {(0,0) (30,0)};
 \addlegendentry{breakeven}
-\addplot[color=cBad,dashed,line width=0.9pt] coordinates {(9,-1.2)(9,0.75)};
-\addlegendentry{assumed real cost (9 bps)}
-\node[font=\scriptsize,anchor=west,text=cBad] at (axis cs:10.9,-0.62)
-     {breakeven $=10.74$ bps};
-\addplot[color=cBad,only marks,mark=o,mark size=2.4pt] coordinates {(10.74,0)};
+\addplot[color=cBad,dashed,line width=0.9pt] coordinates {(9,-1.0) (9,0.75)};
+\addlegendentry{assumed cost (9 bps)}
+\addplot[color=cBad,only marks,mark=o,mark size=2.4pt] coordinates {(11.37,0)};
+\addplot[color=cBad,line width=1.6pt,opacity=0.35] coordinates {(0,0) (26.86,0)};
+\addlegendentry{95\% CI on breakeven}
+\node[font=\scriptsize,anchor=west,text=cBad] at (axis cs:12.2,-0.30)
+     {breakeven $11.4$, CI $[0,\,26.9]$};
 \end{axis}
 \end{tikzpicture}
-\caption{Annualised Sharpe of the logistic long/short book against transaction
-cost. The strategy crosses zero at $10.74$ bps per side; realistic costs are
-approximately $9$ bps.}
+\caption{Annualised Sharpe against transaction cost. The breakeven point is
+$11.4$ bps per side, but its $95\%$ interval spans $[0, 26.9]$ and therefore
+contains the assumed cost of $9$. Tradability is not established either way.}
 \label{fig:cost}
 \end{figure}
 
+The gross annualised Sharpe is $0.544$ with a stationary-bootstrap $95\%$
+interval of $[-0.172, +1.285]$. \emph{The interval contains zero.} Propagating it
+through the cost slope gives a breakeven interval of $[0, 26.9]$ bps per side.
+
+Our first revision reported ``breakeven $10.74$ bps against realistic costs of
+$9$'' to four significant figures and built an argument on the near-coincidence.
+With the interval attached, the correct statement is that the strategy may break
+even anywhere from immediately to at costs three times the assumed level, and no
+conclusion about tradability follows.
+
+Separately, that revision computed the cost curve on $1{,}397$ days by truncating
+all series to the shortest, silently discarding roughly $690$ days of BTC and ETH
+history. The panel here is date-aligned and covers $2{,}083$ days.
+
+\subsection{Confidence gating}
+
+Thresholding on $|p - 0.5|$ is the standard first move to reduce turnover.
+Table~\ref{tab:gate} reports the sensitivity.
+
 \begin{table}[t]\centering\small
-\caption{Cost sensitivity of the logistic long/short book, $1{,}397$ overlapping
-trading days.}
-\label{tab:cost}
-\begin{tabular}{@{}lrrrrrrr@{}}
+\caption{Confidence gating. Reported as a sensitivity, not a selected result.
+Net Sharpe falls monotonically as gating tightens.}
+\label{tab:gate}
+\begin{tabular}{@{}lrrrrr@{}}
 \toprule
-Cost (bps/side) & $0$ & $2$ & $5$ & $\mathbf{9}$ & $10$ & $15$ & $20$ \\
+Gate $|p - 0.5| \ge$ & $0.00$ & $0.02$ & $0.04$ & $0.06$ & $0.08$ \\
 \midrule
-Annualised Sharpe & $0.60$ & $0.49$ & $0.32$ & $\mathbf{0.10}$ & $0.04$ & $-0.24$ & $-0.52$ \\
+Net Sharpe & $+0.113$ & $+0.018$ & $-0.080$ & $-0.191$ & $-0.309$ \\
+Turnover   & $0.765$ & $0.735$ & $0.641$ & $0.522$ & $0.388$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The breakeven cost is $10.74$ bps per side. Against an assumed $9$ bps the
-strategy retains an annualised Sharpe of $0.10$, which is statistically
-indistinguishable from zero over this sample. We regard the breakeven figure as
-the more informative statistic than any single net Sharpe, because it is invariant
-to the analyst choice of cost assumption -- precisely the choice most available for
-motivated reasoning.
+Gating reduces turnover as intended but degrades performance monotonically. The
+model's confidence is not merely uninformative but mildly anti-informative: the
+predictions it is most sure about are worse than the ones it is least sure about.
+This closes off the most obvious route to improving the economics.
+
+\subsection{Attribution: what actually consumes the edge}
+\label{ssec:ladder}
+
+Our first revision reported a frictionless Sharpe of $+0.10$ and an executed
+Sharpe of $-0.35$ and attributed the gap to implementation lag, arguing that
+entering at the next open ``forfeits the overnight gap.'' Five things changed
+between those two numbers and none were isolated. Table~\ref{tab:ladder}
+isolates them.
+
+\begin{table}[t]\centering\small
+\caption{Attribution ladder, one change at a time. Costs dominate; the entry lag
+is free.}
+\label{tab:ladder}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Step & Configuration & Sharpe & $\Delta$ \\
+\midrule
+1 & Label window $C_t \to C_{t+1}$, no cost      & $+0.544$ & --- \\
+2 & \quad + transaction costs (9 bps/side)       & $+0.113$ & $\mathbf{-0.431}$ \\
+3 & \quad + 1-bar entry lag, 1-day hold          & $+0.114$ & $+0.001$ \\
+4 & \quad + 2-day hold (the F3 fault)            & $-0.030$ & $-0.144$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The entry lag costs $+0.001$ Sharpe, which is to say nothing. The reason is
+simple and we had it backwards: \textbf{cryptocurrency trades continuously, so
+there is no overnight gap.} Measured on our sample, the close-to-open return
+$C_t \to O_{t+1}$ has standard deviation $5.8$, $7.5$ and $16.5$ bps for BTC, ETH
+and DOGE, against intraday open-to-close standard deviations of $357$, $459$ and
+$1014$ bps -- a ratio of $1.6\%$ in all three cases. The previous explanation
+imported an equities intuition into a market where it does not apply, and it was
+used to justify what that revision called its most practically important number.
+
+The correct decomposition is that transaction costs consume $0.43$ of Sharpe and
+the holding-period mismatch a further $0.14$.
 
 \subsection{End-to-end simulation}
 \label{ssec:e2e}
 
-Table~\ref{tab:bt} reports the same signals run through the corrected engine, which
-adds the one-bar implementation lag of Figure~\ref{fig:timing}, discrete position
-sizing, and a one-position-per-asset constraint.
+\begin{table}[t]\centering\small
+\caption{Engine backtest under the two holding conventions. Gross return per
+trade is positive in both; costs alone make the strategy unprofitable.}
+\label{tab:bt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Holding rule & Trades & Win rate & Net/trade & Gross/trade & Sharpe \\
+\midrule
+1-bar (corrected)          & $5{,}562$ & $49.30\%$ & $-0.081\%$ & $+0.099\%$ & $-0.467$ \\
+2-bar (F3, previous)       & $5{,}562$ & $50.02\%$ & $-0.094\%$ & $+0.086\%$ & $-0.344$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Adding back the $18$ bps round-trip cost to the net figure shows the mean trade is
+gross-profitable at $+0.099\%$ under the corrected holding rule. The engine loses
+money because of costs, not because of mis-timing. This is directly contrary to
+the narrative in our first revision, which is what happens when a gap between two
+numbers is explained rather than decomposed.
+
+The one-bar rule has the better per-trade economics and the worse Sharpe, because
+closing each position at the end of its bar reduces market exposure and therefore
+volatility, magnifying a negative mean in ratio terms.
+
+\subsection{Comparison with passive exposure}
+\label{ssec:bench}
+
+Our first revision concluded the strategy ``does not beat buy-and-hold at
+$0.89$.'' That comparison is malformed: it sets an unlevered long-only beta
+position against a market-neutral long/short book on raw Sharpe, which is not a
+like-for-like test. The appropriate statistics are correlation, beta and the
+appraisal ratio.
 
 \begin{table}[t]\centering\small
-\caption{End-to-end backtest, logistic signals through the corrected engine,
-2017-08-17 to 2026-04-01.}
-\label{tab:bt}
+\caption{Strategy versus an equal-weight passive basket over the identical
+window.}
+\label{tab:bench}
 \begin{tabular}{@{}lr@{}}
 \toprule
-Metric & Value \\
+Statistic & Value \\
 \midrule
-Trades                    & $5{,}562$ \\
-Win rate                  & $50.02\%$ \\
-Mean return per trade     & $-0.094\%$ \\
-Total return              & $-70.45\%$ \\
-Maximum drawdown          & $72.73\%$ \\
-Profit factor             & $0.920$ \\
-\textbf{Annualised Sharpe}& $\mathbf{-0.346}$ \\
+Correlation with passive basket & $+0.224$ \\
+Beta to passive basket          & $+0.215$ \\
+Passive basket Sharpe           & $+0.833$ \\
+\textbf{Appraisal ratio}        & $\mathbf{-0.076}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The gap between $+0.10$ under the frictionless-timing cost model and $-0.346$ under
-realistic execution is, we argue, the most practically important number in the
-paper. It is not a discrepancy between two estimates of the same quantity; it is a
-measurement of how much of the edge is consumed by acting one bar late. The signal
-predicts the close-to-close window $C_t \to C_{t+1}$, and an implementation that
-cannot enter until the open of $t+1$ has already forfeited the overnight gap, which
-in crypto markets carries a disproportionate share of the move.
+The strategy is only weakly correlated with the basket, so in principle a
+positive-Sharpe sleeve would be additive even at a lower raw Sharpe. The
+appraisal ratio, which is the correct measure of that additivity, is $-0.076$.
+There is no alpha to add. The conclusion is the same as before but now rests on
+the right statistic.
 
-A study that reports the label-window Sharpe and describes it as strategy
-performance is not making an arithmetic error, but it is reporting a quantity no
-participant can realise.
+%==============================================================================
+\section{Verification}
+\label{sec:verification}
+%==============================================================================
 
-\subsection{Before and after}
+\subsection{Mutation testing}
+\label{ssec:mutation}
 
-Table~\ref{tab:beforeafter} places the corrected results beside the originals.
+A test count measures effort. What a reader needs is whether the tests detect the
+failures they were written for. We therefore reintroduce each fault into the
+corrected code and record which tests turn red.
 
 \begin{table}[t]\centering\small
-\caption{Reported performance before and after the corrections of
-Section~\ref{sec:defects}. The original figures are those published by the audited
-system; the corrected figures are from this study.}
-\label{tab:beforeafter}
-\begin{tabular}{@{}lrr@{}}
+\caption{Mutation results. Every expressible fault is detected; mutation score
+$8/8$. The baseline suite is green at $29$ tests.}
+\label{tab:mutation}
+\begin{tabular}{@{}llr@{}}
 \toprule
-Quantity & Original & Corrected \\
+Reintroduced fault & Detecting test(s) & Red \\
 \midrule
-Aggregate annualised Sharpe   & $4.54$   & $-0.35$ \\
-Maximum per-series Sharpe     & $23.65$  & --- \\
-Directional accuracy          & $52.44\%$& $52.94\%$ \\
-Reported with CI and $p$      & no       & yes \\
-Win rate                      & $30.23\%$& $50.02\%$ \\
-Trades                        & $210$    & $5{,}562$ \\
-Evaluation window (15m series)& $9.4$ days & $8.6$ years (daily) \\
-Baselines reported            & none     & three \\
+F1 look-ahead lookup      & \texttt{price\_lookup\_never\_selects\_a\_future\_bar} & 1 \\
+F5 short mark-to-market   & \texttt{short\_equity\_falls\_when\_price\_rises}      & 1 \\
+F6 fee split evenly       & \texttt{equity\_curve\_reconciles\_with\_summed\_trade\_pnl} & 1 \\
+F7 Sharpe annualisation   & \texttt{annualisation\_matches\_the\_closed\_form}; \texttt{periods\_per\_year\_inferred} & 2 \\
+F8 Monte Carlo            & \texttt{bootstrap\_is\_not\_degenerate}                & 1 \\
+F10 scaler refit          & \texttt{single\_row\_transform\_is\_not\_all\_zeros}; \texttt{unfitted\_scaler\_unchanged} & 2 \\
+F11 no embargo            & \texttt{gap\_between\_folds}; \texttt{no\_row\_in\_both\_folds} & 2 \\
+Close-only exits (F-var)  & \texttt{stop\_fills\_at\_the\_stop\_level}; \texttt{stop\_wins\_when\_both\_touched} & 2 \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{Mutation score}} & $\mathbf{8/8}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The directional accuracy is the one quantity that survives essentially unchanged.
-This is not a coincidence: accuracy was computed on an offline path that did not
-exercise the execution or metric defects. Everything downstream of it moved by
-more than its own magnitude.
+Five faults (F2, F3, F4, F9, F12) are covered by dedicated tests but are not
+separately expressible as isolated mutations without rewriting the simulation
+loop. The mutation score therefore covers eight of thirteen expressible
+mutations rather than the full taxonomy, and we report it that way rather than
+inflating it.
 
-%==============================================================================
-\section{Verification: A Null-Test Protocol}
-\label{sec:nulltest}
-%==============================================================================
+\subsection{A calibrated null test}
+\label{ssec:null}
 
-Correcting twelve defects raises an obvious question: how would we know if a
-thirteenth remained? Inspecting outputs for plausibility is what failed in the
-first place. We therefore propose testing the instrument against data whose correct
-answer is known by construction.
+Random entry signals on a driftless geometric random walk contain no structure by
+construction, so a correct engine charging positive costs must lose at a rate set
+by turnover and cost alone.
 
-\subsection{Construction}
+Our first revision proposed asserting $S \le 0$ on a single such path as a
+publication standard. That proposal was itself uncalibrated. A $75$-day fixture
+has $\mathrm{SE}(S) \approx \sqrt{1/0.2} \approx 2.2$, so the assertion is a
+stochastic claim presented as deterministic. Running $60$ independent seeds
+through the corrected engine, \textbf{$13.3\%$ of them produce a positive Sharpe}
+(range $-10.45$ to $+7.33$). A single-path assertion would therefore fail on a
+correct engine roughly one run in eight, and the single value of $-2.579$ that
+revision reported sits about one standard error from zero.
 
-Generate a driftless geometric random walk,
+The calibrated version tests the distribution:
 \begin{equation}
-P_{t+1} = P_t \exp(\sigma \varepsilon_t), \qquad \varepsilon_t \sim \mathcal{N}(0,1),
+\bar{S} = -3.534, \quad \mathrm{sd} = 3.643, \quad \mathrm{se} = 0.470,
+\quad t = -7.51 .
 \end{equation}
-and emit entry signals with random side at random times. There is no predictable
-structure, so a correct engine charging any positive cost must report
+
+Two further assertions accompany it. Cash conservation,
 \begin{equation}
-S \le 0 .
-\label{eq:nullcond}
-\end{equation}
-We additionally require exact reconciliation between the trade record and the
-equity curve. With all positions closed at the end,
-\begin{equation}
-V_T - V_0 = \sum_{i=1}^{N} \text{PnL}_i ,
+V_T - V_0 = \sum_{i=1}^{N} \mathrm{PnL}_i ,
 \label{eq:reconcile}
 \end{equation}
-and separately that expectancy implied by the realised win rate and average
-win/loss equal realised mean return per trade,
-\begin{equation}
-w\,\bar{g} + (1-w)\,\bar{\ell} \;=\; \frac{1}{N}\sum_i r_i .
-\label{eq:expectancy}
-\end{equation}
+holds to $1.2 \times 10^{-11}$ on runs that end flat, and is violated by any
+fault creating or destroying cash. Realised fee rate matches the modelled
+two-sided fee to within tolerance.
 
-Equation~\eqref{eq:reconcile} is the strongest of the three. It is violated by any
-defect that creates or destroys cash -- D1, D3, D4 and asymmetric fee charging all
-fail it -- and it cannot be satisfied by accident.
+We drop a third assertion used previously -- that expectancy implied by win rate
+and average win/loss equals mean return per trade -- because it is a tautology:
+it decomposes a mean into conditional means and can fail only if the reporting
+layer disagrees with itself. Presenting it as an independent check overstated the
+protocol's strength.
 
-\subsection{Result}
-
-Table~\ref{tab:null} reports the protocol on $7{,}200$ synthetic bars per asset
-across three assets.
-
-\begin{table}[t]\centering\small
-\caption{Null-test output on random signals over a driftless random walk. The
-pre-correction engine reported positive Sharpe on this fixture; the corrected
-engine reports the required non-positive value and reconciles exactly.}
-\label{tab:null}
-\begin{tabular}{@{}lrl@{}}
-\toprule
-Quantity & Value & Requirement \\
-\midrule
-Inferred periods per year & $35{,}040$ & $=\sqrt{}$-factor for 15m bars \\
-Annualised Sharpe         & $-2.579$   & $\le 0$ \\
-Profit factor             & $0.880$    & $< 1$ \\
-Monte Carlo 95\% CI width & $1{,}720.4$& $> 0$ (non-degenerate) \\
-Implied expectancy/trade  & $-0.1263\%$& \multirow{2}{*}{$\Big\}$ must be equal} \\
-Realised expectancy/trade & $-0.1263\%$& \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The two expectancy figures agree to floating-point precision. The pre-correction
-engine violated both \eqref{eq:nullcond} and \eqref{eq:expectancy} on this fixture.
-
-\subsection{Proposal}
-
-We suggest that a backtested performance claim be accompanied by the output of a
-null test of this form, and that the reconciliation identity \eqref{eq:reconcile}
-be stated as satisfied. Both are cheap -- the harness runs in under two seconds --
-and neither requires disclosing the strategy. A null test does not establish that a
-positive result is real, but it excludes a large and empirically common class of
-ways for it to be spurious.
-
-The released harness comprises $26$ regression tests: $17$ covering the execution
-and metric defects, and $9$ covering the feature pipeline, including an assertion
-that a single-row standardisation does not collapse to zero and that no bar appears
-in both sides of a split.
+\paragraph{Coverage, stated honestly.} This protocol exercises the \emph{engine}
+with exogenous signals. It is blind to feature leakage, split leakage and
+imputation leakage -- faults F10 and F11 and the entire case study of
+Section~\ref{sec:leakage}. Describing it as a ``minimum publication requirement
+for backtested claims,'' as our first revision did, overstated its coverage
+considerably. It is one necessary check among several, complementary to
+CSCV/PBO \citep{bailey2014deflated} and the SPA test \citep{hansen2005test},
+neither of which it replaces.
 
 %==============================================================================
 \section{Discussion}
 \label{sec:discussion}
 %==============================================================================
 
-\subsection{Statistical significance is not economic significance}
+\subsection{Two failures, and which is worse}
 
-The central tension in our results is that a finding significant at $p < 10^{-4}$
-is not tradable. This is not a paradox. With $n = 5{,}565$, the standard error on a
-hit rate is $0.67$ percentage points, so an effect of $2.94$ points is easily
-detected. But the economic value of a hit rate depends on the magnitude of the moves
-captured, not on the confidence with which the rate differs from a half, and a
-strategy trading daily at $77\%$ turnover pays roughly $14$ bps per day in costs at
-$9$ bps per side.
+The instrument failure inflated a Sharpe ratio from below zero to $23.65$. It is
+dramatic, and it is also the easier of the two to prevent: it yields to fixtures
+with known answers, mutation testing and null tests, all of which are mechanical.
 
-The relationship is worth stating explicitly. For a symmetric long/short book the
-gross Sharpe scales approximately as
-\begin{equation}
-S_{\text{gross}} \;\approx\; (2a-1)\,\frac{\sqrt{P}}{\text{IR-adjustment}},
-\end{equation}
-so accuracy enters linearly through $2a-1$, which at $a = 0.5294$ is $0.0588$.
-Costs, in contrast, enter as a fixed subtraction proportional to turnover. There is
-consequently a hit rate below which no amount of statistical confidence produces a
-tradable strategy, and at daily frequency with these costs that threshold sits just
-above where we are.
+The baseline failure is quieter. Every number our first revision reported was
+correctly computed. The walk-forward was properly purged, the scaler properly
+fitted, the costs properly charged, the $p$-value properly calculated. The
+conclusion was still wrong, because the comparison was against a null that a
+one-line rule clears just as well. No amount of instrument calibration detects
+this. It requires asking, before running anything, what the simplest thing that
+could produce this result would score -- and \citet{makridakis2018statistical}
+show the field routinely does not ask.
 
-\subsection{Relation to market efficiency}
+\subsection{Errors in our own first revision}
+\label{ssec:ourerrors}
 
-Our result matches the operational form of efficiency described by
-\citet{timmermann2004efficient} more closely than either the strong or the naive
-reading of \citet{fama1970efficient}. Predictability exists and is measurable. It
-is small. It sits close enough to the cost boundary that it is plausibly the
-residual left after arbitrage has removed whatever was profitable. That the
-breakeven cost ($10.74$ bps) lands within striking distance of retail execution
-cost ($9$ bps) is the kind of coincidence one should expect if costs are what
-bounds the surviving inefficiency.
-
-\subsection{Implications for practice}
-
-Three recommendations follow from the audit.
+Consistent with the argument above, we record the errors in the previous version
+of this manuscript. This is not ceremonial: the paper argues that measurement
+must be checked, and the checks found faults in our own corrected system.
 
 \begin{enumerate}
-\item \textbf{Test the instrument before the hypothesis.} Every defect we found
-would have been caught by a fixture with a known answer, and none were caught by
-years of plausibility inspection of outputs.
-\item \textbf{Report breakeven cost, not net Sharpe.} A net Sharpe encodes an
-assumption the reader cannot audit. A breakeven cost lets the reader supply their
-own.
-\item \textbf{Require provenance tests for exogenous features.} Any feature
-claimed to carry information from outside the price series should be shown unable
-to be reconstructed from contemporaneous market data.
+\item \textbf{Missing baseline.} Inverse persistence was not reported, despite
+persistence being in the table and its inverse being one subtraction away. This
+inverted the headline conclusion.
+\item \textbf{Holding-period fault (F3).} Our corrected engine held positions for
+two bars against a one-bar label.
+\item \textbf{Wrong causal story.} The frictionless-to-executed gap was
+attributed to a forfeited overnight gap. Crypto has no overnight gap; the
+measured close-to-open dispersion is $1.6\%$ of intraday dispersion. Costs, not
+timing, consume the edge.
+\item \textbf{Arithmetic error.} Daily cost was stated as $14$ bps at $0.774$
+turnover and $9$ bps per side; the product is $7.0$ bps. The stated figure also
+contradicted the paper's own cost table.
+\item \textbf{False precision.} A breakeven of $10.74$ bps was quoted to four
+significant figures with no interval. The interval spans $[0, 26.9]$.
+\item \textbf{Truncated panel.} The cost analysis silently discarded about $690$
+days of BTC and ETH history by truncating to the shortest series.
+\item \textbf{Uncalibrated flagship proposal.} The single-path null test fails on
+a correct engine $13.3\%$ of the time.
+\item \textbf{Overstated founding argument.} Equation~\eqref{eq:contradiction}
+does not bind in the presence of timeout exits.
+\item \textbf{Malformed benchmark comparison.} Raw Sharpe against long-only
+buy-and-hold, where the appraisal ratio is the correct statistic.
+\item \textbf{Inconsistent samples.} Three different row counts were quoted
+across tables without reconciliation.
+\item \textbf{A non-formula.} An expression purporting to relate gross Sharpe to
+accuracy contained an undefined ``IR-adjustment'' term and was not dimensionally
+coherent. It is removed.
 \end{enumerate}
 
-\subsection{On publishing the correction}
+\subsection{Statistical against economic significance}
 
-We report the original figures rather than quietly replacing them. This is
-deliberate. The magnitude of the correction -- from $+4.54$ to $-0.35$ -- is itself
-the evidence for the paper claim, and a reader cannot assess the argument without
-it.
+The pooled hit rate differs from $0.5$ at $p < 10^{-4}$; the gross Sharpe has a
+bootstrap interval containing zero. Both are correct. Accuracy enters the
+economics only through $2a - 1 = 0.059$, while costs enter as a subtraction
+proportional to turnover, and the sample is short enough that a Sharpe of $0.54$
+carries a standard error above $0.35$. Detecting an effect and being paid for it
+are different questions with different power requirements, and the second is far
+more demanding.
+
+\subsection{Practical recommendations}
+
+\begin{enumerate}
+\item \textbf{Report the trivial baseline first.} For directional forecasting,
+persistence and its inverse cost one line each and bound the contribution of
+everything else.
+\item \textbf{Report a mutation score, not a test count.}
+\item \textbf{Report breakeven cost with an interval}, not a net Sharpe under one
+undisclosed assumption.
+\item \textbf{Decompose gaps rather than explaining them.} Every step between two
+reported numbers should be isolated and measured.
+\item \textbf{Report $\mu$ and $\sigma$} so that every ratio is auditable.
+\end{enumerate}
 
 %==============================================================================
 \section{Limitations and Threats to Validity}
 \label{sec:limitations}
 %==============================================================================
 
-\paragraph{Model selection after seeing test results.}
-We report both models we ran, but our narrative emphasises the logistic model,
-chosen after observing out-of-sample results. With two candidates the multiplicity
-cost is small, and GBDT is independently significant in the pooled sample
-($p = 0.008$), so the qualitative conclusion is unaffected. A fully rigorous
-treatment would apply the Deflated Sharpe Ratio of \citet{bailey2014deflated}; with
-two trials the deflation is minor, but we note the exposure rather than assert its
-irrelevance.
+\paragraph{One audited system.} Our fault taxonomy comes from a single artefact.
+We make no prevalence claim about the literature. The natural extension is a
+survey of public repositories and published replication packages scoring each
+against the checks proposed here; this would convert a rhetorical claim into an
+empirical one and is not attempted.
 
-\paragraph{Overlapping observations.}
-Pooling $5{,}565$ predictions across three assets treats them as independent. BTC
-and ETH daily returns are strongly correlated, so the effective sample size is
-smaller than the nominal one and the pooled $p$-value is optimistic. The per-asset
-results, which do not pool, remain significant individually at conventional levels
-for the logistic model, which is the more conservative reading.
+\paragraph{Cost model.} We charge a flat $4$ bps taker fee plus $5$ bps slippage.
+For a daily-horizon signal in BTCUSDT and ETHUSDT this is likely conservative:
+top-of-book spread is well under a basis point with substantial depth, and a
+daily strategy can work orders passively at maker fees that are lower and
+negative at high volume tiers. A defensible passive-execution assumption of
+$2$--$3$ bps per side would place the strategy above breakeven in the point
+estimate. It would not change the conclusion, because the gross Sharpe interval
+already contains zero -- but readers should understand that the cost assumption,
+not merely the signal, is doing work. DOGE is the only leg where $9$ bps is
+comfortably defensible.
 
-\paragraph{Single frequency, three assets.}
-We evaluate daily bars on three liquid cryptocurrencies. Nothing here establishes
-what happens at hourly or minute frequency, where the cost calculus differs
-substantially, nor on illiquid assets, where our cost assumption would be far too
-generous.
+\paragraph{Instrument idealisation.} We model Binance spot but evaluate a
+long/short book, which requires margin. Funding costs, borrow availability and
+liquidation risk are not modelled. In crypto perpetuals funding is frequently
+paid \emph{to} shorts, so omitting it is not conservative in a known direction.
 
-\paragraph{Simplified cost model.}
-We charge a flat per-side rate. Real execution involves a spread that widens with
-volatility, market impact scaling with participation, and funding costs on short
-positions. Our $9$ bps assumption is reasonable for retail taker execution in size
-but is not a full transaction cost model, and the breakeven analysis should be read
-as an approximation.
+\paragraph{Overlapping observations.} Pooling across assets treats them as
+independent; BTC and ETH daily returns are highly correlated, so the effective
+sample is smaller than nominal and the pooled $p$-value is optimistic. The
+per-asset results and the paired tests, which do not pool, are the conservative
+reading and are what the conclusion rests on.
 
-\paragraph{Survivorship and regime.}
-The three assets were selected because data was available, and all three survived
-to the end of the sample. The period spans two full crypto cycles, which is
-favourable for generalisation, but a single asset class over eight years remains a
-narrow base.
+\paragraph{Feature scope.} Thirty-four single-asset technical features. Crypto
+microstructure signals -- funding, open interest, basis, liquidations, order-book
+imbalance, exchange flows, cross-asset lead--lag -- are absent. A negative result
+on this feature set is not a negative result on the asset class.
 
-\paragraph{Absence of genuine sentiment data.}
-The audited pipeline was built around a sentiment thesis we could not test, because
-its sentiment data was synthetic. Whether real financial text adds forward
-information over the feature set used here is an open question that this study does
-not address.
+\paragraph{Modelling machinery not exercised.} We use purging and embargoing from
+\citet{lopezdeprado2018advances} but not meta-labelling, sample-uniqueness
+weighting, sequential bootstrap, fractional differentiation or combinatorial
+purged cross-validation. Meta-labelling in particular targets exactly the failure
+we document in Table~\ref{tab:weighted}, where direction is right more often than
+magnitude warrants.
+
+\paragraph{Objective mismatch.} Models are trained on log-loss over direction,
+not on a cost- or turnover-aware objective. If costs bind, they belong in the
+loss.
+
+\paragraph{Robustness not established.} We do not test sensitivity to the
+$00{:}00$ UTC bar boundary, which for a daily-bar study of a $24/7$ market is a
+genuine concern; re-anchoring at other hours would indicate whether the effect is
+a boundary artefact. No regime analysis or structural-break test is reported.
+
+\paragraph{No live validation.} No paper trading, capacity analysis or
+size-dependent slippage.
 
 %==============================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 %==============================================================================
 
-We audited the evaluation stack of a working cryptocurrency trading system that
-reported an annualised Sharpe ratio of $4.54$, isolated twelve defects spanning
-execution, metric computation and the feature pipeline, and showed that the
-reported figure was an artefact of the measurement apparatus rather than of any
-predictive signal. Among the defects, the most instructive was a feature named for
-sentiment that was in fact a scaled copy of the contemporaneous label,
-correlating $0.916$ with the same day return and $-0.018$ with the next day.
+We audited a cryptocurrency trading system reporting an annualised Sharpe of
+$4.54$, isolated twelve code-level faults from five root causes, and verified the
+corrections by reintroducing each fault and confirming detection, achieving a
+mutation score of $8/8$. Among the faults was a feature named for sentiment that
+was a scaled copy of the contemporaneous label, correlating $0.916$ with the same
+day return and $-0.018$ with the next.
 
-Re-running the study under a corrected harness and a walk-forward protocol with
-purge and embargo, we find weak but statistically robust directional structure:
-$52.94\%$ accuracy over $5{,}565$ out-of-sample daily predictions,
-$p < 10^{-4}$, against persistence at $47.0\%$ and majority at $50.5\%$. The same
-signal has a gross annualised Sharpe of $0.60$, breaks even at $10.74$ basis points
-per side against realistic costs near $9$, achieves $-0.346$ under realistic
-execution timing, and does not beat buy-and-hold at $0.89$.
+Correcting the instrument was necessary and not sufficient. The re-measured
+result -- $52.95\%$ directional accuracy over $5{,}562$ out-of-sample
+predictions, $p < 10^{-4}$ -- is matched by inverse persistence at $52.88\%$, a
+rule with no parameters. Paired tests on identical days give differences between
+$-0.29$ and $+0.53$ percentage points with $|t| \le 0.45$, and the model loses on
+two of three assets. Thirty-four features and walk-forward machinery recover a
+documented one-day reversal effect and add nothing measurable to it. The effect
+is not tradable on this feature set at this frequency: gross Sharpe is $0.544$
+with a bootstrap interval of $[-0.17, +1.28]$, the appraisal ratio against a
+passive basket is $-0.076$, and confidence gating degrades performance
+monotonically.
 
-Both halves of that result matter. The field does not lack for reported edges; it
-lacks reported edges that were measured on a calibrated instrument. We release the
-harness, the null-test protocol and the $26$ regression tests in the hope that
-verifying the instrument becomes an ordinary precondition for reporting a backtest
-rather than an unusual one.
+The general lesson is that two independent things must be checked before a
+backtested claim means anything. The instrument must be calibrated, which is
+mechanical. And the baseline must be non-trivial, which is not mechanical and
+which no amount of engineering discipline supplies. Our own first revision passed
+the first test and failed the second, and we have documented that failure here
+rather than quietly correcting it.
 
 %==============================================================================
 \section*{Data and code availability}
 %==============================================================================
 
-The evaluation harness, the corrected backtest engine, the null-test protocol and
-all $26$ regression tests are released with this paper. The evaluation is
-reproducible end to end from the released daily OHLCV data with a single command;
-full numerical output is serialised to a machine-readable results file. No
-proprietary data is used.
+The evaluation harness, corrected engine, mutation-testing plugin, null-test
+protocol and $29$ regression tests accompany this manuscript. The evaluation
+reproduces end to end from the released daily OHLCV data with a single command,
+and full numerical output is serialised to machine-readable files
+(\texttt{evaluation\_results.json}, \texttt{mutation\_matrix.json}). Repository
+URL, release tag and data vintage hash are to be inserted on acceptance; we note
+that our first revision claimed reproducibility without supplying any of these
+identifiers.
 
 %==============================================================================
 \appendix
@@ -1233,95 +1334,64 @@ proprietary data is used.
 \label{app:features}
 
 All features are functions of bars indexed $\le t$. Let $O_t, H_t, L_t, C_t, V_t$
-denote the open, high, low, close and base volume, $Q_t$ the quote asset volume,
-$N_t$ the trade count and $B_t$ the taker buy base volume.
+denote open, high, low, close and base volume, $Q_t$ quote asset volume, $N_t$
+trade count and $B_t$ taker buy base volume.
 
-\paragraph{Returns.} $\text{logret}_k(t) = \log(C_t / C_{t-k})$ for
-$k \in \{1,2,3,5,10,20\}$.
+\paragraph{Returns.} $\log(C_t / C_{t-k})$ for $k \in \{1,2,3,5,10,20\}$.
 
-\paragraph{Volatility and location.} For $k \in \{5,10,20,60\}$,
-\[
-\text{vol}_k(t) = \mathrm{sd}\big(\{\text{logret}_1(s)\}_{s=t-k+1}^{t}\big),
-\qquad
-\text{zclose}_k(t) = \frac{C_t - \mu_k(C)}{\sigma_k(C)} .
-\]
+\paragraph{Volatility and location.} For $k \in \{5,10,20,60\}$, the rolling
+standard deviation of one-day log returns and
+$(C_t - \mu_k(C))/\sigma_k(C)$.
 
 \paragraph{Bar shape.}
-\[
-\text{hl\_range} = \frac{H_t - L_t}{C_t}, \quad
-\text{co\_spread} = \frac{C_t - O_t}{O_t}, \quad
-\text{close\_loc} = \frac{C_t - L_t}{H_t - L_t} .
-\]
+$(H_t - L_t)/C_t$, $(C_t - O_t)/O_t$, and $(C_t - L_t)/(H_t - L_t)$.
 
-\paragraph{Order flow.}
-\[
-\text{taker\_buy\_ratio} = \frac{B_t}{V_t}, \qquad
-\text{avg\_trade\_size} = \frac{Q_t}{N_t},
-\]
-each accompanied by a rolling mean or $60$-day $z$-score as described in
-Section~\ref{sec:method}, together with $z$-scored $N_t$ and $V_t$ and the ratio
-of $V_t$ to its $20$-day mean.
+\paragraph{Order flow.} $B_t / V_t$ and its five-day mean; $Q_t / N_t$ and its
+$60$-day $z$-score; $z$-scored $N_t$ and $V_t$; and $V_t$ over its $20$-day mean.
 
-\paragraph{Technical indicators.}
-RSI(14) from the ratio of mean gain to mean loss; MACD histogram as
-$\text{EMA}_{12} - \text{EMA}_{26}$ minus its own $9$-period EMA; Bollinger
-position $(C_t - \text{MA}_{20}) / (2\sigma_{20})$; ATR(14) as the $14$-day mean of
-true range divided by $C_t$; and $\sin(2\pi d/7), \cos(2\pi d/7)$ for day of week
-$d$.
+\paragraph{Technical.} RSI(14); MACD histogram
+$(\mathrm{EMA}_{12} - \mathrm{EMA}_{26})$ minus its $9$-period EMA; Bollinger
+position $(C_t - \mathrm{MA}_{20})/(2\sigma_{20})$; ATR(14) over $C_t$; and
+$\sin(2\pi d/7)$, $\cos(2\pi d/7)$ for day of week $d$.
 
 \section{Corrected execution model}
 \label{app:execution}
 
-Let $\mathcal{B}^{(j)}$ be the ordered bar sequence for asset $j$. The engine
-iterates over the union of timestamps. At each timestamp, for each asset with a bar
-present, it first resolves exits for any open position in \emph{that} asset using
-\emph{that} bar, then opens positions scheduled for that bar.
+The engine iterates over the union of bar timestamps. At each timestamp, for each
+asset with a bar present, it resolves exits for any open position in \emph{that}
+asset using \emph{that} bar, then opens positions scheduled for that bar, then
+closes positions whose bar-counted holding period has expired at that bar close.
 
-A signal timestamped within bar $i$ is scheduled for execution at bar $i+1$ and
-filled at its open, adjusted by slippage $\varsigma$:
-\begin{equation}
-p_{\text{entry}} = O_{i+1}\,(1 + \varsigma) \text{ (long)}, \qquad
-O_{i+1}\,(1 - \varsigma) \text{ (short)} .
-\end{equation}
+A signal timestamped within bar $i$ executes at bar $i+1$, filled at its open
+adjusted by slippage $\varsigma$:
+$p_{\text{entry}} = O_{i+1}(1 \pm \varsigma)$.
 
-Cash and equity follow \eqref{eq:equity}, with a long entry debiting
-$q\,p_{\text{entry}} + \varphi$ and a short entry crediting
-$q\,p_{\text{entry}} - \varphi$, where $\varphi$ is the fee on that leg computed on
-that leg own notional. Charging half of a round-trip fee at each leg, as an earlier
-version did, causes cash charged and fee reported to diverge whenever the price
-moves.
-
-Exit resolution against a bar is
-\begin{equation}
-\text{exit price} =
-\begin{cases}
-S & \text{if } L_t \le S \text{ (long)},\\
-T & \text{else if } H_t \ge T \text{ (long)},\\
-C_t & \text{else if } t - t_{\text{entry}} \ge \tau .
-\end{cases}
-\end{equation}
+Cash and equity follow \eqref{eq:equity}. A long entry debits
+$q\,p_{\text{entry}} + \varphi$; a short entry credits $q\,p_{\text{entry}} - \varphi$,
+with $\varphi$ the fee on that leg's own notional. Exit resolution against a bar
+uses $L_t$ and $H_t$, resolving pessimistically to the stop when a single bar
+touches both levels, and otherwise closes at $C_t$ on holding expiry.
 
 \section{Null-test procedure}
 \label{app:null}
 
 \begin{algorithm}[H]
-\caption{Null test for a backtest engine}
+\caption{Randomised null test for a backtest engine}
 \label{alg:null}
 \begin{algorithmic}[1]
-\State \textbf{Input:} engine $E$, bars $n$, assets $J$, volatility $\sigma$, cost $c > 0$
-\For{each asset $j \in J$}
-  \State $P_0 \gets$ arbitrary positive price
-  \For{$t = 1$ to $n$}
-    \State $P_t \gets P_{t-1}\exp(\sigma\varepsilon_t)$, \quad $\varepsilon_t \sim \mathcal{N}(0,1)$
-    \State emit bar with $O,H,L,C$ consistent with $P_{t-1}, P_t$
-    \State with probability $0.02$, emit a signal with uniformly random side
+\State \textbf{Input:} engine $E$, seeds $M$, bars $n$, assets $J$, volatility $\sigma$, cost $c > 0$
+\For{$m = 1$ to $M$}
+  \For{each asset $j \in J$}
+    \For{$t = 1$ to $n$}
+      \State $P_t \gets P_{t-1}\exp(\sigma\varepsilon_t)$, \quad $\varepsilon_t \sim \mathcal{N}(0,1)$
+      \State emit bar consistent with $P_{t-1}, P_t$; with prob.\ $0.02$ emit a random-side signal
+    \EndFor
   \EndFor
+  \State $(\mathcal{T}_m, V_m) \gets E(\text{signals}, \text{bars}, c)$; \quad $S_m \gets \mathrm{Sharpe}(V_m)$
+  \State \textbf{assert} $V_{m,T} - V_{m,0} = \sum_i \mathrm{PnL}_{m,i}$ \Comment{cash conservation}
 \EndFor
-\State $(\mathcal{T}, V) \gets E(\text{signals}, \text{bars}, c)$
-\State \textbf{assert} $\text{Sharpe}(V) \le 0$ \Comment{no edge exists by construction}
-\State \textbf{assert} $V_T - V_0 = \sum_{i}\text{PnL}_i$ \Comment{cash conservation}
-\State \textbf{assert} $w\bar{g} + (1-w)\bar{\ell} = \frac{1}{N}\sum_i r_i$ \Comment{expectancy identity}
-\State \textbf{assert} bootstrap interval has positive width
+\State \textbf{assert} $\bar{S} / \mathrm{se}(S) < -3$ \Comment{distributional, not single-path}
+\State \textbf{assert} realised fee rate $\approx$ modelled two-sided fee
 \end{algorithmic}
 \end{algorithm}
 
@@ -1345,10 +1415,10 @@ Bergmeir, C., Ben\'itez, J.~M., 2012.
 On the use of cross-validation for time series predictor evaluation.
 Information Sciences 191, 192--213.
 
-\bibitem[Bollen et~al.(2011)]{bollen2011twitter}
-Bollen, J., Mao, H., Zeng, X., 2011.
-Twitter mood predicts the stock market.
-Journal of Computational Science 2 (1), 1--8.
+\bibitem[Caporale and Plastun(2019)]{caporale2019reverse}
+Caporale, G.~M., Plastun, A., 2019.
+Price overreactions in the cryptocurrency market.
+Journal of Economic Studies 46 (5), 1137--1155.
 
 \bibitem[Cerqueira et~al.(2020)]{cerqueira2020evaluating}
 Cerqueira, V., Torgo, L., Mozeti\v{c}, I., 2020.
@@ -1356,26 +1426,25 @@ Evaluating time series forecasting models: an empirical study on performance
 estimation methods.
 Machine Learning 109 (11), 1997--2028.
 
-\bibitem[Devlin et~al.(2019)]{devlin2019bert}
-Devlin, J., Chang, M.-W., Lee, K., Toutanova, K., 2019.
-BERT: pre-training of deep bidirectional transformers for language understanding.
-In: Proceedings of NAACL-HLT. pp. 4171--4186.
+\bibitem[Diebold and Mariano(1995)]{diebold1995comparing}
+Diebold, F.~X., Mariano, R.~S., 1995.
+Comparing predictive accuracy.
+Journal of Business and Economic Statistics 13 (3), 253--263.
 
 \bibitem[Fama(1970)]{fama1970efficient}
 Fama, E.~F., 1970.
 Efficient capital markets: a review of theory and empirical work.
 Journal of Finance 25 (2), 383--417.
 
-\bibitem[Fischer and Krauss(2018)]{fischer2018deep}
-Fischer, T., Krauss, C., 2018.
-Deep learning with long short-term memory networks for financial market
-predictions.
-European Journal of Operational Research 270 (2), 654--669.
-
 \bibitem[Gu et~al.(2020)]{gu2020empirical}
 Gu, S., Kelly, B., Xiu, D., 2020.
 Empirical asset pricing via machine learning.
 Review of Financial Studies 33 (5), 2223--2273.
+
+\bibitem[Hansen(2005)]{hansen2005test}
+Hansen, P.~R., 2005.
+A test for superior predictive ability.
+Journal of Business and Economic Statistics 23 (4), 365--380.
 
 \bibitem[Harvey et~al.(2016)]{harvey2016cross}
 Harvey, C.~R., Liu, Y., Zhu, H., 2016.
@@ -1387,47 +1456,50 @@ Hou, K., Xue, C., Zhang, L., 2020.
 Replicating anomalies.
 Review of Financial Studies 33 (5), 2019--2133.
 
+\bibitem[Jegadeesh(1990)]{jegadeesh1990evidence}
+Jegadeesh, N., 1990.
+Evidence of predictable behavior of security returns.
+Journal of Finance 45 (3), 881--898.
+
+\bibitem[Jia and Harman(2011)]{jia2011analysis}
+Jia, Y., Harman, M., 2011.
+An analysis and survey of the development of mutation testing.
+IEEE Transactions on Software Engineering 37 (5), 649--678.
+
 \bibitem[Kaufman et~al.(2012)]{kaufman2012leakage}
 Kaufman, S., Rosset, S., Perlich, C., Stitelman, O., 2012.
 Leakage in data mining: formulation, detection, and avoidance.
 ACM Transactions on Knowledge Discovery from Data 6 (4), 1--21.
 
-\bibitem[Krauss et~al.(2017)]{krauss2017deep}
-Krauss, C., Do, X.~A., Huck, N., 2017.
-Deep neural networks, gradient-boosted trees, random forests: statistical
-arbitrage on the S\&P 500.
-European Journal of Operational Research 259 (2), 689--702.
+\bibitem[Lo and MacKinlay(1990)]{lo1990contrarian}
+Lo, A.~W., MacKinlay, A.~C., 1990.
+When are contrarian profits due to stock market overreaction?
+Review of Financial Studies 3 (2), 175--205.
 
 \bibitem[L\'opez de Prado(2018)]{lopezdeprado2018advances}
 L\'opez de Prado, M., 2018.
 Advances in Financial Machine Learning.
 Wiley, Hoboken, NJ.
 
-\bibitem[Loughran and McDonald(2011)]{loughran2011liability}
-Loughran, T., McDonald, B., 2011.
-When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks.
-Journal of Finance 66 (1), 35--65.
+\bibitem[Makridakis et~al.(2018)]{makridakis2018statistical}
+Makridakis, S., Spiliotis, E., Assimakopoulos, V., 2018.
+Statistical and machine learning forecasting methods: concerns and ways forward.
+PLoS ONE 13 (3), e0194889.
+
+\bibitem[Pesaran and Timmermann(1992)]{pesaran1992simple}
+Pesaran, M.~H., Timmermann, A., 1992.
+A simple nonparametric test of predictive performance.
+Journal of Business and Economic Statistics 10 (4), 461--465.
 
 \bibitem[Politis and Romano(1994)]{politis1994stationary}
 Politis, D.~N., Romano, J.~P., 1994.
 The stationary bootstrap.
 Journal of the American Statistical Association 89 (428), 1303--1313.
 
-\bibitem[Sezer et~al.(2020)]{sezer2020financial}
-Sezer, O.~B., Gudelek, M.~U., Ozbayoglu, A.~M., 2020.
-Financial time series forecasting with deep learning: a systematic literature
-review, 2005--2019.
-Applied Soft Computing 90, 106181.
-
 \bibitem[Sullivan et~al.(1999)]{sullivan1999data}
 Sullivan, R., Timmermann, A., White, H., 1999.
 Data-snooping, technical trading rule performance, and the bootstrap.
 Journal of Finance 54 (5), 1647--1691.
-
-\bibitem[Tetlock(2007)]{tetlock2007giving}
-Tetlock, P.~C., 2007.
-Giving content to investor sentiment: the role of media in the stock market.
-Journal of Finance 62 (3), 1139--1168.
 
 \bibitem[Timmermann and Granger(2004)]{timmermann2004efficient}
 Timmermann, A., Granger, C.~W.~J., 2004.
@@ -1438,11 +1510,6 @@ International Journal of Forecasting 20 (1), 15--27.
 White, H., 2000.
 A reality check for data snooping.
 Econometrica 68 (5), 1097--1126.
-
-\bibitem[Yang et~al.(2020)]{yang2020finbert}
-Yang, Y., Uy, M. C.~S., Huang, A., 2020.
-FinBERT: a pretrained language model for financial communications.
-arXiv preprint arXiv:2006.08097.
 
 \end{thebibliography}
 
