@@ -641,6 +641,38 @@ Process RSS           & \multicolumn{3}{l}{$1{,}448$\,MB with all three model fa
 Per-fold training costs $0.01$\,s for the linear member, $0.14$--$0.39$\,s for
 the boosted member and $1.80$--$2.45$\,s for the LSTM.
 
+Table~\ref{tab:apilatency} reports the serving path. These are in-process ASGI
+measurements with the database and cache stubbed, so they isolate routing,
+handler execution and JSON serialisation; there is no network hop, no TLS and no
+worker pool, and we label them accordingly rather than quoting them as
+production latency.
+
+\begin{table}[t]\centering\small
+\caption{Serving-path latency, in-process ASGI transport with database and cache
+stubbed, $200$ requests per endpoint after warm-up.}
+\label{tab:apilatency}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Endpoint & p50 (ms) & p95 (ms) & p99 (ms) & Payload \
+\midrule
+\texttt{/api/v1/system}        & $1.083$ & $2.587$ & $4.233$ & $58$\,B \
+\texttt{/api/market/snapshot}  & $1.338$ & $1.877$ & $2.081$ & $79$\,B \
+\texttt{/api/health}           & $1.381$ & $2.186$ & $2.608$ & $15$\,B \
+\texttt{/metrics}              & $1.573$ & $3.084$ & $4.399$ & $3.9$\,kB \
+\textbf{\texttt{/api/v1/signals/}} & $\mathbf{2.897}$ & $\mathbf{6.141}$ & $8.321$ & $59$\,kB \
+\texttt{/openapi.json}         & $3.309$ & $4.234$ & $6.478$ & $37$\,kB \
+\midrule
+Median across endpoints        & $1.477$ & $2.835$ & --- & --- \
+\bottomrule
+\end{tabular}
+\end{table}
+
+The signals endpoint, which is the product surface, serves a $59$\,kB payload at
+$2.9$\,ms p50 and $6.1$\,ms p95. Comparing against Table~\ref{tab:latency}, a
+single LSTM inference at $49.7$\,ms p50 is roughly $17\times$ the entire
+serialised HTTP response for the endpoint that would carry it, which is a second
+argument against that member independent of its accuracy.
+
 The ratio worth noting is that the LSTM costs $920\times$ the linear member at
 inference ($49.685$ vs $0.054$\,ms) and roughly $200\times$ at training.
 Section~\ref{ssec:ablation} shows what that buys.
@@ -982,11 +1014,14 @@ evaluated anywhere in this paper. The only historical series available is
 synthetic and excluded, so no claim here concerns sentiment-driven prediction,
 and the sentiment primary in Equation~\eqref{eq:signal} remains untested.
 
-\paragraph{Benchmarks are offline-path only.} Table~\ref{tab:latency} measures
-feature construction, model inference and backtest throughput. It does not
-measure end-to-end request latency through FastAPI, WebSocket delivery,
-ingestion throughput against live APIs, or GPU memory under concurrent load,
-all of which require a running deployment with live credentials.
+\paragraph{Benchmarks exclude network and live I/O.} Tables~\ref{tab:latency}
+and \ref{tab:apilatency} measure feature construction, model inference, backtest
+throughput and in-process serving latency. They do not measure latency over a
+real network with TLS and a worker pool, WebSocket delivery, ingestion
+throughput against live APIs, or GPU memory under concurrent load, all of which
+require a running deployment with live credentials. Two endpoints were excluded
+from Table~\ref{tab:apilatency}: one performs external I/O in its handler
+($7.1$\,s probe) and one failed response-model validation against stubbed rows.
 
 \paragraph{LLM inference not benchmarked.} Ollama generation latency and VRAM
 occupancy are unmeasured, because the container was not running on the
