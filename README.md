@@ -1,5 +1,7 @@
 # Crypto Intelligence Terminal
 
+> **Updated research draft:** [Overleaf manuscript](paper/jfds_overleaf/main.tex) and [replication instructions](RESEARCH_README.md). Run `python scripts/reproduce_jfds.py` for the revised paper. This 30-feature daily-classifier study does not validate every LLM or live-platform component described below. Earlier evaluation numbers and claims below are retained as historical project documentation and are superseded by `docs/jfds/results.json` for the new paper.
+
 Self-hosted crypto trading intelligence system using open-source LLMs to analyze sentiment, predict prices, and generate actionable trading signals.
 
 > **Measured results:** [Performance Evaluation](#performance-evaluation) &nbsp;|&nbsp;
@@ -190,8 +192,9 @@ effect and add nothing measurable to it.
 | **Pooled** | **Inverse persistence** | **5,562** | **52.88%** | [51.6, 54.2] | <1e-4 | — |
 | Pooled | Majority class | 5,562 | 50.49% | [49.2, 51.8] | 0.469 | — |
 
-Paired (model minus inverse persistence, same days): BTC -0.29pp (t=-0.24),
-ETH +0.53pp (t=+0.45), DOGE -0.07pp (t=-0.05). None significant.
+Paired (model minus inverse persistence, same days; 20-lag HAC inference):
+BTC -0.29pp ($z=-0.25$), ETH +0.53pp ($z=+0.44$), and DOGE -0.07pp
+($z=-0.05$). None is statistically significant.
 
 The model is also **worse on the days that matter**: return-weighted hit rate is
 51.68 / 51.57 / 52.33% versus unweighted accuracy of 52.71 / 53.10 / 53.08%.
