@@ -1,0 +1,100 @@
+{
+  "baseline_tests_passing": 29,
+  "mutation_score": 1.0,
+  "killed": 8,
+  "total": 8,
+  "results": [
+    {
+      "mutation": "D2_lookahead_price_lookup",
+      "killed": true,
+      "n_failed": 1,
+      "n_passed": 28,
+      "failing_tests": [
+        "test_price_lookup_never_selects_a_future_bar"
+      ],
+      "expected_test": "test_price_lookup_never_selects_a_future_bar",
+      "exit_status_validated": true
+    },
+    {
+      "mutation": "D4_short_mark_to_market",
+      "killed": true,
+      "n_failed": 1,
+      "n_passed": 28,
+      "failing_tests": [
+        "test_short_equity_falls_when_price_rises"
+      ],
+      "expected_test": "test_short_equity_falls_when_price_rises",
+      "exit_status_validated": true
+    },
+    {
+      "mutation": "D5_close_only_exits",
+      "killed": true,
+      "n_failed": 2,
+      "n_passed": 27,
+      "failing_tests": [
+        "test_stop_fills_at_the_stop_level_when_the_low_pierces_it",
+        "test_stop_wins_when_one_bar_touches_both_levels"
+      ],
+      "expected_test": "test_stop_wins_when_one_bar_touches_both_levels",
+      "exit_status_validated": true
+    },
+    {
+      "mutation": "D6_sharpe_annualisation",
+      "killed": true,
+      "n_failed": 2,
+      "n_passed": 27,
+      "failing_tests": [
+        "test_annualisation_matches_the_closed_form",
+        "test_periods_per_year_is_inferred_from_bar_spacing"
+      ],
+      "expected_test": "test_annualisation_matches_the_closed_form",
+      "exit_status_validated": true
+    },
+    {
+      "mutation": "D7_monte_carlo_permutation",
+      "killed": true,
+      "n_failed": 1,
+      "n_passed": 28,
+      "failing_tests": [
+        "test_bootstrap_is_not_degenerate"
+      ],
+      "expected_test": "test_bootstrap_is_not_degenerate",
+      "exit_status_validated": true
+    },
+    {
+      "mutation": "D10_scaler_refit",
+      "killed": true,
+      "n_failed": 2,
+      "n_passed": 27,
+      "failing_tests": [
+        "test_single_row_transform_is_not_all_zeros",
+        "test_unfitted_scaler_returns_input_unchanged"
+      ],
+      "expected_test": "test_single_row_transform_is_not_all_zeros",
+      "exit_status_validated": true
+    },
+    {
+      "mutation": "D11_no_embargo",
+      "killed": true,
+      "n_failed": 2,
+      "n_passed": 27,
+      "failing_tests": [
+        "test_gap_between_folds_is_at_least_the_sequence_length",
+        "test_no_row_appears_in_both_folds"
+      ],
+      "expected_test": "test_gap_between_folds_is_at_least_the_sequence_length",
+      "exit_status_validated": true
+    },
+    {
+      "mutation": "DX_fee_split_evenly",
+      "killed": true,
+      "n_failed": 1,
+      "n_passed": 28,
+      "failing_tests": [
+        "test_equity_curve_reconciles_with_summed_trade_pnl"
+      ],
+      "expected_test": "test_equity_curve_reconciles_with_summed_trade_pnl",
+      "exit_status_validated": true
+    }
+  ]
+}
