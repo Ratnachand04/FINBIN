@@ -1,0 +1,40 @@
+{
+  "status": "research_draft_verified_not_submitted",
+  "scope": "Daily technical classifiers and research evaluation; not the full live trading platform",
+  "fresh_python_environment": "CPython 3.12.0 on Windows, isolated venv",
+  "archive_extraction_reproduction": "passed",
+  "regression_tests_passed": 51,
+  "selected_mutations_detected": 8,
+  "selected_mutations_total": 8,
+  "baseline_mutation_suite_tests": 29,
+  "fitted_pipelines": 72,
+  "oos_prediction_rows": 5562,
+  "unique_decision_dates": 2083,
+  "official_source_spot_check_asset_days": 275,
+  "source_spot_check_all_fields_match": true,
+  "independent_reproduction_byte_identical_outputs": [
+    "oos_predictions.csv",
+    "fold_manifest.csv",
+    "daily_portfolio.csv",
+    "execution_trades.csv",
+    "execution_equity.csv",
+    "results.json",
+    "latex_numbers.json",
+    "mutation_matrix.json"
+  ],
+  "pdf_compiler_tested": "Tectonic 0.17.0 / XeTeX with BibTeX",
+  "main_pdf_pages": 15,
+  "unresolved_pdf_reference_markers": 0,
+  "overleaf_service_accessed": false,
+  "warnings": [
+    "Non-fatal TeX box/font-configuration warnings; PDF generated and selected pages inspected",
+    "Fresh-environment test log includes a Starlette/AnyIO deprecation warning; no test failure"
+  ],
+  "author_action_required": [
+    "Author identities, affiliations, corresponding contact and CRediT roles",
+    "Funding, competing interests, all-author approval and publication declarations",
+    "Independent human review of methods, code, outputs, references and wording",
+    "AI policy compliance and truthful finalized disclosure",
+    "Data/code redistribution permission and anonymous/public archive arrangements"
+  ]
+}
