@@ -1,5 +1,5 @@
 %==============================================================================
-%  Calibrate the Instrument, Then Check the Baseline
+%  JFDS double-anonymized manuscript (upload separately from the title page)
 %  Elsevier (elsarticle) manuscript.  Compile with pdfLaTeX:
 %      pdflatex -> pdflatex -> pdflatex      (bibliography is inline)
 %==============================================================================
@@ -19,6 +19,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
 \usetikzlibrary{positioning,arrows.meta,calc,fit,backgrounds,shapes.geometric,shapes.misc}
+\setlength{\emergencystretch}{3em}
 
 %---- colours and node styles -------------------------------------------------
 \definecolor{cInput}{HTML}{455A64}\definecolor{cData}{HTML}{1565C0}
@@ -36,81 +37,56 @@
   darr/.style={-{Latex[length=2.2mm]},line width=0.7pt,dashed},
   lbl/.style={font=\scriptsize\itshape,fill=white,inner sep=1pt}}
 
-\journal{Journal of Financial Data Science}
+\journal{The Journal of Finance and Data Science}
 
 \begin{document}
 
 \begin{frontmatter}
 
-\title{Calibrate the Instrument, Then Check the Baseline:\\
-       An Audited Re-Evaluation of Daily Cryptocurrency\\
-       Direction Forecasting}
+\title{Auditing Machine-Learning Trading Systems:\\
+       Leakage, Backtest Faults, and Benchmark Failure}
 
-\author[1]{Author One\corref{cor1}}
-\ead{author1@institution.edu}
-\author[1]{Author Two}
-\author[2]{Author Three}
-
-\cortext[cor1]{Corresponding author}
-
-\affiliation[1]{organization={Department of Computer Science},
-               addressline={University Name},
-               city={City},
-               postcode={000000},
-               country={Country}}
-
-\affiliation[2]{organization={Department of Finance},
-               addressline={Institution Name},
-               city={City},
-               country={Country}}
+% JFDS uses double-anonymized review. Author names, affiliations,
+% acknowledgements and declarations of interest belong in the separate
+% jfds_title_page.tex file, not in this review manuscript.
+\author{}
 
 \begin{abstract}
-We report a two-stage failure that we believe is common in applied trading
-research, and we quantify both stages on a single system. In the first stage the
-measurement apparatus is wrong. Auditing a complete cryptocurrency trading
-pipeline that reported an aggregate annualised Sharpe ratio of $4.54$ and a
-per-series maximum of $23.65$, we isolate twelve code-level faults arising from
-five root causes, spanning execution, metric computation and the feature
-pipeline. Among them is a feature named for sentiment that is in fact a scaled,
-noised copy of the contemporaneous label, correlating $0.916$ with the same day
-return and $-0.018$ with the next day. Every fault is reproduced, corrected, and
-pinned by a regression test; a mutation study reintroducing each fault kills
-$8/8$ of the mutants it can express. In the second stage, which survives the
-first, the model is compared against the wrong baseline. Re-running the study
-under a corrected harness with expanding-window walk-forward validation, a
-purge-and-embargo gap and per-fold scaler fitting, a regularised linear model
-attains $52.95\%$ next-day directional accuracy over $5{,}562$ out-of-sample
-predictions ($p < 10^{-4}$ against the coin flip). The same data yields
-$52.88\%$ from inverse persistence -- a zero-parameter rule that bets against
-yesterday's sign. Paired tests on identical days give differences of
-$-0.29$, $+0.53$ and $-0.07$ percentage points on BTC, ETH and DOGE, none
-remotely significant, with the model losing on two of three assets. Thirty-four
-engineered features, per-fold scaling and walk-forward machinery recover a
-well-documented one-day reversal effect and nothing beyond it. The effect is
-also not tradable: gross annualised Sharpe is $0.544$ with a stationary-bootstrap
-$95\%$ interval of $[-0.17, +1.28]$ that contains zero, and the appraisal ratio
-against a passive basket is $-0.076$. A decomposition attributes the
-frictionless-to-executed gap to transaction costs ($-0.43$ Sharpe) and a
-holding-period mismatch ($-0.14$), and shows the entry lag costs essentially
-nothing, contradicting a common intuition imported from equities into a market
-that trades continuously. We propose mutation scoring and a randomised null test
-as minimum verification for backtested claims, and show that the single-path
-version of that null test which we previously advocated is itself uncalibrated,
-producing a positive Sharpe on $13.3\%$ of correct-engine draws.
+We study two independent ways in which a machine-learning trading result can
+survive conventional evaluation yet support the wrong conclusion: a defective
+measurement pipeline and an inadequate benchmark. Auditing a cryptocurrency
+system that reported an aggregate annualised Sharpe ratio of $4.54$, we identify
+twelve code-level faults from five root causes. These include execution and
+accounting defects and a purported sentiment feature that correlates $0.916$
+with the same-day return but only $-0.018$ with the next-day return. Eight
+expressible faults are reintroduced as mutations; the regression suite detects
+all eight. We then re-estimate performance using expanding-window walk-forward
+validation, a five-day embargo, training-fold-only scaling, and $5{,}562$
+out-of-sample predictions. Logistic regression attains $52.95\%$ directional
+accuracy ($p=1.09\times10^{-5}$ against $50\%$), but a zero-parameter inverse-
+persistence rule attains $52.88\%$. Paired asset-level differences range from
+$-0.29$ to $+0.53$ percentage points and are not statistically significant.
+The model therefore adds no measurable directional information beyond one-day
+reversal. Economic evidence is also inconclusive: gross annualised Sharpe is
+$0.544$ with a stationary-bootstrap $95\%$ interval of $[-0.17,1.28]$; after an
+assumed $9$ basis points per side, net Sharpe is $0.113$. A randomized null test
+further shows why validation must be distributional: $13.3\%$ of correct-engine
+single-path draws have positive Sharpe despite positive costs. The results
+support mutation testing, calibrated null tests, paired benchmark comparisons,
+and uncertainty intervals as minimum controls for empirical trading research.
 \end{abstract}
 
 \begin{highlights}
-\item Twelve code-level evaluation faults from five root causes, each killed by a regression test (mutation score 8/8).
-\item A sentiment feature shown to be a scaled copy of the contemporaneous label ($\rho = 0.916$ same-day, $-0.018$ next-day).
-\item Inverse persistence, a zero-parameter rule, matches the machine-learning model: paired differences of $-0.29$ to $+0.53$ pp, none significant.
-\item Gross Sharpe $0.544$ with bootstrap CI $[-0.17, +1.28]$; breakeven cost CI spans the assumed cost, so tradability is not established.
-\item Attribution shows costs dominate; the one-bar entry lag costs $\approx 0$ because crypto has no overnight gap.
+\item Twelve backtest faults are traced to five root causes.
+\item Mutation tests detect all eight faults that the harness can express.
+\item A zero-parameter reversal rule matches 34-feature logistic regression.
+\item Gross Sharpe uncertainty includes zero; trading costs absorb the estimate.
+\item Calibrated randomized-null tests replace fragile single-path checks.
 \end{highlights}
 
 \begin{keyword}
-Backtest overfitting \sep Data leakage \sep Mutation testing \sep Cryptocurrency
-\sep Directional forecasting \sep Walk-forward validation \sep Baselines
-\sep Negative results
+Financial machine learning \sep Backtest validation \sep Data leakage
+\sep Cryptocurrency forecasting \sep Mutation testing \sep Benchmark models
 \end{keyword}
 
 \end{frontmatter}
@@ -174,7 +150,7 @@ days, \emph{inverse persistence} -- predict the opposite of yesterday's
 direction, a rule with no parameters and no inputs beyond the previous sign --
 scores $52.88\%$. Paired comparisons on identical observations give differences
 of $-0.29$, $+0.53$ and $-0.07$ percentage points on BTC, ETH and DOGE, with
-$|t| \le 0.45$ throughout. The machine-learning model loses on two of three
+$|z_{\mathrm{HAC}}| \le 0.44$ throughout. The machine-learning model loses on two of three
 assets and is indistinguishable from the trivial rule on the third.
 
 The substantive content of the result is therefore that daily cryptocurrency
@@ -276,7 +252,7 @@ provide.
 \subsection{Short-horizon reversal}
 
 Short-horizon return reversal is long documented in equities
-\citep{lo1990contrarian, jegadeesh1990evidence} and reported in cryptocurrency
+\citep{lo1990contrarian,jegadeesh1990evidence} and reported in cryptocurrency
 \citep{caporale2019reverse}. Our contribution here is not the effect but the
 observation that a machine-learning pipeline evaluated without the corresponding
 baseline will recover it and present it as learned structure.
@@ -289,7 +265,12 @@ cross-validation validity for time series. \citet{gu2020empirical} provide the
 reference comparison of machine learning for asset returns, finding modest gains
 and that regularised linear methods are competitive with far more flexible
 models -- consistent with our finding that logistic regression beats
-gradient-boosted trees on every asset. \citet{fama1970efficient} and
+gradient-boosted trees on every asset. In cryptocurrency specifically,
+\citet{jaquart2021short} compare multiple machine-learning models and feature
+families at one- to sixty-minute horizons; their pre-cost predictability also
+fails to survive transaction costs. Our daily-horizon study differs by centring
+software verification and incremental performance against a reversal rule.
+\citet{fama1970efficient} and
 \citet{timmermann2004efficient} supply the null: predictability may exist but
 should be small, unstable, and bounded by costs.
 
@@ -356,6 +337,7 @@ the fault is reintroduced in the mutation study of Section~\ref{ssec:mutation}
 and detected; ``direct'' indicates it is covered by a dedicated test but is not
 separately expressible as a mutation.}
 \label{tab:defects}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 Root cause & ID & Fault & Coverage \\
@@ -382,7 +364,7 @@ Root cause & ID & Fault & Coverage \\
 R5 Naming
  & F12 & Accuracy reported as Sharpe and profit factor & Direct \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 We flag two honest qualifications. First, F12 is a labelling error, not a
@@ -511,8 +493,8 @@ The pipeline consumed a per-asset daily sentiment series with fields
 \texttt{simulated\_headline}. The series is generated from the price data:
 \begin{align}
 r^{\text{same}}_t &= \frac{C_t - O_t}{O_t}, \\
-s_t &= \mathrm{clip}\!\left(15\, r^{\text{same}}_t,\, -1,\, 1\right) + \epsilon_t,
-\qquad \epsilon_t \sim \mathcal{U}(-0.2, 0.2),
+s_t &= \mathrm{clip}\!\left(15\, r^{\text{same}}_t,\, -1,\, 1\right) + \epsilon_t, \\
+\epsilon_t &\sim \mathcal{U}(-0.2, 0.2),
 \label{eq:sentgen}
 \end{align}
 with headline text drawn from fifteen fixed templates selected by the sign and
@@ -686,11 +668,14 @@ is the baseline whose omission invalidated our first revision.
 
 We report Wilson score intervals rather than Wald, which is preferable near a
 boundary and at moderate $n$. Against a fixed null $p_0$ we use the usual
-proportion test. For model-versus-baseline we use a \emph{paired} test on the
-per-observation difference of correctness indicators, following
-\citet{diebold1995comparing}, because both forecasts are evaluated on identical
-days and their errors are correlated; comparing two independent intervals is the
-wrong instrument. We additionally report the \citet{pesaran1992simple} test,
+proportion test. For model-versus-baseline we test the mean paired difference of
+the two correctness indicators on identical days. Following the loss-
+differential logic of \citet{diebold1995comparing}, its standard error uses a
+Newey--West heteroskedasticity-and-autocorrelation-consistent estimator with a
+20-day truncation lag. Pairing handles contemporaneous dependence between the
+two forecasts, while the long-run variance estimate allows their daily loss
+differential to be serially dependent. We additionally report the
+\citet{pesaran1992simple} test,
 which examines independence of predicted and realised direction rather than a hit
 rate against $0.5$, and therefore does not credit a forecast for matching the
 unconditional frequency of up moves.
@@ -731,6 +716,29 @@ previous two-bar window did not.}
 \label{fig:timing}
 \end{figure}
 
+\subsection{Reproducibility and verification protocol}
+
+All headline quantities are generated by one deterministic command from the
+three archived comma-separated data files; numerical results are written to a
+machine-readable JSON file before they are transcribed into tables. The random
+number generator used by the stationary bootstrap is seeded at $20{,}260{,}401$.
+The archived environment pins Python and the numerical libraries, and the
+review package contains the evaluation script, corrected backtest engine,
+tests, mutation runner, null-test runner, serialized output, and input data.
+
+We use three complementary checks. First, ordinary regression tests evaluate
+specified invariants, including causal price lookup, short-position accounting,
+bar-level exits, annualisation, fold separation, scaler behaviour, and cash
+reconciliation. Second, mutation testing reintroduces eight historical defects
+that can be represented independently and requires at least one relevant test
+to fail. Third, a distributional null test runs exogenous random signals over
+$60$ independent, driftless geometric random walks of $2{,}400$ bars and three
+assets. It tests negative mean performance under positive costs, exact cash
+conservation for paths flat at termination, and agreement between realised and
+specified fees. These checks address software correctness; they do not establish
+predictive validity, which is evaluated separately through the walk-forward and
+benchmark comparisons.
+
 %==============================================================================
 \section{Results}
 \label{sec:results}
@@ -744,6 +752,7 @@ previous two-bar window did not.}
 PT is the Pesaran--Timmermann $p$-value. The inverse-persistence row is the
 comparison that matters.}
 \label{tab:acc}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}llrrcrrr@{}}
 \toprule
 Asset & Predictor & $n$ & Accuracy & 95\% CI & $p$ vs $.5$ & PT $p$ & Gross SR \\
@@ -776,7 +785,7 @@ Asset & Predictor & $n$ & Accuracy & 95\% CI & $p$ vs $.5$ & PT $p$ & Gross SR \
  & Persistence                  & $5{,}562$ & $47.12\%$ & $[45.8, 48.4]$ & $<10^{-4}$ & --- & --- \\
  & Majority                     & $5{,}562$ & $50.49\%$ & $[49.2, 51.8]$ & $0.469$ & --- & --- \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Table~\ref{tab:acc} contains the result. Read on its own, the logistic row is
@@ -793,23 +802,24 @@ significance, and the model is behind on two of three assets.}
 \label{tab:paired}
 \begin{tabular}{@{}llrrrrl@{}}
 \toprule
-Asset & Model & Diff (pp) & SE (pp) & $t$ & $p$ & Verdict \\
+Asset & Model & Diff (pp) & HAC SE (pp) & $z$ & $p$ & Verdict \\
 \midrule
-BTC  & Logistic & $-0.29$ & $1.22$ & $-0.24$ & $0.813$ & baseline ahead \\
-BTC  & GBDT     & $-0.91$ & $1.24$ & $-0.74$ & $0.461$ & baseline ahead \\
-ETH  & Logistic & $+0.53$ & $1.18$ & $+0.45$ & $0.654$ & model ahead, n.s. \\
+BTC  & Logistic & $-0.29$ & $1.15$ & $-0.25$ & $0.803$ & baseline ahead \\
+BTC  & GBDT     & $-0.91$ & $1.08$ & $-0.84$ & $0.399$ & baseline ahead \\
+ETH  & Logistic & $+0.53$ & $1.21$ & $+0.44$ & $0.663$ & model ahead, n.s. \\
 ETH  & GBDT     & $-1.20$ & $1.29$ & $-0.93$ & $0.353$ & baseline ahead \\
-DOGE & Logistic & $-0.07$ & $1.39$ & $-0.05$ & $0.959$ & baseline ahead \\
-DOGE & GBDT     & $-1.22$ & $1.54$ & $-0.79$ & $0.429$ & baseline ahead \\
+DOGE & Logistic & $-0.07$ & $1.34$ & $-0.05$ & $0.957$ & baseline ahead \\
+DOGE & GBDT     & $-1.22$ & $1.34$ & $-0.91$ & $0.363$ & baseline ahead \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Pesaran--Timmermann statistics in Table~\ref{tab:acc} confirm that
-directional predictability is genuinely present ($p = 0.015$, $0.008$, $0.016$).
-The predictability is real. It is simply not attributable to the model: a rule
-that inverts yesterday's sign captures it, and everything the pipeline adds is
-within noise of nothing.
+Under their asymptotic reference distribution, the Pesaran--Timmermann
+statistics in Table~\ref{tab:acc} reject independence of predicted and realised
+direction for the logistic forecasts ($p = 0.015$, $0.008$, $0.016$). This is
+evidence of directional dependence, not of incremental model value: a rule that
+inverts yesterday's sign captures the same dependence, and the HAC paired
+comparisons place everything added by the pipeline within sampling noise.
 
 \subsection{The model is worse on the days that matter}
 
@@ -1074,6 +1084,7 @@ corrected code and record which tests turn red.
 \caption{Mutation results. Every expressible fault is detected; mutation score
 $8/8$. The baseline suite is green at $29$ tests.}
 \label{tab:mutation}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}llr@{}}
 \toprule
 Reintroduced fault & Detecting test(s) & Red \\
@@ -1089,7 +1100,7 @@ Close-only exits (F-var)  & \texttt{stop\_fills\_at\_the\_stop\_level}; \texttt{
 \midrule
 \multicolumn{2}{@{}l}{\textbf{Mutation score}} & $\mathbf{8/8}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Five faults (F2, F3, F4, F9, F12) are covered by dedicated tests but are not
@@ -1298,7 +1309,7 @@ Correcting the instrument was necessary and not sufficient. The re-measured
 result -- $52.95\%$ directional accuracy over $5{,}562$ out-of-sample
 predictions, $p < 10^{-4}$ -- is matched by inverse persistence at $52.88\%$, a
 rule with no parameters. Paired tests on identical days give differences between
-$-0.29$ and $+0.53$ percentage points with $|t| \le 0.45$, and the model loses on
+$-0.29$ and $+0.53$ percentage points with $|z_{\mathrm{HAC}}| \le 0.44$, and the model loses on
 two of three assets. Thirty-four features and walk-forward machinery recover a
 documented one-day reversal effect and add nothing measurable to it. The effect
 is not tradable on this feature set at this frequency: gross Sharpe is $0.544$
@@ -1317,14 +1328,34 @@ rather than quietly correcting it.
 \section*{Data and code availability}
 %==============================================================================
 
-The evaluation harness, corrected engine, mutation-testing plugin, null-test
-protocol and $29$ regression tests accompany this manuscript. The evaluation
-reproduces end to end from the released daily OHLCV data with a single command,
-and full numerical output is serialised to machine-readable files
-(\texttt{evaluation\_results.json}, \texttt{mutation\_matrix.json}). Repository
-URL, release tag and data vintage hash are to be inserted on acceptance; we note
-that our first revision claimed reproducibility without supplying any of these
-identifiers.
+An anonymized reproducibility archive accompanies the review submission. It
+contains the evaluation harness, corrected engine, $29$-test verification suite,
+mutation and randomized-null runners, environment specification, serialized
+outputs (\texttt{evaluation\_results.json} and
+\texttt{mutation\_matrix.json}), and the three daily OHLCV input files. The
+headline evaluation reproduces with
+\texttt{python scripts/evaluate\_walkforward.py}. The public repository and
+immutable release identifier will be disclosed on the separate title page after
+the final submission artifact is archived, and will replace this blinded
+statement in the accepted manuscript. SHA-256 hashes of the BTC,
+ETH, and DOGE input files are, respectively,
+\texttt{aca018e6...217cfc}, \texttt{20a0bef6...44313c}, and
+\texttt{5eefe614...9fce51}.
+
+\section*{Ethics statement}
+
+This study uses market data and software artifacts and involves no human
+participants, personal data, animals, or biological materials; ethics approval
+and consent were therefore not applicable.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the
+writing process}
+
+During preparation of the revised manuscript, the authors used OpenAI Codex to
+assist with language editing, structural revision, and consistency checks. The
+authors reviewed and edited all output, verified the reported numerical results
+against the executable analysis, and take full responsibility for the content
+of the manuscript.
 
 %==============================================================================
 \appendix
@@ -1455,6 +1486,12 @@ Review of Financial Studies 29 (1), 5--68.
 Hou, K., Xue, C., Zhang, L., 2020.
 Replicating anomalies.
 Review of Financial Studies 33 (5), 2019--2133.
+
+\bibitem[Jaquart et~al.(2021)]{jaquart2021short}
+Jaquart, P., Dann, D., Weinhardt, C., 2021.
+Short-term bitcoin market prediction via machine learning.
+The Journal of Finance and Data Science 7, 45--66.
+\url{https://doi.org/10.1016/j.jfds.2021.03.001}.
 
 \bibitem[Jegadeesh(1990)]{jegadeesh1990evidence}
 Jegadeesh, N., 1990.
