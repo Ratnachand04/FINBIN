@@ -1,0 +1,5 @@
+Daily crypto forecasts are compared with parameter-free reversal baselines.
+Paired date-block inference finds an uncertain incremental accuracy advantage.
+Joint return-turnover resampling quantifies uncertainty in break-even costs.
+Explicit execution policies produce materially different economic outcomes.
+Saved predictions and eight detected mutations support a reproducible audit.
