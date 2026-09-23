@@ -1,0 +1,181 @@
+{
+  "checked_utc": "2026-09-22T15:37:22.686081+00:00",
+  "purpose": "Selected-month provenance check, not a full-history independent validation",
+  "relative_tolerance": 1e-10,
+  "absolute_tolerance": 1e-08,
+  "compared_rows": 275,
+  "all_match": true,
+  "records": [
+    {
+      "symbol": "BTCUSDT",
+      "month": "2019-07",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1d/BTCUSDT-1d-2019-07.zip",
+      "archive_sha256": "52afd0bad5ac94a8cfec04d8922e2ec19806783c3a905d4e1149246561c4a331",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "month": "2023-01",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1d/BTCUSDT-1d-2023-01.zip",
+      "archive_sha256": "a9fd53b75add7cc42fb4779a545811606260f79810f3826215d6ebecda11bb36",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "BTCUSDT",
+      "month": "2026-03",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1d/BTCUSDT-1d-2026-03.zip",
+      "archive_sha256": "b81fb1942f9653564f355e3bd62dc06e0552d1c64bc966f7dce5a9c1f8780c47",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "month": "2019-07",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1d/ETHUSDT-1d-2019-07.zip",
+      "archive_sha256": "211372309c6ab41b04a487ccc907974e1fd25ebedd30a8e5efb4e6f3ce33ccd1",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "month": "2023-01",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1d/ETHUSDT-1d-2023-01.zip",
+      "archive_sha256": "811ff55e20735e6fff55ef37c0c3e922eb6d26d41fe84fc04b2a03c0179549ad",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "ETHUSDT",
+      "month": "2026-03",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/1d/ETHUSDT-1d-2026-03.zip",
+      "archive_sha256": "ce8ec50be4226da6d0c7724dac25c1a35dac8d75c8f3207d5aa8a0991ee54d9a",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "month": "2019-07",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/DOGEUSDT/1d/DOGEUSDT-1d-2019-07.zip",
+      "archive_sha256": "ce60b004779a01e5cde64c81c09f93ac7fa41b29796ea2a617912dc849226cce",
+      "checksum_verified": true,
+      "compared_rows": 27,
+      "matching_rows_by_field": {
+        "open": 27,
+        "high": 27,
+        "low": 27,
+        "close": 27,
+        "volume": 27,
+        "quote_asset_volume": 27,
+        "number_of_trades": 27,
+        "taker_buy_base_asset_volume": 27
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "month": "2023-01",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/DOGEUSDT/1d/DOGEUSDT-1d-2023-01.zip",
+      "archive_sha256": "110be6f38eb88e72747502f63b1cdbea6364614ec8c3142a13fa8e882afc54ec",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "month": "2026-03",
+      "url": "https://data.binance.vision/data/spot/monthly/klines/DOGEUSDT/1d/DOGEUSDT-1d-2026-03.zip",
+      "archive_sha256": "d5a42d4bbf77d2890a6ec8600d2622cfb956afaac6d0e75d90b3234d7409e2da",
+      "checksum_verified": true,
+      "compared_rows": 31,
+      "matching_rows_by_field": {
+        "open": 31,
+        "high": 31,
+        "low": 31,
+        "close": 31,
+        "volume": 31,
+        "quote_asset_volume": 31,
+        "number_of_trades": 31,
+        "taker_buy_base_asset_volume": 31
+      },
+      "all_compared_fields_match": true
+    }
+  ]
+}
