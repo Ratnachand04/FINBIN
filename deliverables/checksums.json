@@ -1,0 +1,16 @@
+[
+  {
+    "file": "JFDS_Overleaf.zip",
+    "files": 19,
+    "bytes": 376288,
+    "sha256": "9cee4eefd51ee3c6de51de8a6d748bcba28594b75704f7aad6b96c6a234db475",
+    "verified": true
+  },
+  {
+    "file": "JFDS_Replication.zip",
+    "files": 142,
+    "bytes": 3977328,
+    "sha256": "a96b7dc2e3c0831c65da75bf52f3402072e1e31b87487e27ec8d16a0c0333483",
+    "verified": true
+  }
+]
