@@ -157,25 +157,36 @@ def prop_test(k: int, n: int, p0: float) -> dict:
     return {"z": float(z), "p_value": float(math.erfc(abs(z) / math.sqrt(2)))}
 
 
-def paired_accuracy_test(a: np.ndarray, b: np.ndarray) -> dict:
-    """Paired test on two correctness vectors over the same observations.
+def paired_accuracy_test(a: np.ndarray, b: np.ndarray, hac_lags: int = 20) -> dict:
+    """Paired accuracy test with a Newey--West/HAC standard error.
 
     Because both forecasts are evaluated on identical days, their errors are
     correlated and an unpaired comparison of two independent intervals is the
-    wrong instrument. Uses the mean of the per-observation difference.
+    wrong instrument.  The loss differential can also be serially dependent,
+    so the standard error uses a Bartlett-kernel HAC estimator rather than the
+    iid variance of the per-observation difference.
     """
     d = a.astype(float) - b.astype(float)
     n = d.size
     if n < 2:
-        return {"diff": 0.0, "se": 0.0, "t": 0.0, "p_value": 1.0}
+        return {"diff": 0.0, "se_hac": 0.0, "z_hac": 0.0,
+                "p_value": 1.0, "hac_lags": 0}
     mean = float(d.mean())
-    se = float(d.std(ddof=1) / math.sqrt(n))
-    t = mean / se if se > 0 else 0.0
+    centred = d - mean
+    lag_max = min(int(hac_lags), n - 1)
+    long_run_var = float(np.dot(centred, centred) / n)
+    for lag in range(1, lag_max + 1):
+        weight = 1.0 - lag / (lag_max + 1.0)
+        autocov = float(np.dot(centred[lag:], centred[:-lag]) / n)
+        long_run_var += 2.0 * weight * autocov
+    se = math.sqrt(max(long_run_var, 0.0) / n)
+    z = mean / se if se > 0 else 0.0
     return {
         "diff": mean,
-        "se": se,
-        "t": float(t),
-        "p_value": float(math.erfc(abs(t) / math.sqrt(2))),
+        "se_hac": float(se),
+        "z_hac": float(z),
+        "p_value": float(math.erfc(abs(z) / math.sqrt(2))),
+        "hac_lags": lag_max,
     }
 
 
@@ -625,7 +636,8 @@ def main() -> int:
             v = res[name]["vs_inverse_persistence"]
             verdict = "model better" if v["diff"] > 0 else "BASELINE BETTER"
             print(f"  {symbol:<9} {name:<9} diff={v['diff']*100:+6.2f}pp  "
-                  f"se={v['se']*100:4.2f}pp  t={v['t']:+5.2f}  p={v['p_value']:.3f}   {verdict}")
+                  f"HACse={v['se_hac']*100:4.2f}pp  z={v['z_hac']:+5.2f}  "
+                  f"p={v['p_value']:.3f}   {verdict}")
 
     symbols = list(per_symbol)
     panel = build_panel(per_symbol)
