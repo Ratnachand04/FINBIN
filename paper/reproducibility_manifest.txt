@@ -1,0 +1,20 @@
+Reproducibility manifest for the JFDS review package
+
+Input file SHA-256 hashes:
+
+ACA018E6C7C299B16C691BE1E746371F4468C475675899C35BB9F2B109217CFC  data_ingestion/output/klines/BTCUSDT_daily.csv
+20A0BEF67DD349B23C40AE8DD510D0064D4AF0DEF3B687EAF936A95AD444313C  data_ingestion/output/klines/ETHUSDT_daily.csv
+5EEFE6147B3820B39BD7C2C046EF2F0E658E577A23DFCB4D56CFC5DC4A9FCE51  data_ingestion/output/klines/DOGEUSDT_daily.csv
+
+Headline command:
+
+python scripts/evaluate_walkforward.py
+
+Verification commands:
+
+python -m pytest -q -o addopts="" tests/test_evaluation_statistics.py tests/test_backtest_engine_correctness.py tests/test_feature_pipeline_correctness.py tests/test_prediction.py tests/test_sentiment.py
+python scripts/mutation_matrix.py
+python scripts/null_test_backtest.py
+
+Before submission, append the SHA-256 hashes of evaluation_results.json,
+mutation_matrix.json, the environment lockfile, and the final archive itself.
