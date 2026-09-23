@@ -1,0 +1,5 @@
+Twelve backtest faults are traced to five root causes.
+Mutation tests detect all eight faults that the harness can express.
+A zero-parameter reversal rule matches 34-feature logistic regression.
+Gross Sharpe uncertainty includes zero; trading costs absorb the estimate.
+Calibrated randomized-null tests replace fragile single-path checks.
