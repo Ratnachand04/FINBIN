@@ -1,0 +1,40 @@
+OVERLEAF IMPORT INSTRUCTIONS
+
+1. Sign in at https://www.overleaf.com/ and open your Projects dashboard.
+2. Choose New Project > Upload Project.
+3. Upload JFDS_Overleaf_Import.zip directly; do not extract it first.
+4. Open the project settings (Menu or gear icon).
+5. Set Main document to main.tex and Compiler to XeLaTeX.
+6. Open main.tex and click Recompile. Overleaf handles the bibliography.
+7. Use Download PDF beside the preview to save the compiled manuscript.
+
+WHAT TO EDIT
+main.tex: manuscript text and unresolved declarations.
+title_page.tex: author names, order, affiliations, corresponding contact,
+                contributions, funding and competing interests.
+references.bib: bibliography entries.
+highlights.txt: separate submission highlights.
+generated/: result tables and numeric macros; retain the folder and filenames.
+figures/evidence.pdf: the figure used by the manuscript; retain its path.
+
+SEPARATE AUTHOR TITLE PAGE
+Keep author identities out of the anonymous main manuscript. Complete
+title_page.tex, set it as the main document, and compile/download its PDF
+separately. Then restore main.tex as the main document and open main.tex.
+
+IF COMPILATION FAILS
+Check that main.tex is at the project root and the generated/ and figures/
+folders were uploaded intact. Recheck Compiler = XeLaTeX and Main document =
+main.tex. For stale references, use Recompile from scratch if available.
+Do not upload the Python replication ZIP into this LaTeX project.
+
+STATUS
+This is an author-review research draft, not a submitted or accepted paper.
+Complete the marked declarations and independent human review before journal
+submission. No author identities, approvals, funding or conflicts were invented.
+The source was compiled locally with Tectonic/XeTeX; Overleaf itself has not
+been accessed. This import ZIP deliberately excludes previously compiled
+main.pdf and title_page.pdf so Overleaf generates fresh outputs.
+
+Official upload help:
+https://docs.overleaf.com/managing-projects-and-files/uploading-a-project
