@@ -1,0 +1,46 @@
+[
+  {
+    "step": "evaluation",
+    "returncode": 0,
+    "command": [
+      "python",
+      "scripts/build_jfds_research.py"
+    ]
+  },
+  {
+    "step": "regression",
+    "returncode": 0,
+    "command": [
+      "python",
+      "-m",
+      "pytest",
+      "-c",
+      "research_pytest.ini",
+      "tests/test_jfds_research.py",
+      "tests/test_backtest_engine_correctness.py",
+      "tests/test_feature_pipeline_correctness.py",
+      "tests/test_evaluation_statistics.py",
+      "-o",
+      "addopts=",
+      "-q"
+    ]
+  },
+  {
+    "step": "mutations",
+    "returncode": 0,
+    "command": [
+      "python",
+      "scripts/mutation_matrix.py",
+      "--out",
+      "docs/jfds/mutation_matrix.json"
+    ]
+  },
+  {
+    "step": "figures",
+    "returncode": 0,
+    "command": [
+      "python",
+      "scripts/render_jfds_figures.py"
+    ]
+  }
+]
