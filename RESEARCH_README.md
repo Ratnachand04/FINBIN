@@ -35,6 +35,7 @@ Never load joblib/pickle files from untrusted parties. The file is executable Py
 
 - `scripts/build_jfds_research.py`: fixed expanding folds, saved models, prediction export, comparative inference, portfolio and independent execution calculations.
 - `scripts/research_statistics.py`: HAC estimator, synchronized stationary bootstrap, explicit target-turnover policy, exact cost root, one-bar trading formula.
+- `scripts/supplementary_diagnostics.py`: derived quantities cited in the manuscript but not stored in `results.json` (per-asset Wilson/Pesaran--Timmermann statistics, magnitude terciles, logistic coefficients, ledger decomposition, passive-basket regression, sentiment-proxy provenance, LF/CRLF input hashes). Writes `docs/jfds/supplementary_diagnostics.json`; run after the build (it is a step of `reproduce_jfds.py`).
 - `scripts/evaluate_walkforward.py`: inherited feature/model definitions. Its old `main()` is a historical evaluation and is **not** the source of the revised paper's economic results.
 - `docs/jfds/oos_predictions.csv`: prediction origins, return dates, labels, fold IDs, all model/baseline decisions, probabilities and execution prices.
 - `docs/jfds/fold_manifest.csv`: training-feature and training-label end dates, OOS dates, counts and gap contract.

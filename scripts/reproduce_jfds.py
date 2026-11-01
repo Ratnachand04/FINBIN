@@ -12,6 +12,7 @@ def main():
     logdir.mkdir(parents=True, exist_ok=True)
     commands = [
         ("evaluation", ["scripts/build_jfds_research.py"]),
+        ("supplementary", ["scripts/supplementary_diagnostics.py"]),
         ("regression", ["-m", "pytest", "-c", "research_pytest.ini", "tests/test_jfds_research.py",
           "tests/test_backtest_engine_correctness.py", "tests/test_feature_pipeline_correctness.py",
           "tests/test_evaluation_statistics.py", "-o", "addopts=", "-q"]),
