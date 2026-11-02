@@ -14,12 +14,14 @@ Outputs ``docs/jfds/supplementary_diagnostics.json`` containing:
   prediction file rather than copied from an older results file;
 * magnitude-aware measures (return-weighted hit rate, signed-forecast
   correlation with the next-day return, single-asset gross Sharpe);
+* date-synchronized stationary-bootstrap intervals for pooled accuracy, and
+  the share of asset-days with an 'up' logistic forecast;
 * agreement between the logistic forecast and inverse persistence, and
   accuracy by within-asset terciles of the absolute next-day return;
 * a per-trade decomposition of the daily-liquidation cash ledger;
 * annualised moments of the target-notional diagnostic and the passive
-  basket, with the regression intercept and appraisal ratio of the net
-  strategy on the passive basket (descriptive only);
+  basket, with the regression intercept (OLS and 20-lag HAC t-statistics)
+  and appraisal ratio of the net strategy on the passive basket;
 * close-to-next-open versus open-to-close return dispersion;
 * SHA-256 hashes of the input files with LF and CRLF line endings;
 * dependence of the excluded simulated sentiment score on same-day and
@@ -45,6 +47,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.evaluate_walkforward import (SYMBOLS, build_features,  # noqa: E402
                                           load_symbol, pesaran_timmermann,
                                           prop_test, wilson_interval)
+from scripts.research_statistics import percentile, stationary_indices  # noqa: E402
 
 KLINES = ROOT / "data_ingestion" / "output" / "klines"
 PREDICTORS = ("logistic", "gbdt", "lag1", "inverse", "persistence", "majority")
@@ -74,6 +77,33 @@ def per_asset_inference(pred: pd.DataFrame) -> list[dict]:
                     single_asset_gross_sharpe=sharpe(signed * r))
             rows.append(rec)
     return rows
+
+
+def pooled_accuracy_bootstrap(pred: pd.DataFrame, replicates: int = 2000,
+                              mean_block: int = 20) -> dict:
+    """Date-synchronized stationary-bootstrap intervals for pooled accuracy.
+
+    Uses the same index generator and seed as the main build, so dates (not
+    asset-days) are resampled and cross-asset dependence is preserved.
+    """
+    dates = np.sort(pred.date.unique())
+    ix = stationary_indices(len(dates), replicates=replicates, mean_block=mean_block)
+    out = {}
+    for name in PREDICTORS:
+        correct = (pred[f"pred_{name}"] == pred.y).astype(float)
+        by_day = correct.groupby(pred.date).agg(["sum", "count"]).reindex(dates)
+        hits, n = by_day["sum"].to_numpy(), by_day["count"].to_numpy()
+        boot = hits[ix].sum(axis=1) / n[ix].sum(axis=1)
+        out[name] = dict(accuracy=float(hits.sum() / n.sum()), ci95=percentile(boot),
+                         mean_block=mean_block, replicates=replicates)
+    return out
+
+
+def forecast_shares(pred: pd.DataFrame) -> dict:
+    """Share of asset-days with an 'up' logistic forecast (long-or-cash exposure)."""
+    up = pred.pred_logistic == 1
+    return dict(pooled=float(up.mean()),
+                by_asset={s: float(v) for s, v in up.groupby(pred.symbol).mean().items()})
 
 
 def agreement_and_terciles(pred: pd.DataFrame) -> dict:
@@ -120,6 +150,16 @@ def portfolio_moments(out: Path) -> dict:
     alpha = float(y.mean() - beta * x.mean())
     resid = y - alpha - beta * x
     resid_sd = float(resid.std(ddof=2))
+    X = np.column_stack([np.ones_like(x), x])
+    xtx_inv = np.linalg.inv(X.T @ X)
+    ols_se = float(np.sqrt(resid @ resid / (len(y) - 2) * xtx_inv[0, 0]))
+    scores = X * resid[:, None]
+    meat = scores.T @ scores
+    for lag in range(1, 21):
+        w = 1 - lag / 21
+        g = scores[lag:].T @ scores[:-lag]
+        meat += w * (g + g.T)
+    hac_se = float(np.sqrt((xtx_inv @ meat @ xtx_inv)[0, 0]))
     return dict(gross_annual_mean=float(365 * d.gross.mean()),
                 gross_annual_vol=float(np.sqrt(365) * d.gross.std(ddof=1)),
                 net_annual_mean=float(365 * d.net.mean()),
@@ -129,7 +169,8 @@ def portfolio_moments(out: Path) -> dict:
                 passive_sharpe=sharpe(d.passive_gross),
                 net_beta=beta, net_alpha_daily=alpha, net_alpha_annual=365 * alpha,
                 net_correlation=float(np.corrcoef(x, y)[0, 1]),
-                appraisal_ratio_annual=float(alpha / resid_sd * np.sqrt(365)))
+                appraisal_ratio_annual=float(alpha / resid_sd * np.sqrt(365)),
+                net_alpha_t_ols=alpha / ols_se, net_alpha_t_hac20=alpha / hac_se)
 
 
 def market_facts(pred: pd.DataFrame) -> dict:
@@ -237,6 +278,8 @@ def main() -> int:
     args = ap.parse_args()
     pred = pd.read_csv(args.results / "oos_predictions.csv")
     payload = dict(per_asset=per_asset_inference(pred),
+                   pooled_accuracy_bootstrap=pooled_accuracy_bootstrap(pred),
+                   forecast_shares=forecast_shares(pred),
                    agreement=agreement_and_terciles(pred),
                    execution_ledger=ledger_decomposition(pred, args.results),
                    portfolio=portfolio_moments(args.results),

@@ -358,6 +358,70 @@
       }
     }
   ],
+  "pooled_accuracy_bootstrap": {
+    "logistic": {
+      "accuracy": 0.5294857964760877,
+      "ci95": [
+        0.5145447138551652,
+        0.5440940691522087
+      ],
+      "mean_block": 20,
+      "replicates": 2000
+    },
+    "gbdt": {
+      "accuracy": 0.517799352750809,
+      "ci95": [
+        0.5020672771227707,
+        0.5321453127552327
+      ],
+      "mean_block": 20,
+      "replicates": 2000
+    },
+    "lag1": {
+      "accuracy": 0.5235526788924847,
+      "ci95": [
+        0.509582601061554,
+        0.5370807608147847
+      ],
+      "mean_block": 20,
+      "replicates": 2000
+    },
+    "inverse": {
+      "accuracy": 0.5287666307083783,
+      "ci95": [
+        0.5117807691370332,
+        0.5439339633480366
+      ],
+      "mean_block": 20,
+      "replicates": 2000
+    },
+    "persistence": {
+      "accuracy": 0.47123336929162174,
+      "ci95": [
+        0.45606603665196344,
+        0.48821923086296676
+      ],
+      "mean_block": 20,
+      "replicates": 2000
+    },
+    "majority": {
+      "accuracy": 0.5048543689320388,
+      "ci95": [
+        0.4936384178882659,
+        0.5156419080498165
+      ],
+      "mean_block": 20,
+      "replicates": 2000
+    }
+  },
+  "forecast_shares": {
+    "pooled": 0.5604099244875944,
+    "by_asset": {
+      "BTCUSDT": 0.5818530964954393,
+      "DOGEUSDT": 0.5408309455587392,
+      "ETHUSDT": 0.5520883341334614
+    }
+  },
   "agreement": {
     "agreement_pooled": 0.7080186983099604,
     "agreement_by_asset": {
@@ -410,7 +474,9 @@
     "net_alpha_daily": -0.00011072470453506823,
     "net_alpha_annual": -0.0404145171552999,
     "net_correlation": 0.19819555753985954,
-    "appraisal_ratio_annual": -0.07061289138318494
+    "appraisal_ratio_annual": -0.07061289138318494,
+    "net_alpha_t_ols": -0.1684921762204846,
+    "net_alpha_t_hac20": -0.17586922080454503
   },
   "market": {
     "BTCUSDT": {
